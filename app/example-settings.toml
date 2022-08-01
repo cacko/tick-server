@@ -1,0 +1,28 @@
+[botyo]
+client = "LAMETRIC"
+host = "192.168.0.105"
+phone = "fadfa"
+port = 7777
+redis_url = "redis://127.0.0.1/4"
+storage = "./cache"
+attachments = "/tmp"
+
+[api]
+host = "0.0.0.0"
+port = 32321
+secret = "gfsgs"
+
+[yanko]
+host = "192.168.0.107"
+port = 7988
+secret = "gfgsgfg"
+
+[lametric]
+host = "http://192.168.0.88:8080"
+user = "dev"
+apikey = "gdfsgs"
+widget_endpoint = "gsfg"
+widget_token = "gsfg=="
+
+[openweather]
+apikey = "f6ada6839eef26b3d3dd2ef45d8c77b1"
