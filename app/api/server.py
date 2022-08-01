@@ -2,9 +2,11 @@ from queue import LifoQueue
 from bottle import Bottle, run, request
 from app.api.auth import auth_required
 from app.config import Config
-from app.lametric.client import LaMetric
+from app.lametric.models import CONTENT_TYPE
+from app.lametric import LaMetric
 
 app = Bottle()
+
 
 class ServerMeta(type):
 
@@ -17,47 +19,40 @@ class ServerMeta(type):
             self._instance = super().__call__(*args, **kwds)
         return self._instance
 
-    def start(cls, queue: LifoQueue):
-        cls().start_server(queue)
+    def start(cls):
+        cls().start_server()
 
     def nowplaying(cls, query):
-        return  cls().handle_nowplaying(query)
+        return cls().handle_nowplaying(query)
 
     def status(cls, query):
-        return  cls().handle_status(query)
+        return cls().handle_status(query)
 
-    @property
-    def queue(cls):
-        if not cls._queue:
-            cls._queue = LifoQueue()
-        return cls._queue
 
 class Server(object, metaclass=ServerMeta):
 
-    api: LifoQueue = None
-    
-    def start_server(self, queue):
-        self.api = queue
+    def start_server(self):
         conf = Config.api.to_dict()
         run(app, **conf)
 
     def handle_nowplaying(self, payload):
-        LaMetric.nowplaying(payload)
+        LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
     def handle_status(self, payload):
-        LaMetric.status(payload)
+        LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
 
 
-@app.route('/yanko/nowplaying',method='POST')
+@app.route('/yanko/nowplaying', method='POST')
 @auth_required
 def nowplaying():
     return Server.nowplaying(request.json)
 
 
-@app.route('/yanko/status',method='POST')
+@app.route('/yanko/status', method='POST')
 @auth_required
 def status():
     return Server.status(request.json)
+
 
 @app.route('/privacy')
 def priavacy():

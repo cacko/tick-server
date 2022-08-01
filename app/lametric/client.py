@@ -1,45 +1,27 @@
-from app.config import Config
+import logging
+from pprint import pprint
+from app.core import clean_frame
+from app.config import Config, LametricConfig
 import requests
 from cachable.request import Method
 from app.lametric.models import (
     Notification,
-    NotificationFrame,
-    NotificationModel
+    Content
 )
 
 
-class LaMetricMeta(type):
+class Client(object):
 
-    _instance = None
+    __config: LametricConfig = None
 
-    def __call__(self, *args, **kwds):
-        if not self._instance:
-            self._instance = super().__call__(*args, **kwds)
-        return self._instance
-
-    def nowplaying(cls, payload):
-        cls().do_notification(Notification(
-            priority='info',
-            model=NotificationModel(
-                frames=[NotificationFrame(**payload)]
-            )
-        ))
-        cls().do_widget_state(NotificationModel(
-            frames=[
-                NotificationFrame(**payload)
-            ]
-        ))
-
-    def status(cls, payload):
-        pass
-
-
-class LaMetric(object, metaclass=LaMetricMeta):
+    def __init__(self, config: LametricConfig) -> None:
+        self.__config = config
 
     def __make_request(self, method: Method, endpoint: str, **args):
-        host = Config.lametric.host
-        user = Config.lametric.user
-        apikey = Config.lametric.apikey
+        host = self.__config.host
+        user = self.__config.user
+        apikey = self.__config.apikey
+        logging.info(args)
         response = requests.request(
             method=method.value,
             auth=(user, apikey),
@@ -49,8 +31,9 @@ class LaMetric(object, metaclass=LaMetricMeta):
         return response.json()
 
     def __widget_request(self, method: Method, **args):
-        url = Config.lametric.widget_endpoint
-        token = Config.lametric.widget_token
+        url = self.__config.widget_endpoint
+        token = self.__config.widget_token
+        logging.info(args)
         response = requests.request(
             method=method.value,
             headers={
@@ -61,15 +44,19 @@ class LaMetric(object, metaclass=LaMetricMeta):
         )
         return response.status_code
 
-    def do_notification(self, notification: Notification):
+    def send_notification(self, notification: Notification):
+        data = notification.to_dict()
+        data["model"]["frames"] = list(map(clean_frame, data.get("model").get("frames", [])))
         return self.__make_request(
             Method.POST,
             "device/notifications",
-            json=notification.to_dict()
+            json=data
         )
 
-    def do_widget_state(self, model: NotificationModel):
+    def send_model(self, model: Content):
+        data = model.to_dict()
+        data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.__widget_request(
             Method.POST,
-            json=model.to_dict()
+            json=data
         )

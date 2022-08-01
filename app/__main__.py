@@ -6,16 +6,18 @@ from botyo_client.core.config import Config as BotyoConfig
 from botyo_client.app import App
 from app.config import Config
 from app.core.thread import StoppableThread
+from app.lametric import LaMetric
 
 
 threads = []
 
 try:
-    queue = LifoQueue()
-    ts = StoppableThread(target=Server.start, args=[
-        queue,
-    ])
+    lm = StoppableThread(target=LaMetric.start)
+    lm.start()
+
+    ts = StoppableThread(target=Server.start)
     ts.start()
+
     client = Client()
     app = App(
         BotyoConfig.from_dict(Config.botyo.to_dict()),
