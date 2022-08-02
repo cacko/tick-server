@@ -2,6 +2,7 @@ import logging
 from app.core import clean_frame
 from app.config import LametricConfig
 import requests
+from requests import ConnectionError
 from cachable.request import Method
 from app.lametric.models import (
     Notification,
@@ -21,29 +22,35 @@ class Client(object):
         user = self.__config.user
         apikey = self.__config.apikey
         logging.debug(args)
-        response = requests.request(
-            method=method.value,
-            auth=(user, apikey),
-            url=f"{host}/api/v2/{endpoint}",
-            **args
-        )
-        return response.json()
+        try:
+            response = requests.request(
+                method=method.value,
+                auth=(user, apikey),
+                url=f"{host}/api/v2/{endpoint}",
+                **args
+            )
+            return response.json()
+        except ConnectionError:
+            pass
 
     def __widget_request(self, method: Method, **args):
         url = self.__config.widget_endpoint
         token = self.__config.widget_token
         logging.debug(args)
-        response = requests.request(
-            method=method.value,
-            headers={
-                'X-Access-Token': token,
-                'Cache-Control': 'no-cache',
-                'Accept': 'application/json'
-            },
-            url=f"{url}",
-            **args
-        )
-        return response.status_code
+        try:
+            response = requests.request(
+                method=method.value,
+                headers={
+                    'X-Access-Token': token,
+                    'Cache-Control': 'no-cache',
+                    'Accept': 'application/json'
+                },
+                url=f"{url}",
+                **args
+            )
+            return response.status_code
+        except ConnectionError:
+            pass
 
     def send_notification(self, notification: Notification):
         data = notification.to_dict()
