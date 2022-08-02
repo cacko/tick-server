@@ -30,7 +30,7 @@ class Clock(object, metaclass=ClockMeta):
 
     @property
     def date(self):
-        return datetime.now().strftime('%a %d %B %Y')
+        return datetime.now().strftime('%b / %a')
 
     @property
     def date_icon(self):
