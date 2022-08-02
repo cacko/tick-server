@@ -1,5 +1,4 @@
 import logging
-from math import lgamma
 from queue import LifoQueue
 from bottle import Bottle, run, request
 from app.api.auth import auth_required
@@ -36,7 +35,9 @@ class Server(object, metaclass=ServerMeta):
 
     def start_server(self):
         conf = Config.api.to_dict()
-        run(app, **{"debug": (log.level == logging.DEBUG), **conf})
+        print(log.level, logging.DEBUG)
+        print({"debug": log.level == logging.DEBUG, **conf})
+        run(app, **{"debug": log.level == logging.DEBUG, **conf})
 
     def handle_nowplaying(self, payload):
         LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
