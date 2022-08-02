@@ -11,9 +11,6 @@ class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
 
-class SCROLL_TYPE(Enum):
-    TYPEWRITER = "typewriter"
-
 class YANKO_STATUS(Enum):
     PLAYING = 'playing'
     STOPPED = 'stopped'
@@ -36,9 +33,7 @@ class ContentFrame:
     icon: Optional[str | int] = None
     index: Optional[int] = 0
     duration: Optional[int] = None
-    scroll_type: Optional[str] = None
     goalData: Optional[GoalData] = None
-
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass

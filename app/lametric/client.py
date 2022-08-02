@@ -1,5 +1,7 @@
 import logging
+from os import EX_CANTCREAT
 from pprint import pprint
+from traceback import print_exc
 from app.core import clean_frame
 from app.config import Config, LametricConfig
 import requests
@@ -34,17 +36,21 @@ class Client(object):
         url = self.__config.widget_endpoint
         token = self.__config.widget_token
         logging.info(args)
-        response = requests.request(
-            method=method.value,
-            headers={
-                'X-Access-Token': token,
-                'Cache-Control': 'no-cache',
-                'Accept': 'application/json'
-            },
-            url=f"{url}",
-            **args
-        )
-        return response.status_code
+        try:
+            response = requests.request(
+                method=method.value,
+                headers={
+                    'X-Access-Token': token,
+                    'Cache-Control': 'no-cache',
+                    'Accept': 'application/json'
+                },
+                url=f"{url}",
+                **args
+            )
+            logging.info(response.json())
+            return response.status_code
+        except Exception as e:
+            print_exc(e)
 
     def send_notification(self, notification: Notification):
         data = notification.to_dict()

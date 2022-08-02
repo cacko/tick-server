@@ -77,12 +77,10 @@ class Clock(object, metaclass=ClockMeta):
                 icon=self.icon,
                 duration=16200,
                 goalData=GoalData(start=0, end=6, current=self.week_day),
-                scroll_type=SCROLL_TYPE.TYPEWRITER.value
             ),
             DateFrame(
                 text=date,
                 icon=self.date_icon,
-                scroll_type=SCROLL_TYPE.TYPEWRITER.value,
                 goalData=GoalData(start=1, end=self.days_in_month, current=self.month_day)
             ),
         ]
