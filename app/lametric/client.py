@@ -37,7 +37,9 @@ class Client(object):
         response = requests.request(
             method=method.value,
             headers={
-                'x-access-token': token
+                'X-Access-Token': token,
+                'Cache-Control': 'no-cache',
+                'Accept': 'application/json'
             },
             url=f"{url}",
             **args
