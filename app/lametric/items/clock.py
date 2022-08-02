@@ -2,7 +2,6 @@ from app.lametric.models import (
     TimeFrame,
     GoalData,
     DateFrame,
-    SCROLL_TYPE
 )
 from datetime import datetime
 from pandas import Period

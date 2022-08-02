@@ -1,9 +1,7 @@
 import logging
-from os import EX_CANTCREAT
-from pprint import pprint
 from traceback import print_exc
 from app.core import clean_frame
-from app.config import Config, LametricConfig
+from app.config import LametricConfig
 import requests
 from cachable.request import Method
 from app.lametric.models import (
