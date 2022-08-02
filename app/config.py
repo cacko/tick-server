@@ -48,12 +48,18 @@ class OpenWeatherConfig:
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
+class OAuthConfig:
+    client_id: str
+    client_secret: str
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
 class ConfigStruct:
     botyo: BotyoConfig
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
     openweather: OpenWeatherConfig
+    oauth: OAuthConfig
 
 class ConfigMeta(type):
     _instance = None
@@ -79,10 +85,13 @@ class ConfigMeta(type):
     def api(cls) -> ApiConfig:
         return cls().struct.api
 
-
     @property
     def openweather(cls) -> OpenWeatherConfig:
         return cls().struct.openweather
+
+    @property
+    def oauth(cls) -> OAuthConfig:
+        return cls().struct.oauth
 
 class Config(object, metaclass=ConfigMeta):
 

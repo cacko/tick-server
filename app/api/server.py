@@ -59,12 +59,16 @@ def status():
 
 
 @app.route('/app/button')
-def on_buttons():
+def on_button():
     logging.info(
         [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
     logging.info(
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     return ""
+
+@app.route('/auth/callback')
+def auth_callback():
+    
 
 
 @app.route('/privacy')

@@ -3,6 +3,8 @@ import pyotp
 from app.config import Config
 from functools import wraps
 
+
+
 def auth_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
