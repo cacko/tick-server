@@ -20,7 +20,6 @@ class BotyoConfig:
 @dataclass
 class YankoConfig:
     host: str
-    port: int
     secret: str
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -41,12 +40,20 @@ class LametricConfig:
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
+class OpenWeatherConfig:
+    apikey: str
+    city: str
+    country: str
+    lifetime: int
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
 class ConfigStruct:
     botyo: BotyoConfig
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
-
+    openweather: OpenWeatherConfig
 
 class ConfigMeta(type):
     _instance = None
@@ -71,6 +78,11 @@ class ConfigMeta(type):
     @property
     def api(cls) -> ApiConfig:
         return cls().struct.api
+
+
+    @property
+    def openweather(cls) -> OpenWeatherConfig:
+        return cls().struct.openweather
 
 class Config(object, metaclass=ConfigMeta):
 

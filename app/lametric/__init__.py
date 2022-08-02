@@ -1,7 +1,12 @@
+import logging
 from queue import LifoQueue
+from traceback import print_exc
+
+from requests import get
 from app.lametric.client import Client
 from app.config import Config
 from app.lametric.items.clock import Clock
+from app.lametric.items.weather import Weather
 from app.lametric.models import (
     CONTENT_TYPE,
     YANKO_STATUS,
@@ -12,6 +17,7 @@ from app.lametric.models import (
     
 )
 import time
+import pyotp
 
 
 class LaMetricMeta(type):
@@ -38,23 +44,45 @@ class LaMetric(object, metaclass=LaMetricMeta):
     _client: Client = None
     _clock: Clock = None
     _display: Display = None
+    _weather: Weather = None
 
     def __init__(self) -> None:
         self._client = Client(Config.lametric)
         self._clock = Clock()
+        self._weather = Weather()
+        self._clock.icon = self._weather.icon
         self._display = Display(
-            clock=self._clock.getFrames()
+            clock=self._clock.getFrames(),
+            weather=self._weather.getFrames()
         )
 
     def run(self):
         queue = __class__.queue
         display = self._display
         clock: Clock = self._clock
+        weather = self._weather
         self._client.send_model(display.getContent())
+        otp = pyotp.TOTP(Config.yanko.secret)
+        try:
+            resp = get(
+                f"{Config.yanko.host}/state",
+                headers={'X-TOTP': otp.now()}
+            )
+            logging.info(resp.status_code)
+        except Exception as e:
+            print_exc(e)
+
         while True:
             isUpdated = False
+
             if clock.isUpdated:
                 isUpdated = True
+                display.clock = clock.getFrames()
+
+            if weather.isUpdated:
+                isUpdated = True
+                display.weather = weather.getFrames()
+                clock.icon = weather.icon
                 display.clock = clock.getFrames()
 
             if queue.empty():
