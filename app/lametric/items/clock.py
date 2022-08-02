@@ -65,7 +65,7 @@ class Clock(object, metaclass=ClockMeta):
                 icon=self.icon,
                 duration=10000,
                 goalData=GoalData(
-                    start=0, end=6, current=self.week_day
+                    start=self.week_day, end=6, current=self.week_day
                 )),
             DateFrame(text=date, icon=self.date_icon),
         ]
