@@ -80,10 +80,9 @@ class Weather(object, metaclass=WeatherMeta):
         observation = self.observation
         weather: WeatherData = observation.weather
         temp = int(weather.temperature('celsius').get("temp"))
-        detailed = weather.detailed_status
         return [
             WeatherFrame(
-                text=f"{temp}° {detailed}",
+                text=f"{temp}°",
                 icon=self.icon,
                 duration=5000
             )
