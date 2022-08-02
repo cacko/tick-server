@@ -1,10 +1,12 @@
 import logging
+from math import lgamma
 from queue import LifoQueue
 from bottle import Bottle, run, request
 from app.api.auth import auth_required
 from app.config import Config
 from app.lametric.models import CONTENT_TYPE
 from app.lametric import LaMetric
+from app import log
 
 app = Bottle()
 
@@ -34,7 +36,7 @@ class Server(object, metaclass=ServerMeta):
 
     def start_server(self):
         conf = Config.api.to_dict()
-        run(app, **conf)
+        run(app, **{"debug": (log.level == logging.DEBUG), **conf})
 
     def handle_nowplaying(self, payload):
         LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
@@ -54,10 +56,13 @@ def nowplaying():
 def status():
     return Server.status(request.json)
 
+
 @app.route('/app/button')
 def on_buttons():
-    logging.info([f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
-    logging.info([f"{h}: {request.query.get(h)}" for h in request.query.keys()])
+    logging.info(
+        [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
+    logging.info(
+        [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     return ""
 
 
