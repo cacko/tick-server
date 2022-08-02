@@ -41,7 +41,7 @@ tasks:
   pull:
     desc: pulls from git
     cmds:
-      - ssh $REMOTE_HOST 'source ~/.zshrc;cd ~/{{.PROJECT}};git reset --hard;git pull'
+      - ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}};git reset --hard;git pull'
 
   pp:
     desc: push and pull
@@ -52,7 +52,7 @@ tasks:
   install:
     desc: calls poetry install and npm ci
     cmds:
-      - ssh $REMOTE_HOST 'source ~/.zshrc;cd ~/{{.PROJECT}};poetry install'
+      - ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}};poetry install'
 
   deploy:
     desc: shortcut for stop -> push -> pull -> restart
