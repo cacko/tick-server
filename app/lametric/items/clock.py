@@ -4,6 +4,7 @@ from app.lametric.models import (
     DateFrame
 )
 from datetime import datetime
+from pandas import Period
 
 
 class ClockMeta(type):
@@ -42,6 +43,16 @@ class Clock(object, metaclass=ClockMeta):
         return int(d.strftime("%w"))
 
     @property
+    def month_day(self):
+        d = datetime.now()
+        return int(d.strftime("%d"))
+
+    @property
+    def days_in_month(self):
+        d = datetime.now().date
+        return Period(d.isoformat()).days_in_month
+
+    @property
     def icon(self):
         return self.__icon
 
@@ -64,8 +75,10 @@ class Clock(object, metaclass=ClockMeta):
                 text=f"{time:>20s}",
                 icon=self.icon,
                 duration=10000,
-                goalData=GoalData(
-                    start=self.week_day, end=6, current=self.week_day
-                )),
-            DateFrame(text=date, icon=self.date_icon),
+                goalData=GoalData(start=0, end=6, current=self.week_day)),
+            DateFrame(
+                text=date,
+                icon=self.date_icon,
+                goalData=GoalData(start=1, end=self.days_in_month, current=self.month_day)
+            ),
         ]
