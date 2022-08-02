@@ -1,6 +1,5 @@
 import logging
 from queue import LifoQueue
-from traceback import print_exc
 
 from requests import get
 from app.lametric.client import Client

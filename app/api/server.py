@@ -1,3 +1,4 @@
+import logging
 from queue import LifoQueue
 from bottle import Bottle, run, request
 from app.api.auth import auth_required
@@ -52,6 +53,12 @@ def nowplaying():
 @auth_required
 def status():
     return Server.status(request.json)
+
+@app.route('/app/button')
+def on_buttons():
+    logging.info(request.headers)
+    logging.info(request.params)
+    return ""
 
 
 @app.route('/privacy')
