@@ -70,7 +70,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
             )
             logging.info(resp.status_code)
         except Exception as e:
-            print_exc(e)
+            self._display.yanko = None
 
         while True:
             isUpdated = False
