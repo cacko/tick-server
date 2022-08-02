@@ -1,7 +1,8 @@
 from app.lametric.models import (
     TimeFrame,
     GoalData,
-    DateFrame
+    DateFrame,
+    SCROLL_TYPE
 )
 from datetime import datetime
 from pandas import Period
@@ -75,10 +76,13 @@ class Clock(object, metaclass=ClockMeta):
                 text=f"{time:>20s}",
                 icon=self.icon,
                 duration=10000,
-                goalData=GoalData(start=0, end=6, current=self.week_day)),
+                goalData=GoalData(start=0, end=6, current=self.week_day),
+                scroll_type=SCROLL_TYPE.TYPEWRITER.value
+            ),
             DateFrame(
                 text=date,
                 icon=self.date_icon,
+                scroll_type=SCROLL_TYPE.TYPEWRITER.value,
                 goalData=GoalData(start=1, end=self.days_in_month, current=self.month_day)
             ),
         ]
