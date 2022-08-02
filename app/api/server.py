@@ -61,9 +61,9 @@ def status():
 
 @app.route('/app/button')
 def on_button():
-    logging.info(
+    logging.debug(
         [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
-    logging.info(
+    logging.debug(
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     Yanko.next()
 

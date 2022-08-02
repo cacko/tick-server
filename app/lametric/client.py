@@ -1,5 +1,4 @@
 import logging
-from traceback import print_exc
 from app.core import clean_frame
 from app.config import LametricConfig
 import requests
@@ -21,7 +20,7 @@ class Client(object):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
-        logging.info(args)
+        logging.debug(args)
         response = requests.request(
             method=method.value,
             auth=(user, apikey),
@@ -33,7 +32,7 @@ class Client(object):
     def __widget_request(self, method: Method, **args):
         url = self.__config.widget_endpoint
         token = self.__config.widget_token
-        logging.info(args)
+        logging.debug(args)
         response = requests.request(
             method=method.value,
             headers={
