@@ -57,7 +57,7 @@ def status():
 @app.route('/app/button')
 def on_buttons():
     logging.info([f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
-    logging.info(request.query)
+    logging.info([f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     return ""
 
 
