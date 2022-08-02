@@ -30,7 +30,7 @@ class Clock(object, metaclass=ClockMeta):
 
     @property
     def date(self):
-        return datetime.now().strftime('%b/%a')
+        return datetime.now().strftime('%b %a')
 
     @property
     def date_icon(self):
@@ -80,6 +80,7 @@ class Clock(object, metaclass=ClockMeta):
             DateFrame(
                 text=date,
                 icon=self.date_icon,
+                duration: 5000,
                 goalData=GoalData(start=1, end=self.days_in_month, current=self.month_day)
             ),
         ]
