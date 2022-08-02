@@ -49,7 +49,7 @@ class Clock(object, metaclass=ClockMeta):
 
     @property
     def days_in_month(self):
-        d = datetime.now().date
+        d = datetime.now().date()
         return Period(d.isoformat()).days_in_month
 
     @property
