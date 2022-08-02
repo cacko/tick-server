@@ -6,6 +6,7 @@ from app.config import Config
 from app.lametric.models import CONTENT_TYPE
 from app.lametric import LaMetric
 from app import log
+from app.yanko import Yanko
 
 app = Bottle()
 
@@ -64,7 +65,7 @@ def on_button():
         [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
     logging.info(
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
-    return ""
+    Yanko.next()
 
 @app.route('/privacy')
 def priavacy():

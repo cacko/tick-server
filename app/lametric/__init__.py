@@ -1,7 +1,5 @@
-import logging
 from queue import LifoQueue
 
-from requests import get
 from app.lametric.client import Client
 from app.config import Config
 from app.lametric.items.clock import Clock
@@ -16,7 +14,8 @@ from app.lametric.models import (
     
 )
 import time
-import pyotp
+
+from app.yanko import Yanko
 
 
 class LaMetricMeta(type):
@@ -61,14 +60,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
         clock: Clock = self._clock
         weather = self._weather
         self._client.send_model(display.getContent())
-        otp = pyotp.TOTP(Config.yanko.secret)
-        try:
-            resp = get(
-                f"{Config.yanko.host}/state",
-                headers={'X-TOTP': otp.now()}
-            )
-            logging.info(resp.status_code)
-        except Exception as e:
+        if not Yanko.state():
             self._display.yanko = None
 
         while True:
