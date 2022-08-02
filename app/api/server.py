@@ -68,7 +68,11 @@ def on_button():
 
 @app.route('/auth/callback')
 def auth_callback():
-    
+    logging.info(
+        [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
+    logging.info(
+        [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
+    return "" 
 
 
 @app.route('/privacy')
