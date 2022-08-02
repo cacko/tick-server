@@ -61,7 +61,7 @@ class Clock(object, metaclass=ClockMeta):
         self.__last_called = time
         return [
             TimeFrame(
-                text=f"{time:>7s}",
+                text=f"{time:>20s}",
                 icon=self.icon,
                 duration=10000,
                 goalData=GoalData(
