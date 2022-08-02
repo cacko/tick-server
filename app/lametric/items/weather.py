@@ -27,7 +27,7 @@ class WEATHER_ICON(Enum):
     SQUALL = 2154
     TORNADO = 2153
     CLEAR = 73
-    CLOUDS = 2283
+    CLOUDS = 2286
 
 class WeatherMeta(type):
 
