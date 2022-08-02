@@ -60,8 +60,12 @@ class Clock(object, metaclass=ClockMeta):
         date = self.date
         self.__last_called = time
         return [
-            TimeFrame(text=time, icon=self.icon, goalData=GoalData(
-                start=0, end=6, current=self.week_day
-            )),
+            TimeFrame(
+                text=time,
+                icon=self.icon,
+                duration=10000,
+                goalData=GoalData(
+                    start=0, end=6, current=self.week_day
+                )),
             DateFrame(text=date, icon=self.date_icon),
         ]

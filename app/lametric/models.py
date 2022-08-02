@@ -34,6 +34,7 @@ class ContentFrame:
     text: Optional[str] = None
     icon: Optional[str | int] = None
     index: Optional[int] = 0
+    duration: Optional[int] = None
     goalData: Optional[GoalData] = None
 
 
