@@ -1,11 +1,9 @@
 
-from asyncio.log import logger
 import logging
-from pytz import timezone
 from app.lametric.models import (
     WeatherFrame
 )
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pyowm.owm import OWM
 from pyowm.weatherapi25.weather_manager import WeatherManager
 from pyowm.weatherapi25.observation import Observation
@@ -98,18 +96,19 @@ class Weather(object, metaclass=WeatherMeta):
             try:
                 now = datetime.now(tz=timezone.utc)
                 isDay = now > sunrise_time and now < sunset_time
-                icon = WEATHER_ICON_DAY[status.upper()] if isDay else WEATHER_ICON_NIGHT[status.upper()]
-                self.__icon= icon.value
+                icon = WEATHER_ICON_DAY[status.upper(
+                )] if isDay else WEATHER_ICON_NIGHT[status.upper()]
+                self.__icon = icon.value
             except ValueError as e:
                 logging.error(e)
         return self.__icon
 
     def getFrames(self):
-        observation= self.observation
-        weather: WeatherData= observation.weather
-        temperature= weather.temperature('celsius')
-        temp= int(temperature.get("temp"))
-        feels_like= int(temperature.get("feels_like"))
+        observation = self.observation
+        weather: WeatherData = observation.weather
+        temperature = weather.temperature('celsius')
+        temp = int(temperature.get("temp"))
+        feels_like = int(temperature.get("feels_like"))
         return [
             WeatherFrame(
                 text=f"{temp}°/{feels_like}°",
