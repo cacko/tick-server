@@ -7,11 +7,7 @@ import toml
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
-class BotyoConfig:
-    host: str
-    port: int
-    phone: str
-    client: str
+class StorageConfig:
     storage: str
     redis_url: str
     attachments: str
@@ -49,7 +45,7 @@ class OpenWeatherConfig:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ConfigStruct:
-    botyo: BotyoConfig
+    storage: StorageConfig
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
@@ -64,8 +60,8 @@ class ConfigMeta(type):
         return cls._instance
 
     @property
-    def botyo(cls) -> BotyoConfig:
-        return cls().struct.botyo
+    def storage(cls) -> StorageConfig:
+        return cls().struct.storage
 
     @property
     def yanko(cls) -> YankoConfig:

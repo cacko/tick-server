@@ -29,8 +29,8 @@ class LaMetricMeta(type):
             self._instance = super().__call__(*args, **kwds)
         return self._instance
 
-    def start(cls):
-        cls().run()
+    def start(cls, mainQueue):
+        cls().run(mainQueue)
 
     @property
     def queue(cls):
@@ -43,6 +43,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
     _clock: Clock = None
     _display: Display = None
     _weather: Weather = None
+    _mainQueue = None
 
     def __init__(self) -> None:
         self._client = Client(Config.lametric)
@@ -54,7 +55,8 @@ class LaMetric(object, metaclass=LaMetricMeta):
             weather=self._weather.getFrames()
         )
 
-    def run(self):
+    def run(self, mainQueue):
+        self._mainQueue = mainQueue
         queue = __class__.queue
         display = self._display
         clock: Clock = self._clock

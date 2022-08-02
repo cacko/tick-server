@@ -22,8 +22,8 @@ class ServerMeta(type):
             self._instance = super().__call__(*args, **kwds)
         return self._instance
 
-    def start(cls):
-        cls().start_server()
+    def start(cls, mainQueue):
+        cls().start_server(mainQueue)
 
     def nowplaying(cls, query):
         return cls().handle_nowplaying(query)
@@ -34,11 +34,12 @@ class ServerMeta(type):
 
 class Server(object, metaclass=ServerMeta):
 
-    def start_server(self):
+    _mqinQueue = None
+
+    def start_server(self, mainQueue):
+        self._mqinQueue = mainQueue
         conf = Config.api.to_dict()
-        log.warn(f"{log.getEffectiveLevel()} - {logging.DEBUG}")
-        log.warn({"debug": log.getEffectiveLevel() == logging.DEBUG, **conf})
-        run(app, **{"debug": log.level == logging.DEBUG, **conf})
+        run(app, **conf)
 
     def handle_nowplaying(self, payload):
         LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
@@ -66,6 +67,7 @@ def on_button():
     logging.debug(
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     Yanko.next()
+
 
 @app.route('/privacy')
 def priavacy():
