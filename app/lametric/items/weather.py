@@ -12,7 +12,8 @@ from pyowm.weatherapi25.weather import Weather as WeatherData
 from app.config import Config
 from enum import Enum
 
-class WEATHER_ICON(Enum):
+
+class WEATHER_ICON_DAY(Enum):
     THUNDERSTORM = 11428
     DRIZZLE = 72
     RAIN = 72
@@ -29,6 +30,25 @@ class WEATHER_ICON(Enum):
     CLEAR = 73
     CLOUDS = 2286
 
+
+class WEATHER_ICON_NIGHT(Enum):
+    THUNDERSTORM = 43748
+    DRIZZLE = 43747
+    RAIN = 21905
+    SNOW = 26090
+    MIST = 17054
+    SMOKE = 17054
+    HAZE = 17054
+    DUST = 17054
+    FOG = 17054
+    SAND = 17054
+    ASH = 17054
+    SQUALL = 17054
+    TORNADO = 17054
+    CLEAR = 13505
+    CLOUDS = 2152
+
+
 class WeatherMeta(type):
 
     _instance = None
@@ -37,6 +57,7 @@ class WeatherMeta(type):
         if not self._instance:
             self._instance = super().__call__(*args, **kwds)
         return self._instance
+
 
 class Weather(object, metaclass=WeatherMeta):
 
@@ -69,19 +90,25 @@ class Weather(object, metaclass=WeatherMeta):
     def icon(self):
         if not self.__icon:
             status = self.observation.weather.status
+            sunset_time = self.observation.weather.sunset_time(
+                timeformat="date")
+            sunrise_time = self.observation.weather.sunrise_time(
+                timeformat="date")
             try:
-                icon = WEATHER_ICON[status.upper()]
-                self.__icon = icon.value
+                now = datetime.now()
+                isDay = now > sunrise_time and now < sunset_time
+                icon = WEATHER_ICON_DAY[status.upper()] if isDay else WEATHER_ICON_NIGHT[status.upper()]
+                self.__icon= icon.value
             except ValueError as e:
                 print_exc(e)
         return self.__icon
 
     def getFrames(self):
-        observation = self.observation
-        weather: WeatherData = observation.weather
-        temperature = weather.temperature('celsius')
-        temp = int(temperature.get("temp"))
-        feels_like = int(temperature.get("feels_like"))
+        observation= self.observation
+        weather: WeatherData= observation.weather
+        temperature= weather.temperature('celsius')
+        temp= int(temperature.get("temp"))
+        feels_like= int(temperature.get("feels_like"))
         return [
             WeatherFrame(
                 text=f"{temp}°/{feels_like}°",
@@ -90,7 +117,7 @@ class Weather(object, metaclass=WeatherMeta):
             )
         ]
 
-    @property
+    @ property
     def isUpdated(self):
         if self.__last_called is None:
             return True
