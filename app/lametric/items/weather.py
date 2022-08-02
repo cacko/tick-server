@@ -1,10 +1,11 @@
-from curses.ascii import isupper
-from pprint import pprint
-from traceback import print_exc
+
+from asyncio.log import logger
+import logging
+from pytz import timezone
 from app.lametric.models import (
     WeatherFrame
 )
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from pyowm.owm import OWM
 from pyowm.weatherapi25.weather_manager import WeatherManager
 from pyowm.weatherapi25.observation import Observation
@@ -95,12 +96,12 @@ class Weather(object, metaclass=WeatherMeta):
             sunrise_time = self.observation.weather.sunrise_time(
                 timeformat="date")
             try:
-                now = datetime.now()
+                now = datetime.now(tz=timezone.utc)
                 isDay = now > sunrise_time and now < sunset_time
                 icon = WEATHER_ICON_DAY[status.upper()] if isDay else WEATHER_ICON_NIGHT[status.upper()]
                 self.__icon= icon.value
             except ValueError as e:
-                print_exc(e)
+                logging.error(e)
         return self.__icon
 
     def getFrames(self):
