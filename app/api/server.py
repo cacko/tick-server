@@ -35,8 +35,8 @@ class Server(object, metaclass=ServerMeta):
 
     def start_server(self):
         conf = Config.api.to_dict()
-        log.warn(f"{log.level} - {logging.DEBUG}")
-        log.warn({"debug": log.level == logging.DEBUG, **conf})
+        log.warn(f"{log.getEffectiveLevel()} - {logging.DEBUG}")
+        log.warn({"debug": log.getEffectiveLevel() == logging.DEBUG, **conf})
         run(app, **{"debug": log.level == logging.DEBUG, **conf})
 
     def handle_nowplaying(self, payload):
