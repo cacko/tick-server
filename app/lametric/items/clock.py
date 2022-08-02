@@ -74,7 +74,7 @@ class Clock(object, metaclass=ClockMeta):
             TimeFrame(
                 text=f"{time}",
                 icon=self.icon,
-                duration=16200,
+                duration=10000,
                 goalData=GoalData(start=0, end=6, current=self.week_day),
             ),
             DateFrame(
