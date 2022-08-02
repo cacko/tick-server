@@ -84,7 +84,8 @@ class Weather(object, metaclass=WeatherMeta):
         return [
             WeatherFrame(
                 text=f"{temp}° {detailed}",
-                icon=self.icon
+                icon=self.icon,
+                duration=5000
             )
         ]
 
