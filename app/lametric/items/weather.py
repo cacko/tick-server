@@ -108,10 +108,9 @@ class Weather(object, metaclass=WeatherMeta):
         weather: WeatherData = observation.weather
         temperature = weather.temperature('celsius')
         temp = int(temperature.get("temp"))
-        feels_like = int(temperature.get("feels_like"))
         return [
             WeatherFrame(
-                text=f"{temp}°/{feels_like}°",
+                text=f"{temp}°",
                 icon=self.icon,
                 duration=5000
             )
