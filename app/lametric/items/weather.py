@@ -83,7 +83,7 @@ class Weather(object, metaclass=WeatherMeta):
         detailed = weather.detailed_status
         return [
             WeatherFrame(
-                text=f"{temp}℃ {detailed}",
+                text=f"{temp}° {detailed}",
                 icon=self.icon
             )
         ]
