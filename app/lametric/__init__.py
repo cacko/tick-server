@@ -11,7 +11,7 @@ from app.lametric.models import (
     Notification,
     Display,
     YankoFrame,
-    
+
 )
 import time
 
@@ -85,8 +85,6 @@ class LaMetric(object, metaclass=LaMetricMeta):
                         isUpdated |= self.__nowplaying(payload)
                     case CONTENT_TYPE.YANKOSTATUS:
                         isUpdated |= self.__yankostatus(payload)
-                queue.task_done()
-
             if isUpdated:
                 self._client.send_model(display.getContent())
 
