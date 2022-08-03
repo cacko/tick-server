@@ -66,13 +66,11 @@ def on_button():
         [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
     logging.debug(
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
-    Yanko.next()
+    Yanko.toggle()
 
 @app.route("/subscription", method="POST")
 def on_subscription():
     logging.info(request.json)
-
-
 
 @app.route('/privacy')
 def priavacy():

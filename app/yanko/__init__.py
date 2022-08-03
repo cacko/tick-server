@@ -8,7 +8,7 @@ from cachable.request import Method
 class Endpoints(Enum):
     STATE = 'state'
     NEXT = 'command/next'
-
+    TOGGLE = 'command/toggle'
 
 class YankoMeta(type):
 
@@ -24,6 +24,9 @@ class YankoMeta(type):
 
     def next(cls):
         return cls().make_request(Method.GET, Endpoints.NEXT)
+
+    def toggle(cls):
+        return cls().make_request(Method.GET, Endpoints.TOGGLE)
 
 
 class Yanko(object, metaclass=YankoMeta):
