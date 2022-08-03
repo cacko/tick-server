@@ -44,8 +44,8 @@ class WEATHER_ICON_NIGHT(Enum):
     ASH = 17054
     SQUALL = 17054
     TORNADO = 17054
-    CLEAR = 13505
-    CLOUDS = 2152
+    CLEAR = 18433
+    CLOUDS = 26088
 
 
 class WeatherMeta(type):
