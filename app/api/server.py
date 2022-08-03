@@ -48,19 +48,19 @@ class Server(object, metaclass=ServerMeta):
         LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
 
 
-@app.route('/yanko/nowplaying', method='POST')
+@app.route('/api/nowplaying', method='POST')
 @auth_required
 def nowplaying():
     return Server.nowplaying(request.json)
 
 
-@app.route('/yanko/status', method='POST')
+@app.route('/api/status', method='POST')
 @auth_required
 def status():
     return Server.status(request.json)
 
 
-@app.route('/app/button')
+@app.route('/api/button')
 def on_button():
     logging.debug(
         [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
@@ -68,7 +68,7 @@ def on_button():
         [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
     Yanko.toggle()
 
-@app.route("/subscription", method="POST")
+@app.route("/api/subscription", method="POST")
 def on_subscription():
     logging.info(request.json)
 
