@@ -69,6 +69,7 @@ def on_button():
     Yanko.toggle()
 
 @app.route("/api/subscription", method="POST")
+@auth_required
 def on_subscription():
     logging.info(request.json)
 
