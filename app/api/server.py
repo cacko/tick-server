@@ -74,5 +74,5 @@ def on_subscription():
     logging.info(request.json)
 
 @app.route('/privacy')
-def priavacy():
+def privacy():
     return template('privacy')
