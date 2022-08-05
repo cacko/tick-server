@@ -1,8 +1,8 @@
 import logging
-from msilib.schema import Patch
 from pathlib import Path
 from queue import LifoQueue
-from bottle import Bottle, run, template, request, TEMPLATE_PATH
+import bottle
+from bottle import Bottle, run, template, request
 from app.api.auth import auth_required
 from app.config import Config
 from app.lametric.models import CONTENT_TYPE
@@ -14,7 +14,7 @@ app = Bottle()
 
 views = Path(__file__).parent() / "views"
 
-TEMPLATE_PATH = [views.as_posix()]
+bottle.TEMPLATE_PATH = [views.as_posix()]
 
 class ServerMeta(type):
 
