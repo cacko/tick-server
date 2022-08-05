@@ -12,7 +12,7 @@ from app.yanko import Yanko
 
 app = Bottle()
 
-views = Path(__file__).parent() / "views"
+views = Path(__file__).parent / "views"
 
 bottle.TEMPLATE_PATH = [views.as_posix()]
 
