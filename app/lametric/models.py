@@ -15,6 +15,10 @@ class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
 
+class APP_NAME(Enum):
+    CLOCK = 'clock'
+    WEATHER = 'weather'
+    YANKO = 'yanko'
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'

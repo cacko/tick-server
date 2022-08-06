@@ -9,7 +9,8 @@ from app.lametric.models import (
     NowPlayingFrame,
     Notification,
     Content,
-    MUSIC_STATUS
+    MUSIC_STATUS,
+    APP_NAME
 )
 from cachable.request import Method
 from app.config import Config

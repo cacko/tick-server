@@ -77,7 +77,7 @@ class Client(object):
         data = model.to_dict()
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(
-            Method.POST,
             config_name,
+            Method.POST,
             json=data
         )
