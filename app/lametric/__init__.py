@@ -3,18 +3,10 @@ from queue import LifoQueue
 from app.lametric.client import Client
 from app.config import Config
 from app.lametric.models import (
-    CONTENT_TYPE,
-    MUSIC_STATUS,
-    App,
-    Content,
-    Notification,
-    NowPlayingFrame,
+    CONTENT_TYPE
 )
 from app.lametric.display import Display
 import time
-
-
-from app.yanko import Yanko
 
 
 class LaMetricMeta(type):

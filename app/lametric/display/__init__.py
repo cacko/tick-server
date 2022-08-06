@@ -3,9 +3,9 @@
 from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import (
-    CONTENT_TYPE, 
+    CONTENT_TYPE,
     App,
-    Widget, 
+    Widget,
     NowPlayingFrame,
     Notification,
     Content,
@@ -17,7 +17,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
-
 
 
 class WidgetMeta(type):
@@ -66,6 +65,15 @@ class ClockWidget(BaseWidget):
         pass
 
 
+class WeatherWidget(BaseWidget):
+
+    def onShow(self):
+        pass
+
+    def onShow(self):
+        pass
+
+
 class YankoWidget(BaseWidget):
 
     def onShow(self):
@@ -80,19 +88,16 @@ class YankoWidget(BaseWidget):
             model=Content(frames=[frame]),
             priority='critical'
         ))
-        self._display.yanko = [frame]
         return True
 
-    def musicstatus(self, payload):
+    def yankostatus(self, payload):
         try:
             status = MUSIC_STATUS(payload.get("status"))
             if status == MUSIC_STATUS.EXIT:
-                self._display.yanko = None
                 return True
         except ValueError:
             pass
         return False
-
 
 
 class NowPlayingWidget(YankoWidget):
@@ -108,6 +113,7 @@ class DisplayItem:
     hidden: bool = False
     activated_at: Optional[datetime] = None
 
+
 class Display(object):
 
     _apps: dict[str, App] = {}
@@ -115,6 +121,7 @@ class Display(object):
     _items: list[DisplayItem] = []
     _frames: list[DisplayItem] = []
     _current_frame: DisplayItem = None
+    _widgets: dict[str, BaseWidget] = {}
 
     def __init__(self, client: Client):
         self._client = client
@@ -138,7 +145,12 @@ class Display(object):
         ]
 
     def load(self, content_type: CONTENT_TYPE, payload):
-        pass
+        match(content_type):
+            case CONTENT_TYPE.NOWPLAYING:
+                self._widgets.get("yanko").nowplaying(payload)
+            case CONTENT_TYPE.YANKOSTATUS:
+                self._widgets.get("yanko").yankostatus(payload)
+              
 
     def update(self):
         if not len(self._frames):
@@ -156,18 +168,21 @@ class Display(object):
             self._current_frame = self._frames.pop(0)
             self._current_frame.widget.activate()
             self._current_frame.activated_at = datetime.now()
-            self._current_frame.widget.onShow()           
-
+            self._current_frame.widget.onShow()
 
     def getWidget(self, name, package_name):
         app_widgets = self._apps.get(package_name).widgets
         first_key = list(app_widgets.keys()).pop(0)
         widget_data = app_widgets.get(first_key)
-        match(name):
-            case 'clock':
-                return ClockWidget(first_key, widget_data)
-            case 'weather':
-                return ClockWidget(first_key, widget_data)
-            case 'yanko':
-                return YankoWidget(first_key, widget_data)
-
+        if name not in self._widgets:
+            match(name):
+                case 'clock':
+                    self._widgets['clock'] = ClockWidget(
+                        first_key, widget_data)
+                case 'weather':
+                    self._widgets['weather'] = WeatherWidget(
+                        first_key, widget_data)
+                case 'yanko':
+                    self._widgets['yanko'] = YankoWidget(
+                        first_key, widget_data)
+        return self._widgets.get(name)
