@@ -19,6 +19,7 @@ class Client(object):
 
     def __init__(self, config: LametricConfig) -> None:
         self.__config = config
+        print(config.apps)
 
     def api_call(self, method: Method, endpoint: str, **args):
         host = self.__config.host
@@ -37,7 +38,7 @@ class Client(object):
             pass
 
     def widget_call(self, config_name, method: Method, **args):
-        app : LametricApp= getattr(self.__config.apps, config_name)
+        app : LametricApp = self.__config.apps.get(config_name)
         url = app.endpoint
         token = app.token
         logging.debug(args)
