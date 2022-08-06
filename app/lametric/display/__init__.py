@@ -71,7 +71,7 @@ class WeatherWidget(BaseWidget):
     def onShow(self):
         pass
 
-    def onShow(self):
+    def onHide(self):
         pass
 
 
