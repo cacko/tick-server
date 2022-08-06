@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import logging
 from app.core import clean_frame
 from app.config import LametricConfig
@@ -5,8 +6,10 @@ import requests
 from requests import ConnectionError
 from cachable.request import Method
 from app.lametric.models import (
+    App,
     Notification,
-    Content
+    Content,
+    LametricApp
 )
 
 
@@ -17,7 +20,7 @@ class Client(object):
     def __init__(self, config: LametricConfig) -> None:
         self.__config = config
 
-    def __make_request(self, method: Method, endpoint: str, **args):
+    def api_call(self, method: Method, endpoint: str, **args):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
@@ -33,9 +36,10 @@ class Client(object):
         except ConnectionError:
             pass
 
-    def __widget_request(self, method: Method, **args):
-        url = self.__config.widget_endpoint
-        token = self.__config.widget_token
+    def widget_call(self, config_name, method: Method, **args):
+        app : LametricApp= getattr(self.__config.apps, config_name)
+        url = app.endpoint
+        token = app.token
         logging.debug(args)
         try:
             response = requests.request(
@@ -54,17 +58,26 @@ class Client(object):
 
     def send_notification(self, notification: Notification):
         data = notification.to_dict()
-        data["model"]["frames"] = list(map(clean_frame, data.get("model").get("frames", [])))
-        return self.__make_request(
+        data["model"]["frames"] = list(
+            map(clean_frame, data.get("model").get("frames", [])))
+        return self.api_call(
             Method.POST,
             "device/notifications",
             json=data
         )
 
-    def send_model(self, model: Content):
+    def get_apps(self) -> dict[str, App]:
+        res = self.api_call(
+            Method.GET,
+            "device/apps"
+        )
+        return {k: App.from_dict(v) for k, v in res.items()}
+
+    def send_model(self, config_name, model: Content):
         data = model.to_dict()
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
-        return self.__widget_request(
+        return self.widget_call(
             Method.POST,
+            config_name,
             json=data
         )

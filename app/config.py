@@ -2,15 +2,24 @@
 from os import environ
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 from dataclasses_json import dataclass_json, Undefined
-import toml
-
+from yaml import load, Loader
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class StorageConfig:
     storage: str
     redis_url: str
     attachments: str
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class LametricApp:
+    package: str
+    duration: Optional[int] = None
+    endpoint: Optional[str] = None
+    token: Optional[str] = None
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -31,16 +40,7 @@ class LametricConfig:
     host: str
     user: str
     apikey: str
-    widget_endpoint: str
-    widget_token: str
-
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class OpenWeatherConfig:
-    apikey: str
-    city: str
-    country: str
-    lifetime: int
+    apps: dict[str, LametricApp]
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -49,7 +49,7 @@ class ConfigStruct:
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
-    openweather: OpenWeatherConfig
+    display: list[str]
 
 class ConfigMeta(type):
     _instance = None
@@ -76,13 +76,14 @@ class ConfigMeta(type):
         return cls().struct.api
 
     @property
-    def openweather(cls) -> OpenWeatherConfig:
-        return cls().struct.openweather
+    def display(cls) -> list:
+        return cls().struct.display
 
 class Config(object, metaclass=ConfigMeta):
 
     truct: ConfigStruct = None
 
     def __init__(self):
-        settings = Path(environ.get("SETTINGS_PATH", "app/settings.toml"))
-        self.struct = ConfigStruct.from_dict(toml.loads(settings.read_text()))
+        settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
+        data = load(settings.read_text(), Loader=Loader)
+        self.struct = ConfigStruct.from_dict(data)

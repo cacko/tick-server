@@ -1,0 +1,38 @@
+storage:
+  redis_url: redis://127.0.0.1/4
+  storage: ./cache
+  attachments: /tmp
+
+api:
+  host: 0.0.0.0
+  port: 32321
+  secret: O6EH5A34OGI5O7OZLI6RQ3LDLUZQHD6C
+
+yanko:
+  host: http://192.168.0.107:7988
+  secret: YKXJZI2KGBLF4FPNRDLWETQ4VVNCWTXT
+
+lametric:
+  host: http://192.168.0.88:8080
+  user: dev
+  apikey: 8bfe7cda54b339d690e495217edf41b5dcb4b3356c64bda4e7285a334c694db5
+  apps:
+    clock:
+      package: com.lametric.clock
+      duration: 10000
+    weather:
+      package: com.lametric.8d5e85833d86929bd1dc73a146cae449
+      duration: 5000
+    tick:
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8989dc732066722bd5f837443e64e77b/1 
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+    yanko:
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8d5e85833d86929bd1dc73a146cae449/9
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+      package: com.lametric.8d5e85833d86929bd1dc73a146cae449
+      duration: 10000
+
+display:
+  - clock
+  - weather
+  - yanko

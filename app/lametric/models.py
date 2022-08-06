@@ -1,21 +1,48 @@
 from dataclasses import dataclass
-from lib2to3.pgen2.token import OP
-from statistics import mode
+from datetime import date, datetime
+from pathlib import Path
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 from enum import Enum
-from datetime import datetime
+from pixelme import Pixelate
+from tempfile import gettempdir
+from uuid import uuid4
+from base64 import b64decode, b64encode
 
+from app.config import LametricApp
 
 class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
 
-class YANKO_STATUS(Enum):
+
+class MUSIC_STATUS(Enum):
     PLAYING = 'playing'
     STOPPED = 'stopped'
+    RESUMED = 'resumed'
     LOADING = 'loadng'
     EXIT = 'exit'
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class Widget:
+    index: int
+    package: str
+    settings: Optional[dict] = None
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class App:
+    package: str
+    title: str
+    vendor: str
+    version: str
+    version_code: str
+    widgets: Optional[dict[str, Widget]] = None
+    triggers: Optional[dict] = None
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -34,6 +61,7 @@ class ContentFrame:
     index: Optional[int] = 0
     duration: Optional[int] = None
     goalData: Optional[GoalData] = None
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -55,9 +83,20 @@ class WeatherFrame(ContentFrame):
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
-class YankoFrame(ContentFrame):
+class NowPlayingFrame(ContentFrame):
     index: Optional[int] = 3
 
+    def __post_init__(self):
+        if self.icon:
+            icon_path = Path(gettempdir()) / f"{uuid4().hex}.webp"
+            icon_path.write_bytes(b64decode(self.icon))
+            pix =Pixelate(
+                icon_path,
+                padding=200,
+                block_size=25
+            )
+            pix.resize((8,8))
+            self.icon = pix.base64
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -72,20 +111,3 @@ class Notification:
     priority: str = "info"
     icon_type: str = "none"
 
-
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Display:
-    clock: list[ContentFrame]
-    weather: Optional[list[WeatherFrame]] = None
-    yanko: Optional[list[YankoFrame]] = None
-
-    def getContent(self):
-        res = [*self.clock]
-        if self.weather:
-            res += self.weather
-        if self.yanko:
-            res += self.yanko
-        return Content(
-            frames=res
-        )
