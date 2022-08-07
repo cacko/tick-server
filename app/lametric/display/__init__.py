@@ -1,18 +1,16 @@
 
 
-import logging
 from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import (
     CONTENT_TYPE,
     App,
-    ContentSound,
     Widget,
     NowPlayingFrame,
     Notification,
     Content,
     MUSIC_STATUS,
-    APP_NAME
+    APPNAME
 )
 from cachable.request import Method
 from app.config import Config
@@ -31,7 +29,8 @@ class WidgetMeta(type):
 
     def __call__(cls, widget: Widget, *args, **kwds):
         if cls.__name__ not in cls._instances:
-            cls._instances[cls.__name__] = type.__call__(cls, widget, *args, **kwds)
+            cls._instances[cls.__name__] = type.__call__(
+                cls, widget, *args, **kwds)
         return cls._instances[cls.__name__]
 
     def register(cls, client: Client):
@@ -111,7 +110,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
             ),
             priority='critical'
         ))
-        __class__.client.send_model('yanko', Content(frames=[frame]))
+        __class__.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
         return True
 
     def yankostatus(self, payload):
@@ -119,6 +118,16 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
             self.status = MUSIC_STATUS(payload.get("status"))
         except ValueError:
             self.status = MUSIC_STATUS.STOPPED
+
+
+class RMWidget(BaseWidget, metaclass=WidgetMeta):
+
+    def onShow(self):
+        pass
+
+    def onHide(self):
+        pass
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -174,7 +183,7 @@ class Display(object):
         self._items = [
             DisplayItem(
                 app=lametricaps.get(name),
-                widget=self.getWidget(name, app.package),
+                widget=self.getWidget(APPNAME(name), app.package),
                 duration=app.duration,
                 hidden=False
             )
@@ -184,9 +193,9 @@ class Display(object):
     def load(self, content_type: CONTENT_TYPE, payload):
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
-                self._widgets.get("yanko").nowplaying(payload)
+                self._widgets.get(APPNAME.YANKO.value).nowplaying(payload)
             case CONTENT_TYPE.YANKOSTATUS:
-                self._widgets.get("yanko").yankostatus(payload)
+                self._widgets.get(APPNAME.YANKO.value).yankostatus(payload)
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
@@ -205,19 +214,21 @@ class Display(object):
             current.deactivate()
             return self.get_next_idx()
 
-    def getWidget(self, name, package_name):
+    def getWidget(self, name: APPNAME, package_name):
         app_widgets = self._apps.get(package_name).widgets
         first_key = list(app_widgets.keys()).pop(0)
         widget_data = app_widgets.get(first_key)
         if name not in self._widgets:
             match(name):
-                case 'clock':
-                    self._widgets['clock'] = ClockWidget(
+                case APPNAME.CLOCK:
+                    self._widgets[name] = ClockWidget(
                         first_key, widget_data)
-                case 'weather':
-                    self._widgets['weather'] = WeatherWidget(
+                case APPNAME.WEATHER:
+                    self._widgets[name] = WeatherWidget(
                         first_key, widget_data)
-                case 'yanko':
-                    self._widgets['yanko'] = YankoWidget(
+                case APPNAME.YANKO:
+                    self._widgets[name] = YankoWidget(
                         first_key, widget_data)
+                case APPNAME.RM:
+                    self._widgets[name] = RMWidget(first_key, widget_data)
         return self._widgets.get(name)

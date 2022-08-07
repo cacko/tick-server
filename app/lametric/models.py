@@ -1,24 +1,16 @@
 from dataclasses import dataclass
-from datetime import date, datetime
-from pathlib import Path
-from unicodedata import category
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 from enum import Enum
-from tempfile import gettempdir
-from uuid import uuid4
-from base64 import b64decode, b64encode
-
-from app.config import LametricApp
-
 class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
 
-class APP_NAME(Enum):
+class APPNAME(Enum):
     CLOCK = 'clock'
     WEATHER = 'weather'
     YANKO = 'yanko'
+    RM = 'rm'
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'

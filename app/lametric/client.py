@@ -6,6 +6,7 @@ import requests
 from requests import ConnectionError
 from cachable.request import Method
 from app.lametric.models import (
+    APPNAME,
     App,
     Notification,
     Content,
@@ -36,8 +37,8 @@ class Client(object):
         except ConnectionError:
             pass
 
-    def widget_call(self, config_name, method: Method, **args):
-        app : LametricApp = self.__config.apps.get(config_name)
+    def widget_call(self, config_name:APPNAME, method: Method, **args):
+        app : LametricApp = self.__config.apps.get(config_name.value)
         url = app.endpoint
         token = app.token
         logging.debug(args)
@@ -74,7 +75,7 @@ class Client(object):
         )
         return {k: App.from_dict(v) for k, v in res.items()}
 
-    def send_model(self, config_name, model: Content):
+    def send_model(self, config_name:APPNAME, model: Content):
         data = model.to_dict()
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(
