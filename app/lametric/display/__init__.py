@@ -56,6 +56,10 @@ class BaseWidget(object, metaclass=WidgetMeta):
     def onHide(self):
         raise NotImplementedError
 
+    @property
+    def isHidden(self):
+        return False
+
 
 class ClockWidget(BaseWidget):
 
@@ -77,11 +81,17 @@ class WeatherWidget(BaseWidget):
 
 class YankoWidget(BaseWidget):
 
+    status: MUSIC_STATUS = None
+
     def onShow(self):
         pass
 
     def onHide(self):
         pass
+
+    @property
+    def isHidden(self):
+        return self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.STOPPED]
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
@@ -94,12 +104,9 @@ class YankoWidget(BaseWidget):
 
     def yankostatus(self, payload):
         try:
-            status = MUSIC_STATUS(payload.get("status"))
-            if status == MUSIC_STATUS.EXIT:
-                return True
+            self.status = MUSIC_STATUS(payload.get("status"))
         except ValueError:
-            pass
-        return False
+            self.status = MUSIC_STATUS.STOPPED
 
 
 class NowPlayingWidget(YankoWidget):
@@ -115,14 +122,34 @@ class DisplayItem:
     hidden: bool = False
     activated_at: Optional[datetime] = None
 
+    def activate(self):
+        self.widget.activate()
+        self.widget.onShow()
+
+    def deactivate(self):
+        self.activated_at = None
+        self.widget.onHide()
+
+    @property
+    def isExpired(self):
+        td = datetime.now() - self._current_frame.activated_at
+        return td > timedelta(milliseconds=self._current_frame.duration)
+
+    @property
+    def isActive(self):
+        return self.activated_at is not None
+
+    @property
+    def isAllowed(self):
+        return not self.hidden
+
 
 class Display(object):
 
     _apps: dict[str, App] = {}
     _client: Client = None
     _items: list[DisplayItem] = []
-    _frames: list[DisplayItem] = []
-    _current_frame: DisplayItem = None
+    _current_idx: int = None
     _widgets: dict[str, BaseWidget] = {}
 
     def __init__(self, client: Client):
@@ -152,25 +179,24 @@ class Display(object):
                 self._widgets.get("yanko").nowplaying(payload)
             case CONTENT_TYPE.YANKOSTATUS:
                 self._widgets.get("yanko").yankostatus(payload)
-              
+
+    def get_next_idx(self):
+        next_idx = self._current_idx + 1
+        if len(self._items) > next_idx :
+            self._current_idx = next_idx
+        else:
+            self._current_idx = 0
 
     def update(self):
-        if not len(self._frames):
-            self._frames = self._items[:]
-        if not self._current_frame:
-            self._current_frame = self._frames.pop(0)
-        if not self._current_frame.activated_at:
-            self._current_frame.widget.activate()
-            self._current_frame.activated_at = datetime.now()
-            self._current_frame.widget.onShow()
-            return
-        td = datetime.now() - self._current_frame.activated_at
-        if td > timedelta(milliseconds=self._current_frame.duration):
-            self._current_frame.widget.onHide()
-            self._current_frame = self._frames.pop(0)
-            self._current_frame.widget.activate()
-            self._current_frame.activated_at = datetime.now()
-            self._current_frame.widget.onShow()
+        current = self._items[self._current_idx]
+        if not current.isAllowed:
+            return self.get_next_idx()
+        if not current.isActive:
+            return current.activate()
+        if current.isExpired:
+            current.deactivate()
+            return self.get_next_idx()
+
 
     def getWidget(self, name, package_name):
         app_widgets = self._apps.get(package_name).widgets
