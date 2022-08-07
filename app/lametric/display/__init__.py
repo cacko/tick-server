@@ -193,9 +193,9 @@ class Display(object):
     def load(self, content_type: CONTENT_TYPE, payload):
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
-                self._widgets.get(APPNAME.YANKO.value).nowplaying(payload)
+                self._widgets.get(APPNAME.YANKO).nowplaying(payload)
             case CONTENT_TYPE.YANKOSTATUS:
-                self._widgets.get(APPNAME.YANKO.value).yankostatus(payload)
+                self._widgets.get(APPNAME.YANKO).yankostatus(payload)
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
