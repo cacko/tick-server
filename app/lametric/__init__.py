@@ -5,7 +5,7 @@ from app.config import Config
 from app.lametric.models import (
     CONTENT_TYPE
 )
-from app.lametric.widgets import Display
+from app.lametric.display import Display
 import time
 
 
