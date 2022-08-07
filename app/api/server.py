@@ -7,7 +7,6 @@ from app.api.auth import auth_required
 from app.config import Config
 from app.lametric.models import CONTENT_TYPE
 from app.lametric import LaMetric
-from app import log
 from app.yanko import Yanko
 
 app = Bottle()

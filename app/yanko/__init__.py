@@ -1,3 +1,4 @@
+import logging
 from app.config import Config
 from app.core.otp import OTP
 from requests import request
@@ -48,4 +49,5 @@ class Yanko(object, metaclass=YankoMeta):
             )
             return resp.status_code > 399
         except Exception as e:
+            logging.debug(e)
             return False

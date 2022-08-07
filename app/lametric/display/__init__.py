@@ -29,9 +29,9 @@ class WidgetMeta(type):
     client: Client = None
 
     def __call__(cls, widget: Widget, *args, **kwds):
-        if cls not in cls._instances:
-            cls._instances[cls] = type.__call__(cls, widget, *args, **kwds)
-        return cls._instances[cls]
+        if cls.__name__ not in cls._instances:
+            cls._instances[cls.__name__] = type.__call__(cls, widget, *args, **kwds)
+        return cls._instances[cls.__name__]
 
     def register(cls, client: Client):
         cls.client = client
@@ -64,7 +64,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
         return False
 
 
-class ClockWidget(BaseWidget):
+class ClockWidget(BaseWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         pass
@@ -73,7 +73,7 @@ class ClockWidget(BaseWidget):
         pass
 
 
-class WeatherWidget(BaseWidget):
+class WeatherWidget(BaseWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         pass
@@ -82,13 +82,15 @@ class WeatherWidget(BaseWidget):
         pass
 
 
-class YankoWidget(BaseWidget):
+class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     status: MUSIC_STATUS = None
 
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
-        Yanko.state()
+        self.status = MUSIC_STATUS.STOPPED
+        if not Yanko.state():
+            self.status = MUSIC_STATUS.STOPPED
 
     def onShow(self):
         pass
@@ -98,7 +100,7 @@ class YankoWidget(BaseWidget):
 
     @property
     def isHidden(self):
-        return self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT]
+        return (self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT])
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
@@ -116,11 +118,6 @@ class YankoWidget(BaseWidget):
             self.status = MUSIC_STATUS(payload.get("status"))
         except ValueError:
             self.status = MUSIC_STATUS.STOPPED
-
-
-class NowPlayingWidget(YankoWidget):
-    pass
-
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -151,7 +148,7 @@ class DisplayItem:
 
     @property
     def isAllowed(self):
-        return not self.hidden
+        return all([not self.hidden, not self.widget.isHidden])
 
 
 class Display(object):
