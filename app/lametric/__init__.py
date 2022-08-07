@@ -53,4 +53,6 @@ class LaMetric(object, metaclass=LaMetricMeta):
                     self._display.load(cmd, payload)
                 case CONTENT_TYPE.YANKOSTATUS:
                     self._display.load(cmd, payload)
+                case CONTENT_TYPE.LIVESCOREEVENT:
+                    self._display.load(cmd, payload)
             self._display.update()
