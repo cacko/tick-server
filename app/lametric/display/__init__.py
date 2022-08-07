@@ -103,6 +103,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
         return (self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT])
 
     def nowplaying(self, payload):
+        print(payload)
         frame = NowPlayingFrame(**payload)
         print(frame)
         __class__.client.send_notification(Notification(
