@@ -18,8 +18,8 @@ pyotp = "^2.6.0"
 pandas = "^1.4.3"
 APScheduler = "^3.9.1"
 cachable = "^0.3.9"
-pixelme = "^0.4.6"
 PyYAML = "^6.0"
+requests-toolbelt = "^0.9.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"

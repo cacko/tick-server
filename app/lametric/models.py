@@ -5,7 +5,6 @@ from unicodedata import category
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 from enum import Enum
-from pixelme import Pixelate
 from tempfile import gettempdir
 from uuid import uuid4
 from base64 import b64decode, b64encode
@@ -93,20 +92,6 @@ class WeatherFrame(ContentFrame):
 @dataclass
 class NowPlayingFrame(ContentFrame):
     index: Optional[int] = 3
-
-    def __post_init__(self):
-        if self.icon:
-            icon_path = Path(gettempdir()) / f"{uuid4().hex}.webp"
-            icon_path.write_bytes(b64decode(self.icon))
-            pix =Pixelate(
-                icon_path,
-                padding=200,
-                block_size=25
-            )
-            pix.resize((8,8))
-            self.icon = pix.base64
-
-
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ContentSound:
