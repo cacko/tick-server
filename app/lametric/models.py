@@ -5,12 +5,14 @@ from enum import Enum
 class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
+    LIVESCOREEVENT = 'livescore_event'
 
 class APPNAME(Enum):
     CLOCK = 'clock'
     WEATHER = 'weather'
     YANKO = 'yanko'
     RM = 'rm'
+    LIVESCORES = 'livescores'
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'

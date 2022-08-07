@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import logging
 from app.core import clean_frame
 from app.config import LametricConfig, LametricApp

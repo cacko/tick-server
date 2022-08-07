@@ -1,15 +1,9 @@
-
-
+from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import (
     CONTENT_TYPE,
     App,
-    Widget,
-    NowPlayingFrame,
-    Notification,
-    Content,
-    MUSIC_STATUS,
     APPNAME
 )
 from cachable.request import Method
@@ -18,115 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
-
-from app.yanko import Yanko
-
-
-class WidgetMeta(type):
-
-    _instances = {}
-    client: Client = None
-
-    def __call__(cls, widget: Widget, *args, **kwds):
-        if cls.__name__ not in cls._instances:
-            cls._instances[cls.__name__] = type.__call__(
-                cls, widget, *args, **kwds)
-        return cls._instances[cls.__name__]
-
-    def register(cls, client: Client):
-        cls.client = client
-
-
-class BaseWidget(object, metaclass=WidgetMeta):
-
-    widget: Widget = None
-    widget_id: str = None
-
-    def __init__(self, widget_id: str, widget: Widget):
-        self.widget = widget
-        self.widget_id = widget_id
-
-    def activate(self):
-        resp = __class__.client.api_call(
-            method=Method.PUT,
-            endpoint=f"device/apps/{self.widget.package}/widgets/{self.widget_id}/activate"
-        )
-        return resp
-
-    def onShow(self):
-        raise NotImplementedError
-
-    def onHide(self):
-        raise NotImplementedError
-
-    @property
-    def isHidden(self):
-        return False
-
-
-class ClockWidget(BaseWidget, metaclass=WidgetMeta):
-
-    def onShow(self):
-        pass
-
-    def onHide(self):
-        pass
-
-
-class WeatherWidget(BaseWidget, metaclass=WidgetMeta):
-
-    def onShow(self):
-        pass
-
-    def onHide(self):
-        pass
-
-
-class YankoWidget(BaseWidget, metaclass=WidgetMeta):
-
-    status: MUSIC_STATUS = None
-
-    def __init__(self, widget_id: str, widget: Widget):
-        super().__init__(widget_id, widget)
-        self.status = MUSIC_STATUS.STOPPED
-        if not Yanko.state():
-            self.status = MUSIC_STATUS.STOPPED
-
-    def onShow(self):
-        pass
-
-    def onHide(self):
-        pass
-
-    @property
-    def isHidden(self):
-        return (self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT])
-
-    def nowplaying(self, payload):
-        frame = NowPlayingFrame(**payload)
-        __class__.client.send_notification(Notification(
-            model=Content(
-                frames=[frame],
-            ),
-            priority='critical'
-        ))
-        __class__.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
-        return True
-
-    def yankostatus(self, payload):
-        try:
-            self.status = MUSIC_STATUS(payload.get("status"))
-        except ValueError:
-            self.status = MUSIC_STATUS.STOPPED
-
-
-class RMWidget(BaseWidget, metaclass=WidgetMeta):
-
-    def onShow(self):
-        pass
-
-    def onHide(self):
-        pass
+from app.lametric.widgets import *
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -231,4 +117,7 @@ class Display(object):
                         first_key, widget_data)
                 case APPNAME.RM:
                     self._widgets[name] = RMWidget(first_key, widget_data)
+                case APPNAME.LIVESCORES:
+                    self._widgets[name] = LivescoresWidget(
+                        first_key, widget_data)
         return self._widgets.get(name)

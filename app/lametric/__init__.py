@@ -5,7 +5,7 @@ from app.config import Config
 from app.lametric.models import (
     CONTENT_TYPE
 )
-from app.lametric.display import Display
+from app.lametric.widgets import Display
 import time
 
 
@@ -48,7 +48,6 @@ class LaMetric(object, metaclass=LaMetricMeta):
                 continue
             cmd, payload = queue.get_nowait()
             queue.task_done()
-            print(cmd, payload)
             match(cmd):
                 case CONTENT_TYPE.NOWPLAYING:
                     self._display.load(cmd, payload)
