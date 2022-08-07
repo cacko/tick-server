@@ -179,7 +179,7 @@ class Display(object):
         lametricaps = Config.lametric.apps
         for name in Config.display:
             app: LametricApp = lametricaps.get(name)
-            Widget: Widget = self.getWidget(name, app.package)
+            Widget: Widget = self.getWidget(APPNAME(name), app.package)
         self._items = [
             DisplayItem(
                 app=lametricaps.get(name),
