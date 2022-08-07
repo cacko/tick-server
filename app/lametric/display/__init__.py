@@ -149,7 +149,7 @@ class Display(object):
     _apps: dict[str, App] = {}
     _client: Client = None
     _items: list[DisplayItem] = []
-    _current_idx: int = None
+    _current_idx: int = 0
     _widgets: dict[str, BaseWidget] = {}
 
     def __init__(self, client: Client):
