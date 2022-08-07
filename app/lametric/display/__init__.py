@@ -103,7 +103,9 @@ class YankoWidget(BaseWidget):
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
         __class__.client.send_notification(Notification(
-            model=Content(frames=[frame], sound=ContentSound(id="cat")),
+            model=Content(
+                frames=[frame],
+            ),
             priority='critical'
         ))
         __class__.client.send_model('yanko', Content(frames=[frame]))
@@ -190,7 +192,7 @@ class Display(object):
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
-        if len(self._items) > next_idx :
+        if len(self._items) > next_idx:
             self._current_idx = next_idx
         else:
             self._current_idx = 0
@@ -204,7 +206,6 @@ class Display(object):
         if current.isExpired:
             current.deactivate()
             return self.get_next_idx()
-
 
     def getWidget(self, name, package_name):
         app_widgets = self._apps.get(package_name).widgets
