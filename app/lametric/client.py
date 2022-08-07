@@ -32,6 +32,7 @@ class Client(object):
                 url=f"{host}/api/v2/{endpoint}",
                 **args
             )
+            logging.info(response.json())
             return response.json()
         except ConnectionError:
             pass
