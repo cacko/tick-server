@@ -124,6 +124,7 @@ class DisplayItem:
 
     def activate(self):
         self.widget.activate()
+        self.activated_at = datetime.now()
         self.widget.onShow()
 
     def deactivate(self):
