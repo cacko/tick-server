@@ -62,11 +62,11 @@ class Client(object):
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", [])))
         logging.info(f"sending notification")
-        logging.warning(data)
+        logging.warning(clean_frame(data))
         return self.api_call(
             Method.POST,
             "device/notifications",
-            json=data
+            json=clean_frame(data)
         )
 
     def get_apps(self) -> dict[str, App]:
