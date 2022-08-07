@@ -55,7 +55,6 @@ class Server(object, metaclass=ServerMeta):
 @app.route('/api/nowplaying', method='POST')
 @auth_required
 def nowplaying():
-    print(request.content_type, request.body)
     return Server.nowplaying(request.json)
 
 
@@ -76,7 +75,7 @@ def on_button():
 @app.route("/api/subscription", method="POST")
 @auth_required
 def on_subscription():
-    logging.info(request.json)
+    logging.warning(request.json)
 
 @app.route('/privacy')
 def privacy():
