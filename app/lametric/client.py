@@ -19,7 +19,6 @@ class Client(object):
 
     def __init__(self, config: LametricConfig) -> None:
         self.__config = config
-        print(config.apps)
 
     def api_call(self, method: Method, endpoint: str, **args):
         host = self.__config.host

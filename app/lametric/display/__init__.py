@@ -19,6 +19,8 @@ from datetime import datetime, timedelta
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 
+from app.yanko import Yanko
+
 
 class WidgetMeta(type):
 
@@ -82,6 +84,10 @@ class WeatherWidget(BaseWidget):
 class YankoWidget(BaseWidget):
 
     status: MUSIC_STATUS = None
+
+    def __init__(self, widget_id: str, widget: Widget):
+        super().__init__(widget_id, widget)
+        Yanko.state()
 
     def onShow(self):
         pass
