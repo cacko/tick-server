@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
+from unicodedata import category
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 from enum import Enum
@@ -102,10 +103,18 @@ class NowPlayingFrame(ContentFrame):
             pix.resize((8,8))
             self.icon = pix.base64
 
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class ContentSound:
+    id: str
+    category: str = "notifications"
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Content:
     frames: list[ContentFrame]
+    sound: Optional[ContentSound] = None
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)

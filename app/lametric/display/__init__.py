@@ -5,6 +5,7 @@ from app.lametric.client import Client
 from app.lametric.models import (
     CONTENT_TYPE,
     App,
+    ContentSound,
     Widget,
     NowPlayingFrame,
     Notification,
@@ -102,7 +103,7 @@ class YankoWidget(BaseWidget):
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
         __class__.client.send_notification(Notification(
-            model=Content(frames=[frame]),
+            model=Content(frames=[frame], sound=ContentSound(id="cat")),
             priority='critical'
         ))
         __class__.client.send_model('yanko', Content(frames=[frame]))
