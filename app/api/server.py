@@ -35,6 +35,8 @@ class ServerMeta(type):
     def status(cls, query):
         return cls().handle_status(query)
 
+    def subscription(cls, query):
+        return cls().handle_subscription(query)
 
 class Server(object, metaclass=ServerMeta):
 
@@ -51,6 +53,8 @@ class Server(object, metaclass=ServerMeta):
     def handle_status(self, payload):
         LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
 
+    def handle_subscription(self, payload):
+        LaMetric.queue.put_nowait((CONTENT_TYPE.LIVESCOREEVENT, payload))
 
 @app.route('/api/nowplaying', method='POST')
 @auth_required
@@ -75,7 +79,7 @@ def on_button():
 @app.route("/api/subscription", method="POST")
 @auth_required
 def on_subscription():
-    logging.warning(request.json)
+    return Server.subscription(request.json)
 
 @app.route('/privacy')
 def privacy():
