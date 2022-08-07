@@ -104,6 +104,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
+        print(frame)
         __class__.client.send_notification(Notification(
             model=Content(
                 frames=[frame],

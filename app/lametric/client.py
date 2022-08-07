@@ -58,6 +58,7 @@ class Client(object):
             pass
 
     def send_notification(self, notification: Notification):
+        print(notification)
         data = notification.to_dict()
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", [])))
