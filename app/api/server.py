@@ -43,11 +43,9 @@ class Server(object, metaclass=ServerMeta):
     def start_server(self, mainQueue):
         self._mqinQueue = mainQueue
         conf = Config.api.to_dict()
-        conf['debug'] = True
         run(app, **conf)
 
     def handle_nowplaying(self, payload):
-        logging.warn(payload)
         LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
     def handle_status(self, payload):

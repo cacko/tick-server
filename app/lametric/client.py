@@ -32,7 +32,6 @@ class Client(object):
                 url=f"{host}/api/v2/{endpoint}",
                 **args
             )
-            logging.info(response.json())
             return response.json()
         except ConnectionError:
             pass
@@ -62,8 +61,6 @@ class Client(object):
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", [])))
         data["model"] = clean_frame(data.get("model"))
-        logging.info(f"sending notification")
-        logging.warning(data)
         return self.api_call(
             Method.POST,
             "device/notifications",
