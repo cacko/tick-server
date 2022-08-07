@@ -56,6 +56,7 @@ class Server(object, metaclass=ServerMeta):
 @app.route('/api/nowplaying', method='POST')
 @auth_required
 def nowplaying():
+    print(request.content_type, request.body)
     return Server.nowplaying(request.json)
 
 
