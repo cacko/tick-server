@@ -61,7 +61,8 @@ class Client(object):
         data = notification.to_dict()
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", [])))
-        logging.info(f"sending notification", data)
+        logging.info(f"sending notification")
+        logging.warning(data)
         return self.api_call(
             Method.POST,
             "device/notifications",
