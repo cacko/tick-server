@@ -43,6 +43,7 @@ class Server(object, metaclass=ServerMeta):
     def start_server(self, mainQueue):
         self._mqinQueue = mainQueue
         conf = Config.api.to_dict()
+        conf['debug'] = True
         run(app, **conf)
 
     def handle_nowplaying(self, payload):
