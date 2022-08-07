@@ -47,6 +47,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
                 self._display.update()
                 continue
             cmd, payload = queue.get_nowait()
+            queue.task_done()
             print(cmd, payload)
             match(cmd):
                 case CONTENT_TYPE.NOWPLAYING:

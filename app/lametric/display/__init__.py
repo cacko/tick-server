@@ -1,5 +1,6 @@
 
 
+import logging
 from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import (
@@ -183,6 +184,7 @@ class Display(object):
         ]
 
     def load(self, content_type: CONTENT_TYPE, payload):
+        logging.warning(payload)
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
                 self._widgets.get("yanko").nowplaying(payload)
