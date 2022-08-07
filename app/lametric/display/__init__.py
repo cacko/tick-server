@@ -98,7 +98,7 @@ class YankoWidget(BaseWidget):
 
     @property
     def isHidden(self):
-        return self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.STOPPED]
+        return self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT]
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)

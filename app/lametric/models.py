@@ -23,10 +23,13 @@ class APP_NAME(Enum):
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'
+    PAUSED = 'paused'
     STOPPED = 'stopped'
-    RESUMED = 'resumed'
     LOADING = 'loadng'
     EXIT = 'exit'
+    RESUMED = 'resumed'
+    NEXT = 'next'
+    PREVIOUS = 'previous'
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
