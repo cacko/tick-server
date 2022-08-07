@@ -133,8 +133,8 @@ class DisplayItem:
 
     @property
     def isExpired(self):
-        td = datetime.now() - self._current_frame.activated_at
-        return td > timedelta(milliseconds=self._current_frame.duration)
+        td = datetime.now() - self.activated_at
+        return td > timedelta(milliseconds=self.duration)
 
     @property
     def isActive(self):
