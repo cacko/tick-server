@@ -4,7 +4,8 @@ from app.lametric.client import Client
 from app.lametric.models import (
     CONTENT_TYPE,
     App,
-    APPNAME
+    APPNAME,
+    DeviceDisplay
 )
 from cachable.request import Method
 from app.config import Config
@@ -21,6 +22,7 @@ class DisplayItem:
     app: LametricApp
     widget: BaseWidget
     duration: int
+    appname: APPNAME
     hidden: bool = False
     activated_at: Optional[datetime] = None
 
@@ -54,12 +56,26 @@ class Display(object):
     _items: list[DisplayItem] = []
     _current_idx: int = 0
     _widgets: dict[str, BaseWidget] = {}
+    _device_display: DeviceDisplay = None
 
     def __init__(self, client: Client):
         self._client = client
         self._apps = client.get_apps()
         BaseWidget.register(self._client)
         self.__init()
+        self._device_display = self._client.get_display()
+
+
+    @property
+    def is_screensaver_active(self):
+        if not self._device_display.screensaver.enabled:
+            return False
+        if not self._device_display.screensaver.modes.time_based.enabled:
+            return False
+        time_based = self._device_display.screensaver.modes.time_based
+        n = datetime.now().time()
+        return all([n > time_based.local_start_time, n < time_based.local_end_time])
+
 
     def __init(self):
         lametricaps = Config.lametric.apps
@@ -71,7 +87,8 @@ class Display(object):
                 app=lametricaps.get(name),
                 widget=self.getWidget(APPNAME(name), app.package),
                 duration=app.duration,
-                hidden=False
+                hidden=False,
+                appname=APPNAME(name)
             )
             for name in Config.display
         ]
@@ -93,7 +110,13 @@ class Display(object):
             self._current_idx = 0
 
     def update(self):
+        if self.is_screensaver_active and self._current_idx != 0:
+            self._current_idx = 0
+            current = self._items[0]
+            current.activate()
+            return 0
         current = self._items[self._current_idx]
+
         if not current.isAllowed:
             return self.get_next_idx()
         if not current.isActive:

@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from queue import LifoQueue
 
@@ -34,14 +35,11 @@ class LaMetric(object, metaclass=LaMetricMeta):
 
     _client: Client = None
     _display: Display = None
-    _device_display: DeviceDisplay = None
     _mainQueue = None
 
     def __init__(self) -> None:
         self._client = Client(Config.lametric)
         self._display = Display(client=self._client)
-        self._device_display = self._client.get_display()
-        logging.warning(self._device_display)
 
     def run(self, mainQueue):
         self._mainQueue = mainQueue
