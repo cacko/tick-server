@@ -29,7 +29,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def onHide(self):
         pass
 
-    def on_event(event):
+    def on_event(self, event):
         frame = ContentFrame(
             text=f"{event.action} {event.time:.0f}' {event.event_name} {event.score}"
         )
