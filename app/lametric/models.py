@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, Undefined
-from datetime import time
+from datetime import time, datetime, timezone
 from typing import Optional
 from enum import Enum
 class CONTENT_TYPE(Enum):
@@ -34,6 +34,16 @@ class ModeTimeBased:
     start_time: time
     local_end_time: time
     local_start_time: time
+
+    @property
+    def isActive(self):
+        if not self.enabled:
+            return False
+        n = datetime.now(tz=timezone.utc).time()
+        return all([
+            time.fromisoformat(self.start_time) < n,
+            time.fromisoformat(self.end_time) > n
+        ])
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass

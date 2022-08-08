@@ -72,9 +72,7 @@ class Display(object):
             return False
         if not self._device_display.screensaver.modes.time_based.enabled:
             return False
-        time_based = self._device_display.screensaver.modes.time_based
-        n = datetime.now().time()
-        return all([n > time_based.local_start_time, n < time_based.local_end_time])
+        return self._device_display.screensaver.modes.time_based.isActive
 
 
     def __init(self):
