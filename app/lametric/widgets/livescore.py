@@ -31,7 +31,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_event(self, event):
         frame = ContentFrame(
-            text=f"{event.action} {event.time:.0f}' {event.event_name} {event.score}"
+            text=f"{event.get('action')} {event.get('time'):.0f}' {event.get('event_name')} {event.get('score')}"
         )
         __class__.client.send_notification(Notification(
             model=Content(
