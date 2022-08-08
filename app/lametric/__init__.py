@@ -1,9 +1,11 @@
+import logging
 from queue import LifoQueue
 
 from app.lametric.client import Client
 from app.config import Config
 from app.lametric.models import (
-    CONTENT_TYPE
+    CONTENT_TYPE,
+    DeviceDisplay
 )
 from app.lametric.display import Display
 import time
@@ -32,11 +34,14 @@ class LaMetric(object, metaclass=LaMetricMeta):
 
     _client: Client = None
     _display: Display = None
+    _device_display: DeviceDisplay = None
     _mainQueue = None
 
     def __init__(self) -> None:
         self._client = Client(Config.lametric)
         self._display = Display(client=self._client)
+        self._device_display = self._client.get_display()
+        logging.warning(self._device_display)
 
     def run(self, mainQueue):
         self._mainQueue = mainQueue

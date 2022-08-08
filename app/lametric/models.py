@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, Undefined
+from datetime import time
 from typing import Optional
 from enum import Enum
 class CONTENT_TYPE(Enum):
@@ -24,6 +25,33 @@ class MUSIC_STATUS(Enum):
     NEXT = 'next'
     PREVIOUS = 'previous'
 
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class ModeTimeBased:
+    enabled: bool
+    end_time: time
+    start_time: time
+    local_end_time: time
+    local_start_time: time
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class ScreensaveModes:
+    time_based: ModeTimeBased
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class DisplayScreensave:
+    enabled: bool
+    modes: ScreensaveModes
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class DeviceDisplay:
+    brightness: int
+    screensaver: DisplayScreensave
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass

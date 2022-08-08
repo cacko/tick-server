@@ -7,6 +7,7 @@ from cachable.request import Method
 from app.lametric.models import (
     APPNAME,
     App,
+    DeviceDisplay,
     Notification,
     Content,
 )
@@ -72,6 +73,13 @@ class Client(object):
             "device/apps"
         )
         return {k: App.from_dict(v) for k, v in res.items()}
+
+    def get_display(self) -> DeviceDisplay:
+        res = self.api_call(
+            Method.GET,
+            "device/display"
+        )
+        return DeviceDisplay.from_dict(res.json())
 
     def send_model(self, config_name: APPNAME, model: Content):
         data = model.to_dict()
