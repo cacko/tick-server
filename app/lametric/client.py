@@ -79,7 +79,7 @@ class Client(object):
             Method.GET,
             "device/display"
         )
-        return DeviceDisplay.from_dict(res.json())
+        return DeviceDisplay.from_dict(res)
 
     def send_model(self, config_name: APPNAME, model: Content):
         data = model.to_dict()
