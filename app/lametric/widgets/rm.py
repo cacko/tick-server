@@ -94,12 +94,9 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         return len(self._schedule.current) == 0
 
     def load(self):
-        # if not Storage.exists(STORAGE_KEY):
         schedule = self.get_schedule()
         self._schedule = Schedule(schedule)
         self._schedule.persist()
-        # else:
-        #     self._schedule = Schedule.load()
 
     def get_schedule(self):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
