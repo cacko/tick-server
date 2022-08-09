@@ -71,7 +71,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.subsriptions = Storage.hgetall(STORAGE_KEY)
-        print(self.subsriptions)
+        logging.warning(self.subsriptions)
 
     def onShow(self):
         pass
@@ -108,4 +108,5 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             Storage.pipeline().hset(STORAGE_KEY, event.event_id, event).persist(STORAGE_KEY)
         else:
             Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist(STORAGE_KEY)
+        self.subsriptions = Storage.hgetall(STORAGE_KEY)
 
