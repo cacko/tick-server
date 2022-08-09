@@ -327,7 +327,8 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         logging.warning(res.content)
 
     def onShow(self):
-        pass
+        self.load_scores()
+        self.update_frames()
 
     def onHide(self):
         pass
