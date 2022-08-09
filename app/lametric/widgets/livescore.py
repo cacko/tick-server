@@ -342,15 +342,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             logging.warning(event)
-            frame = ContentFrame(
-                text=f"{event.time:.0f}' {event.event_name} {event.player} {event.score}"
-            )
-            try:
-                icon = EventIcon[constcase(event.action)]
-                frame.icon = icon.value
-            except ValueError:
-                logging.warning(f"no icon for {event.action}")
             if not event.is_old_event:
+                sub = next(filter(lambda x: x.event_id == event.idEvent, self.subsriptions), None)
+                frame = event.getContentFrame(league_icon=sub.icon if sub else None)
                 __class__.client.send_notification(Notification(
                     model=Content(
                         frames=[frame],
