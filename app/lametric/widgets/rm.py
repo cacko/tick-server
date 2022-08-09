@@ -16,10 +16,12 @@ class Schedule(dict):
 
     def __init__(self, data: list[Game]):
         d = {f"{game.id}":game for game in data}
+        logging.warning(d)
         super().__init__(d)
 
     def persist(self):
         d = {k:pickle.dumps(v) for k,v in self.items()}
+        logging.warning(d)
         Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
 
     @classmethod
