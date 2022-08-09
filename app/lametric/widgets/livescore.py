@@ -132,6 +132,9 @@ class SubscriptionEvent:
             return False
         return (n - self.start_time) > limit
 
+    @property
+    def inProgress(self) -> bool:
+        return re.match(r"^\d+$", self.status)
 
 STATUS_MAP = {
     "Post.": "PPD",
@@ -326,7 +329,14 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         logging.warning(res.content)
 
     def onShow(self):
-        pass
+        do_update = False
+        for sub in self.subscriptions:
+            if sub.inProgress:
+                do_update = True
+                break
+        if do_update:
+            self.load_scores()
+            self.update_frames()
 
     def onHide(self):
         pass
