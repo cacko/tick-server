@@ -34,8 +34,8 @@ def schedule_cron():
         name=f"{STORAGE_KEY}",
         func=cron_func,
         trigger="cron",
-        hour=2,
-        minute=20,
+        hour=0,
+        minute=8,
         replace_existing=True,
         misfire_grace_time=180
     )
