@@ -137,7 +137,7 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def get_schedule(self):
-        url = f"{Config.znayko.host}/livescore"
+        url = f"{Config.znayko.host}/team_schedule/{TEAM_ID}"
         res = requests.get(url)
         data = res.json()
         schedule = Game.schema().load(data, many=True)
