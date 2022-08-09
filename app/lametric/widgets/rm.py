@@ -12,15 +12,40 @@ from app.lametric.models import (
 from zoneinfo import ZoneInfo
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
+from app.scheduler import Scheduler
 import pickle
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
 
 
+def cron_func():
+    games = ZnaykoClient.team_schedule(TEAM_ID)
+    td = datetime.now(tz=timezone.utc).strftime('%m-%d')
+    for game in games:
+        gd = game.startTime.strftime('%m-%d')
+        if td == gd:
+            res = ZnaykoClient.subscribe(game.id)
+            logging.warn(res)
+
+
+def schedule_cron():
+    Scheduler.add_job(
+        id=STORAGE_KEY,
+        name=f"{STORAGE_KEY}",
+        func=cron_func,
+        trigger="cron",
+        hour=2,
+        minutes=20,
+        replace_existing=True,
+        misfire_grace_time=180
+    )
+
+
 class Schedule(dict):
 
     def __init__(self, data: list[Game]):
+        schedule_cron()
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
 

@@ -12,6 +12,7 @@ from app.znayko.models import (
 class ENDPOINT(Enum):
     LIVESCORE = 'livescore'
     UNSUBSCRIBE = 'unsubscribe'
+    SUBSCRIBE = 'subscribe'
     TEAM_SCHEDULE = 'team_schedule'
 
 
@@ -40,6 +41,14 @@ class ClientMeta(type):
             "id": sub.job_id
         }
         return cls().do_post(ENDPOINT.UNSUBSCRIBE.value, json=json)
+
+    def subscribe(cls, id: int):
+        json = {
+            "webhook": f"http://{Config.api.host}:{Config.api.port}/api/subscription",
+            "group": Config.api.secret,
+            "id": id
+        }
+        return cls().do_post(ENDPOINT.SUBSCRIBE.value, json=json)
 
     def team_schedule(cls, team_id: int) -> list[Game]:
         try:
