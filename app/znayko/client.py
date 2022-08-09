@@ -41,8 +41,7 @@ class ClientMeta(type):
 
     def team_schedule(cls, team_id: int) -> list[Game]:
         try:
-            data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE}/{team_id}")
-            logging.warning(data)
+            data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE.value}/{team_id}")
             if data:
                 return Game.schema().load(data, many=True)
         except Exception as e:
@@ -58,9 +57,7 @@ class Client(object, metaclass=ClientMeta):
         self.__host = Config.znayko.host
 
     def do_get(self, endpoint: str, **kwargs):
-        logging.warning(endpoint)
         resp = get(f"{self.__host}/{endpoint}", **kwargs)
-        logging.warning(resp.content)
         return resp.json()
 
     def do_post(self, endpoint:str, **kwargs):
