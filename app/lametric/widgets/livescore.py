@@ -90,6 +90,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def onHide(self):
         pass
 
+    def duration(self, duration: int):
+        return len(self.subsriptions) * 5000
+
     @property
     def isHidden(self):
         return len(self.subsriptions) == 0

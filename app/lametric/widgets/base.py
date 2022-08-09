@@ -43,6 +43,9 @@ class BaseWidget(object, metaclass=WidgetMeta):
     def onHide(self):
         raise NotImplementedError
 
+    def duration(self, duration: int):
+        return duration
+
     @property
     def isHidden(self):
         return False

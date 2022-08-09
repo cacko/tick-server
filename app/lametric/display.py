@@ -38,7 +38,7 @@ class DisplayItem:
     @property
     def isExpired(self):
         td = datetime.now() - self.activated_at
-        return td > timedelta(milliseconds=self.duration)
+        return td > timedelta(milliseconds=self.widget.duration(self.duration))
 
     @property
     def isActive(self):
@@ -65,7 +65,6 @@ class Display(object):
         self.__init()
         self._device_display = self._client.get_display()
 
-
     @property
     def is_screensaver_active(self):
         if not self._device_display.screensaver.enabled:
@@ -73,7 +72,6 @@ class Display(object):
         if not self._device_display.screensaver.modes.time_based.enabled:
             return False
         return self._device_display.screensaver.modes.time_based.isActive
-
 
     def __init(self):
         lametricaps = Config.lametric.apps
