@@ -107,7 +107,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         logging.warning(event)
         logging.warning(action)
         if action == Event.SUBSCRIBED:
-            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event).persist(STORAGE_KEY)
+            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event.to_dict()).persist(STORAGE_KEY)
         else:
             Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist(STORAGE_KEY)
         self.subsriptions = Storage.hgetall(STORAGE_KEY)
