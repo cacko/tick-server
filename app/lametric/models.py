@@ -3,10 +3,13 @@ from dataclasses_json import dataclass_json, Undefined
 from datetime import time, datetime, timezone
 from typing import Optional
 from enum import Enum
+
+
 class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
     LIVESCOREEVENT = 'livescore_event'
+
 
 class APPNAME(Enum):
     CLOCK = 'clock'
@@ -14,6 +17,7 @@ class APPNAME(Enum):
     YANKO = 'yanko'
     RM = 'rm'
     LIVESCORES = 'livescores'
+
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'
@@ -24,6 +28,44 @@ class MUSIC_STATUS(Enum):
     RESUMED = 'resumed'
     NEXT = 'next'
     PREVIOUS = 'previous'
+
+
+class SOUNDS(Enum):
+    BICYCLE = "bicycle"
+    CAR = "car"
+    CASH = "cash"
+    CAT = "cat"
+    DOG = "dog"
+    DOG2 = "dog2"
+    ENERGY = "energy"
+    KNOCK = "knock-knock"
+    EMAIL = "letter_email"
+    LOSE1 = "lose1"
+    LOSE2 = "lose2"
+    NEGATIVE1 = "negative1"
+    NEGATIVE2 = "negative2"
+    NEGATIVE3 = "negative3"
+    NEGATIVE4 = "negative4"
+    NEGATIVE5 = "negative5"
+    NOTIFICATION = "notification"
+    NOTIFICATION2 = "notification2"
+    NOTIFICATION3 = "notification3"
+    NOTIFICATION4 = "notification4"
+    OPEN_DOOR = "open_door"
+    POSITIVE1 = "positive1"
+    POSITIVE2 = "positive2"
+    POSITIVE3 = "positive3"
+    POSITIVE4 = "positive4"
+    POSITIVE5 = "positive5"
+    POSITIVE6 = "positive6"
+    STATISIC = "statistic"
+    THUNDER = "thunder"
+    WATER = "water1"
+    WATER2 = "water2"
+    WIN = "win"
+    WIN2 = "win2"
+    WIND = "wind"
+    WIND_SHORT = "wind_short"
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -45,10 +87,12 @@ class ModeTimeBased:
             time.fromisoformat(self.end_time) > n
         ])
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ScreensaveModes:
     time_based: ModeTimeBased
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -62,6 +106,7 @@ class DisplayScreensave:
 class DeviceDisplay:
     brightness: int
     screensaver: DisplayScreensave
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -124,11 +169,14 @@ class WeatherFrame(ContentFrame):
 @dataclass
 class NowPlayingFrame(ContentFrame):
     index: Optional[int] = 3
+
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ContentSound:
     id: str
     category: str = "notifications"
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -143,4 +191,3 @@ class Notification:
     model: Content
     priority: str = "info"
     icon_type: str = "none"
-
