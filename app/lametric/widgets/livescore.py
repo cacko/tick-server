@@ -315,7 +315,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             if not sub:
                 return
             sub.status = event.displayStatus
-            logging.warning(sub)
             store.hset(STORAGE_KEY, f"{sub.event_id}", pickle.dumps(sub))
             self.scores[event.idEvent] = text
         store.persist(STORAGE_KEY).execute()
@@ -418,5 +417,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
             Storage.hdel(STORAGE_KEY, f"{event.event_id}")
             Storage.persist(STORAGE_KEY)
+            logging.warning(f"DELETING {event.event_name}")
         self.load()
         self.update_frames()
