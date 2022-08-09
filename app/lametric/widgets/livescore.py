@@ -10,6 +10,7 @@ from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
 from enum import IntEnum, Enum
 from cachable.storage import Storage
+import pickle
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -107,7 +108,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         logging.warning(event)
         logging.warning(action)
         if action == Event.SUBSCRIBED:
-            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event.to_dict()).persist(STORAGE_KEY)
+            Storage.pipeline().hset(STORAGE_KEY, event.event_id, pickle.dumps(event)).persist(STORAGE_KEY)
         else:
             Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist(STORAGE_KEY)
         self.subsriptions = Storage.hgetall(STORAGE_KEY)
