@@ -46,6 +46,7 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def load(self):
+        logging.warning(Storage.exists(STORAGE_KEY))
         if not Storage.exists(STORAGE_KEY):
             schedule = self.get_schedule()
             self._schedule = Schedule(schedule)
