@@ -30,7 +30,7 @@ def cron_func():
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
-        td = timedelta(minutes=1)
+        td = timedelta(minutes=30)
         Scheduler.add_job(
             id=f"{STORAGE_KEY}_retry",
             name=f"{STORAGE_KEY}_retry",
@@ -49,7 +49,7 @@ def schedule_cron():
         func=cron_func,
         trigger="cron",
         hour=0,
-        minute=8,
+        minute=30,
         replace_existing=True,
         misfire_grace_time=180
     )
@@ -92,7 +92,6 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         if not self.isHidden:
             self.update_frames()
         schedule_cron()
-        cron_func()
 
     def onShow(self):
         pass
