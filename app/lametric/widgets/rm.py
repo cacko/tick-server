@@ -20,7 +20,7 @@ class Schedule(dict):
 
     def persist(self):
         d = {k:pickle.dumps(v) for k,v in self.items()}
-        Storage.pipeline().hset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
+        Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
 
     @classmethod
     def load(cls) -> 'Schedule':
