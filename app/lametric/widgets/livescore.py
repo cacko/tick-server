@@ -1,7 +1,7 @@
 from enum import IntEnum, Enum
 import logging
 
-from app.lametric.models import Content, ContentFrame, Notification
+from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
 from datetime import datetime, timezone
@@ -67,7 +67,7 @@ STORAGE_KEY = "subscriptions"
 
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
-    subsriptions: list = []
+    subsriptions: list[SubscriptionEvent] = []
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
@@ -80,6 +80,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             self.subsriptions = []
         self.subsriptions = [pickle.loads(v) for v in data.values()]
 
+
     def onShow(self):
         pass
 
@@ -89,6 +90,16 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     @property
     def isHidden(self):
         return len(self.subsriptions) == 0
+
+    def update_frames(self):
+        frames = []
+        for sub in self.subsriptions:
+            frame = ContentFrame(
+                text=sub.event_name
+            )
+            frames.append(frame)
+        __class__.client.send_model(APPNAME.LIVESCORES, Content(frames=frames))
+
 
     def on_event(self, payload):
         if isinstance(payload, list):
@@ -120,4 +131,5 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             Storage.hdel(STORAGE_KEY, f"{event.event_id}")
             Storage.persist(STORAGE_KEY)
         self.load()
+        self.update_frames()
 
