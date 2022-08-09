@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
 from enum import IntEnum, Enum
+from cachable.storage import Storage
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -60,14 +61,27 @@ class Event(Enum):
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
 
+STORAGE_KEY = "subscriptions"
+
 
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
+
+    subsriptions: list = []
+
+    def __init__(self, widget_id: str, widget):
+        super().__init__(widget_id, widget)
+        self.subsriptions = Storage.hgetall(STORAGE_KEY)
+        print(self.subsriptions)
 
     def onShow(self):
         pass
 
     def onHide(self):
         pass
+
+    @property
+    def isHidden(self):
+        return len(self.subsriptions) == 0
 
     def on_event(self, payload):
         if isinstance(payload, list):
@@ -89,4 +103,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             ))
 
     def on_subscription_event(self, event: SubscriptionEvent):
-        logging.warning(event)
+        action = Event(event.action)
+        if action == Event.SUBSCRIBED:
+            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event).persist()
+        else:
+            Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist()
+
