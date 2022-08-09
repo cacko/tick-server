@@ -292,7 +292,11 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_event(self, payload):
         if isinstance(payload, list):
-            self.on_match_events(MatchEvent.schema().load(payload, many=True))
+            try:
+                self.on_match_events(MatchEvent.schema().load(payload, many=True))
+            except Exception as e:
+                logging.error(e)
+                logging.warning(payload)
         else:
             self.on_subscription_event(payload)
 
