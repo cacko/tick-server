@@ -1,3 +1,4 @@
+from argparse import Action
 from enum import IntEnum, Enum
 import logging
 
@@ -47,7 +48,21 @@ class SubscriptionEvent:
     away_team: str
     away_team_id: int
     event_name: str
+    job_id: str
 
+    def __init__(self) -> None:
+        if ':' in self.job_id:
+            self.job_id = self.job_id.split(':')[0]
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class CancelJobEvent:
+    job_id: str
+
+    def __init__(self) -> None:
+        if ':' in self.job_id:
+            self.job_id = self.job_id.split(':')[0]
 
 class EventIcon(IntEnum):
 
@@ -66,6 +81,7 @@ class Event(Enum):
     GAME_START = "Game Start"
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
+    CANCEL_JOB = "Cancel Job"
 
 
 STORAGE_KEY = "subscriptions"
@@ -117,7 +133,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             self.on_match_events(MatchEvent.schema().load(payload, many=True))
         else:
-            self.on_subscription_event(SubscriptionEvent.from_dict(payload))
+            self.on_subscription_event(payload)
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
@@ -131,15 +147,20 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 priority='critical'
             ))
 
-    def on_subscription_event(self, event: SubscriptionEvent):
-        action = Event(event.action)
-        logging.warning(event)
-        logging.warning(action)
-        if action == Event.SUBSCRIBED:
+    def on_subscription_event(self, payload):
+        action = Event(payload.get("action"))
+        if action == Event.CANCEL_JOB:
+            event = CancelJobEvent.from_dict(payload)
+            sub = next(filter(lambda x: x.job_id == event.job_id, self.subsriptions), None)
+            if sub:
+                Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
+                Storage.persist(STORAGE_KEY)            
+        elif action == Event.SUBSCRIBED:
+            event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
+            event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
             Storage.hdel(STORAGE_KEY, f"{event.event_id}")
             Storage.persist(STORAGE_KEY)
         self.load()
-        self.update_frames()
