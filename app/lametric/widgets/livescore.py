@@ -290,6 +290,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             if not sub:
                 return
             sub.status = event.displayStatus
+            logging.warning(sub)
             store.hset(STORAGE_KEY, f"{sub.event_id}", pickle.dumps(sub))
             self.scores[event.idEvent] = text
         store.persist(STORAGE_KEY).execute()
