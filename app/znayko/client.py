@@ -3,15 +3,17 @@ from app.config import Config
 from enum import Enum
 from requests import get, post
 from app.znayko.models import (
-    LivescoreEvent, 
+    LivescoreEvent,
     SubscriptionEvent,
     Game
 )
+
 
 class ENDPOINT(Enum):
     LIVESCORE = 'livescore'
     UNSUBSCRIBE = 'unsubscribe'
     TEAM_SCHEDULE = 'team_schedule'
+
 
 class ClientMeta(type):
 
@@ -57,9 +59,17 @@ class Client(object, metaclass=ClientMeta):
         self.__host = Config.znayko.host
 
     def do_get(self, endpoint: str, **kwargs):
-        resp = get(f"{self.__host}/{endpoint}", headers={"Cache-control: no-cache"}, **kwargs)
+        resp = get(f"{self.__host}/{endpoint}", **{
+            "headers": {"Cache-control: no-cache"},
+            **kwargs
+        })
         return resp.json()
 
-    def do_post(self, endpoint:str, **kwargs):
-        resp = post(f"{self.__host}/{endpoint}", headers={"Cache-control: no-cache"}, **kwargs)
+    def do_post(self, endpoint: str, json, **kwargs):
+        resp = post(
+            f"{self.__host}/{endpoint}", json=json,
+            **{
+                "headers": {"Cache-control: no-cache"},
+                **kwargs
+            })
         return resp.json()
