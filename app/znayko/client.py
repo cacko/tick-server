@@ -57,9 +57,9 @@ class Client(object, metaclass=ClientMeta):
         self.__host = Config.znayko.host
 
     def do_get(self, endpoint: str, **kwargs):
-        resp = get(f"{self.__host}/{endpoint}", **kwargs)
+        resp = get(f"{self.__host}/{endpoint}", headers={"Cache-control: no-cache"}, **kwargs)
         return resp.json()
 
     def do_post(self, endpoint:str, **kwargs):
-        resp = post(f"{self.__host}/{endpoint}", **kwargs)
+        resp = post(f"{self.__host}/{endpoint}", headers={"Cache-control: no-cache"}, **kwargs)
         return resp.json()
