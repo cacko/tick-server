@@ -14,6 +14,7 @@ from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
 from app.scheduler import Scheduler
 import pickle
+from app.core.time import to_local_time, is_today
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
@@ -21,10 +22,8 @@ STORAGE_KEY = "real_madrid_schedule"
 
 def cron_func():
     games = ZnaykoClient.team_schedule(TEAM_ID)
-    td = datetime.now(tz=timezone.utc).strftime('%m-%d')
     for game in games:
-        gd = game.startTime.strftime('%m-%d')
-        if td == gd:
+        if is_today(game.startTime):
             res = ZnaykoClient.subscribe(game.id)
             logging.warn(res)
 
@@ -95,8 +94,7 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         for idx, game in enumerate(self._schedule.current):
             text = []
             if game.not_started:
-                text.append(game.startTime.astimezone(
-                    ZoneInfo('Europe/London')).strftime('%H:%M'))
+                text.append(to_local_time(game.startTime))
             else:
                 text.append(game.shortStatusText)
             text.append(

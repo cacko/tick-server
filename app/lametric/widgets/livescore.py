@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta, timezone
 import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
-from zoneinfo import ZoneInfo
 from cachable.storage import Storage
 import pickle
 from app.znayko.models import (
@@ -15,7 +13,6 @@ from app.znayko.client import Client as ZnaykoClient
 
 
 STORAGE_KEY = "subscriptions"
-TIMEZONE = ZoneInfo("Europe/London")
 
 class Scores(dict):
 

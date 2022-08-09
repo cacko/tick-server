@@ -1,8 +1,7 @@
 from enum import IntEnum, Enum
-import logging
+from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional
-from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
@@ -131,6 +130,7 @@ class SubscriptionEvent:
     def inProgress(self) -> bool:
         return re.match(r"^\d+", self.status)
 
+
 STATUS_MAP = {
     "Post.": "PPD",
     "Ended": "FT",
@@ -213,8 +213,7 @@ class LivescoreEvent:
             self.displayStatus = GameStatus(self.strStatus)
             if delta < 0 and self.displayStatus in [
                     GameStatus.UNKNOWN, GameStatus.NS]:
-                self.displayStatus = self.startTime.astimezone(
-                    ZoneInfo("Europe/London")).strftime("%H:%M")
+                self.displayStatus = to_local_time(self.startTime)
             else:
                 self.displayStatus = self.displayStatus.name
         except Exception:

@@ -46,6 +46,7 @@ class LametricConfig:
     user: str
     apikey: str
     apps: dict[str, LametricApp]
+    timezone: str
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
