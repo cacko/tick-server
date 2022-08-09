@@ -2,8 +2,14 @@ from datetime import datetime, timezone
 import logging
 from .base import BaseWidget, WidgetMeta
 from app.znayko.models import (
-    Game
+    Game,
 )
+from app.lametric.models import (
+    Content,
+    ContentFrame,
+    APPNAME
+)
+from zoneinfo import ZoneInfo
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
 import pickle
@@ -15,11 +21,11 @@ STORAGE_KEY = "real_madrid_schedule"
 class Schedule(dict):
 
     def __init__(self, data: list[Game]):
-        d = {f"{game.id}":game for game in data}
+        d = {f"{game.id}": game for game in data}
         super().__init__(d)
 
     def persist(self):
-        d = {k:pickle.dumps(v) for k,v in self.items()}
+        d = {k: pickle.dumps(v) for k, v in self.items()}
         Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
 
     @classmethod
@@ -34,8 +40,10 @@ class Schedule(dict):
     @property
     def current(self) -> list[Game]:
         n = datetime.now(tz=timezone.utc)
-        events = list(filter(lambda g: abs((n - g.startTime).days) < 2, self.values()))
+        events = list(filter(lambda g: abs(
+            (n - g.startTime).days) < 2, self.values()))
         return events
+
 
 class RMWidget(BaseWidget, metaclass=WidgetMeta):
 
@@ -52,6 +60,38 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
     def onHide(self):
         pass
 
+    def duration(self, duration: int):
+        res = len(self._schedule.current) * 8000
+        return res
+
+    def update_frames(self):
+        frames = []
+        for idx, game in enumerate(self._schedule.current):
+            text = []
+            if game.not_started:
+                text.append(game.startTime.astimezone(
+                    ZoneInfo('Europe/London')).strftime('%H:%M'))
+            else:
+                text.append(game.shortStatusText)
+            text.append(
+                f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
+            if not game.not_started:
+                text.append(
+                    f"{game.homeCompetitor.score:.0f}:{game.awayCompetitor.score:.9f}")
+            frame = ContentFrame(
+                text=' '.join(text),
+                index=idx,
+                icon=game.icon
+            )
+            frames.append(frame)
+        __class__.client.send_model(
+            APPNAME.RM, Content(frames=frames)
+        )
+
+    @property
+    def isHidden(self):
+        return len(self._schedule.current) == 0
+
     def load(self):
         # if not Storage.exists(STORAGE_KEY):
         schedule = self.get_schedule()
@@ -60,12 +100,10 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         # else:
         #     self._schedule = Schedule.load()
 
-
     def get_schedule(self):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
         logging.warning(schedule)
         return schedule
-
 
     # def on_event(self, payload):
     #     if isinstance(payload, list):
