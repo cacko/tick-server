@@ -58,7 +58,9 @@ class Client(object, metaclass=ClientMeta):
         self.__host = Config.znayko.host
 
     def do_get(self, endpoint: str, **kwargs):
+        logging.warning(endpoint)
         resp = get(f"{self.__host}/{endpoint}", **kwargs)
+        logging.warning(resp.content)
         return resp.json()
 
     def do_post(self, endpoint:str, **kwargs):
