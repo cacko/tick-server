@@ -4,6 +4,7 @@ import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
+from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
@@ -57,6 +58,7 @@ class SubscriptionEvent:
             return self.job_id.split(':')[0]
         return self.job_id
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class CancelJobEvent:
@@ -68,6 +70,7 @@ class CancelJobEvent:
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
         return self.job_id
+
 
 class EventIcon(IntEnum):
 
@@ -90,6 +93,7 @@ class ACTION(Enum):
 
 
 STORAGE_KEY = "subscriptions"
+TIMEZONE = ZoneInfo("Europe/London")
 
 
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
@@ -127,7 +131,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         for idx, sub in enumerate(self.subsriptions):
             text = sub.event_name
             if sub.start_time > n:
-                text = f"{sub.start_time.strftime('H:M')} {text}"
+                text = f"{sub.start_time.astimezone(TIMEZONE).strftime('%H:%M')} {text}"
             frame = ContentFrame(
                 text=text,
                 index=idx,
@@ -160,10 +164,11 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         action = ACTION(payload.get("action"))
         if action == ACTION.CANCEL_JOB:
             event = CancelJobEvent.from_dict(payload)
-            sub = next(filter(lambda x: x.jobId == event.jobId, self.subsriptions), None)
+            sub = next(filter(lambda x: x.jobId ==
+                       event.jobId, self.subsriptions), None)
             if sub:
                 Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
-                Storage.persist(STORAGE_KEY)            
+                Storage.persist(STORAGE_KEY)
         elif action == ACTION.SUBSCRIBED:
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
