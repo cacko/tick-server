@@ -320,6 +320,7 @@ class Game:
     hasBetsTeaser: Optional[bool] = None
     winDescription: Optional[str] = ""
     aggregateText: Optional[str] = ""
+    icon: str = ""
 
     @property
     def postponed(self) -> bool:
