@@ -28,7 +28,7 @@ class EventIcon(IntEnum):
     GAME__START = 2541
 
 class ACTION(Enum):
-    SUBSTITUTION = "Subsctitution"
+    SUBSTITUTION = "Substitution"
     GOAL = "Goal"
     YELLOW_CARD = "Yellow Card"
     RED_CARD = "Red Card"
@@ -82,6 +82,17 @@ class MatchEvent:
             pass
 
         return res
+
+    def getIcon(self):
+        try:
+            action = ACTION(self.action)
+            if action in [ACTION.GOAL, ACTION.FULL_TIME]:
+                return ContentSound(
+                    id=SOUNDS.BICYCLE.value
+                )
+        except:
+            pass
+        return None
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -348,7 +359,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 __class__.client.send_notification(Notification(
                     model=Content(
                         frames=[frame],
-                        sound=ContentSound(id=SOUNDS.DOG.value)
+                        sound=event.getIcon()
                     ),
                     priority='critical'
                 ))
