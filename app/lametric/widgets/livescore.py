@@ -1,6 +1,6 @@
 from enum import IntEnum, Enum
 import logging
-from app.lametric.models import APPNAME, Content, ContentFrame, Notification
+from app.lametric.models import APPNAME, Content, ContentFrame, ContentSound, Notification, SOUNDS
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
 from zoneinfo import ZoneInfo
@@ -313,6 +313,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             __class__.client.send_notification(Notification(
                 model=Content(
                     frames=[frame],
+                    sound=ContentSound(id=SOUNDS.DOG.value)
                 ),
                 priority='critical'
             ))
