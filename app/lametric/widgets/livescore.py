@@ -343,3 +343,4 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             Storage.hdel(STORAGE_KEY, f"{event.event_id}")
             Storage.persist(STORAGE_KEY)
         self.load()
+        self.update_frames()
