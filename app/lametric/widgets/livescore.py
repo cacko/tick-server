@@ -105,7 +105,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def on_subscription_event(self, event: SubscriptionEvent):
         action = Event(event.action)
         if action == Event.SUBSCRIBED:
-            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event).persist()
+            Storage.pipeline().hset(STORAGE_KEY, event.event_id, event).persist(STORAGE_KEY)
         else:
-            Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist()
+            Storage.pipeline().hdel(STORAGE_KEY, event.event_id).persist(STORAGE_KEY)
 
