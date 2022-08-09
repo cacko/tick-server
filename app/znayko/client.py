@@ -43,6 +43,7 @@ class ClientMeta(type):
         try:
             data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE}/{team_id}")
             if data:
+                logging.warning(data)
                 return Game.schema().load(data, many=True)
         except Exception as e:
             logging.error(e)
