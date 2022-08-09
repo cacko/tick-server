@@ -36,7 +36,7 @@ def schedule_cron():
         func=cron_func,
         trigger="cron",
         hour=2,
-        minutes=20,
+        minute=20,
         replace_existing=True,
         misfire_grace_time=180
     )
