@@ -134,6 +134,7 @@ class SubscriptionEvent:
 
     @property
     def inProgress(self) -> bool:
+        logging.warning(f"{self.event_name} {self.status}")
         return re.match(r"^\d+", self.status)
 
 STATUS_MAP = {
