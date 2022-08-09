@@ -134,7 +134,7 @@ class SubscriptionEvent:
 
     @property
     def inProgress(self) -> bool:
-        return re.match(r"^\d+$", self.status)
+        return re.match(r"^\d+", self.status)
 
 STATUS_MAP = {
     "Post.": "PPD",
@@ -284,9 +284,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         self.scores = Scores(())
         self.load()
         if self.subscriptions:
-            for sub in self.subscriptions:
-                if sub.isExpired:
-                    self.cancel_sub(sub)
+            # for sub in self.subscriptions:
+            #     if sub.isExpired:
+            #         self.cancel_sub(sub)
             self.load_scores()
             self.update_frames()
 
