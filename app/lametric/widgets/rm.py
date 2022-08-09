@@ -141,4 +141,3 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         res = requests.get(url)
         data = res.json()
         schedule = Game.schema().load(data, many=True)
-        logging.warning(schedule)
