@@ -1,4 +1,5 @@
 from enum import IntEnum, Enum
+import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
@@ -94,29 +95,50 @@ STORAGE_KEY = "subscriptions"
 TIMEZONE = ZoneInfo("Europe/London")
 
 
+class Scores(dict):
+
+    __has_changes = False
+
+    def __setitem__(self, __k, __v) -> None:
+        if self.get(__k, "") != __v:
+            self.__has_changes = True
+        return super().__setitem__(__k, __v)
+
+    def __delitem__(self, __v) -> None:
+        return super().__delitem__(__v)
+
+    @property
+    def has_changes(self):
+        res = self.__has_changes
+        self.__has_changes = False
+        return res
+
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     subsriptions: list[SubscriptionEvent] = []
-    scores = {}
+    scores: Scores = {}
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
         if self.subsriptions:
             self.load_scores()
+            self.update_frames()
+            logging.warning(self.subsriptions)
+            logging.warning(self.scores)
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
             self.subsriptions = []
         self.subsriptions = [pickle.loads(v) for v in data.values()]
-        self.update_frames()
 
     def load_scores(self):
         url = f"{Config.znayko.host}/livescore"
         res = requests.get(url)
         data = res.json()
         ids = [x.event_id for x in self.subsriptions]
+
         scores = list(filter(lambda x: x.get("idEvent") in ids, data))
         for score in scores:
             id = score.get("idEvent")
@@ -165,8 +187,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            if event.score:
-                self.scores[event.event_id] = event.score
             frame = ContentFrame(
                 text=f"{event.get('action')} {event.get('time'):.0f}' {event.get('event_name')} {event.get('score')}"
             )
@@ -176,6 +196,10 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 ),
                 priority='critical'
             ))
+            if event.score:
+                self.scores[event.event_id] = event.score
+        if self.scores.has_changes:
+            self.update_frames()
 
     def on_subscription_event(self, payload):
         action = ACTION(payload.get("action"))
