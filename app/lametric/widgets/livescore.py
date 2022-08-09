@@ -40,6 +40,8 @@ class SubscriptionEvent:
         )
     )
     action: str
+    league: str
+    league_id: int
     home_team: str
     home_team_id: int
     away_team: str
@@ -92,7 +94,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def duration(self, duration: int):
         res = len(self.subsriptions) * 8000
-        logging.warning(f"livescore duration is {res}")
         return res
 
     @property
