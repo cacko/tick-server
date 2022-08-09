@@ -5,7 +5,6 @@ from .base import BaseWidget, WidgetMeta
 from zoneinfo import ZoneInfo
 from cachable.storage import Storage
 import pickle
-from string import punctuation
 from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
