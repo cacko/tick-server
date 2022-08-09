@@ -149,6 +149,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_subscription_event(self, payload):
         action = Event(payload.get("action"))
+        logging.warning(payload)
         if action == Event.CANCEL_JOB:
             event = CancelJobEvent.from_dict(payload)
             sub = next(filter(lambda x: x.job_id == event.job_id, self.subsriptions), None)
@@ -157,6 +158,8 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 Storage.persist(STORAGE_KEY)            
         elif action == Event.SUBSCRIBED:
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
+            logging.warning(event)
+
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
