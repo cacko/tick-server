@@ -1,5 +1,8 @@
+from datetime import datetime
 import logging
 from re import L
+from telnetlib import GA
+from time import timezone
 from .base import BaseWidget, WidgetMeta
 from app.znayko.models import (
     Game
@@ -30,6 +33,15 @@ class Schedule(dict):
         games = [pickle.loads(v) for v in data.values()]
         return cls(games)
 
+    def isIn(self, event_id: int):
+        return f"{event_id}" in self
+
+    @property
+    def current(self) -> list[Game]:
+        n = datetime.now(tz=timezone.utc)
+        events = list(filter(lambda g: abs((n - g.startTime).days) < 2, self.values()))
+        return events
+
 class RMWidget(BaseWidget, metaclass=WidgetMeta):
 
     _schedule: Schedule = None
@@ -37,7 +49,7 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
-        logging.warning(self._schedule)
+        logging.warning(self._schedule.current)
 
     def onShow(self):
         pass
