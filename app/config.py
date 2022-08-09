@@ -29,6 +29,11 @@ class YankoConfig:
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
+class ZnaykoConfig:
+    host: str
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
 class ApiConfig:
     host: str
     port: int
@@ -49,6 +54,7 @@ class ConfigStruct:
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
+    znayko: ZnaykoConfig
     display: list[str]
 
 class ConfigMeta(type):
@@ -66,6 +72,10 @@ class ConfigMeta(type):
     @property
     def yanko(cls) -> YankoConfig:
         return cls().struct.yanko
+
+    @property
+    def znayko(cls) -> ZnaykoConfig:
+        return cls().struct.znayko
 
     @property
     def lametric(cls) -> LametricConfig:

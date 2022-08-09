@@ -85,7 +85,6 @@ class Client(object):
         data = model.to_dict()
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
-        logging.warning(data)
         return self.widget_call(
             config_name,
             Method.POST,

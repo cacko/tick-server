@@ -1,6 +1,4 @@
 from enum import IntEnum, Enum
-import logging
-
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
@@ -11,8 +9,9 @@ from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
 from enum import IntEnum, Enum
 from cachable.storage import Storage
-from cachable.cacheable import CachableFile
+import requests
 import pickle
+from app.config import Config
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -73,7 +72,6 @@ class CancelJobEvent:
 
 
 class EventIcon(IntEnum):
-
     GOAL = 8627
 
 
@@ -99,10 +97,13 @@ TIMEZONE = ZoneInfo("Europe/London")
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     subsriptions: list[SubscriptionEvent] = []
+    scores = {}
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
+        if self.subsriptions:
+            self.load_scores()
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
@@ -110,6 +111,17 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             self.subsriptions = []
         self.subsriptions = [pickle.loads(v) for v in data.values()]
         self.update_frames()
+
+    def load_scores(self):
+        url = f"{Config.znayko.host}/livescore"
+        res = requests.get(url)
+        data = res.json()
+        ids = [x.event_id for x in self.subsriptions]
+        scores = list(filter(lambda x: x.get("idEvent") in ids, data))
+        for score in scores:
+            id = score.get("idEvent")
+            text = f"{score.get('intHomeScore')}:{score.get('intAwayScore')}"
+            self.scores[id] = text
 
     def onShow(self):
         pass
@@ -132,6 +144,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             text = sub.event_name
             if sub.start_time > n:
                 text = f"{sub.start_time.astimezone(TIMEZONE).strftime('%H:%M')} {text}"
+            else:
+                score = self.scores.get(sub.event_id, "")
+                text = f"{text} {score}"
             frame = ContentFrame(
                 text=text,
                 index=idx,
@@ -150,6 +165,8 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
+            if event.score:
+                self.scores[event.event_id] = event.score
             frame = ContentFrame(
                 text=f"{event.get('action')} {event.get('time'):.0f}' {event.get('event_name')} {event.get('score')}"
             )
