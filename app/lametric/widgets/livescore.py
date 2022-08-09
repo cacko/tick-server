@@ -49,20 +49,12 @@ class SubscriptionEvent:
     event_name: str
     job_id: str
 
-    def __init__(self) -> None:
-        if ':' in self.job_id:
-            self.job_id = self.job_id.split(':')[0]
-
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class CancelJobEvent:
     job_id: str
     action: str
-
-    def __init__(self) -> None:
-        if ':' in self.job_id:
-            self.job_id = self.job_id.split(':')[0]
 
 class EventIcon(IntEnum):
 
