@@ -91,7 +91,9 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def duration(self, duration: int):
-        return len(self.subsriptions) * 5000
+        res = len(self.subsriptions) * 8000
+        logging.warning(f"livescore duration is {res}")
+        return res
 
     @property
     def isHidden(self):
