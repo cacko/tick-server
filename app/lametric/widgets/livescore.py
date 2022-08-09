@@ -324,14 +324,14 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         frames = []
         n = datetime.now(tz=timezone.utc)
         for idx, sub in enumerate(self.subsriptions):
-            text = sub.event_name
-            if sub.start_time > n:
-                text = f"{sub.start_time.astimezone(TIMEZONE).strftime('%H:%M')} {text}"
-            else:
-                score = self.scores.get(sub.event_id, "")
-                text = f"{text} {score}"
+            text = []
+            text.append(sub.status)
+            text.append(sub.event_name)
+            score = self.scores.get(sub.event_id, "")
+            if score:
+                text.append(score)
             frame = ContentFrame(
-                text=text,
+                text=' '.join(text),
                 index=idx,
                 icon=sub.icon
             )
