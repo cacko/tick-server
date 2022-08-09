@@ -310,13 +310,14 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 frame.icon = icon.value
             except ValueError:
                 logging.warning(f"no icon for {event.action}")
-            __class__.client.send_notification(Notification(
-                model=Content(
-                    frames=[frame],
-                    sound=ContentSound(id=SOUNDS.DOG.value)
-                ),
-                priority='critical'
-            ))
+            if not event.is_old_event:
+                __class__.client.send_notification(Notification(
+                    model=Content(
+                        frames=[frame],
+                        sound=ContentSound(id=SOUNDS.DOG.value)
+                    ),
+                    priority='critical'
+                ))
             if event.score:
                 self.scores[event.event_id] = event.score
         if self.scores.has_changes:
