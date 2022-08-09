@@ -15,7 +15,7 @@ import pickle
 from app.config import Config
 from string import punctuation
 import re
-
+from stringcase import constcase
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -178,7 +178,12 @@ class CancelJobEvent:
 
 class EventIcon(IntEnum):
     GOAL = 8627
-
+    SUBSTITUTION = 31567
+    YELLOW__CARD = 43845
+    RED__CARD = 43844
+    GOAL__DISALLOWED = 10723
+    FULL__TIME = 2541
+    GAME__START = 2541
 
 class ACTION(Enum):
     SUBSTITUTION = "Subsctitution"
@@ -294,8 +299,13 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             frame = ContentFrame(
-                text=f"{event.get('action')} {event.get('time'):.0f}' {event.get('event_name')} {event.get('score')}"
+                text=f"{event.time:.0f}' {event.event_name} {event.score}"
             )
+            try:
+                icon = EventIcon[constcase(event.action)]
+                frame.icon = icon.value
+            except ValueError:
+                logging.warning(f"no icon for {event.action}")
             __class__.client.send_notification(Notification(
                 model=Content(
                     frames=[frame],
