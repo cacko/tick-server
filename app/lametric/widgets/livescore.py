@@ -12,6 +12,7 @@ from enum import IntEnum, Enum
 from cachable.storage import Storage
 import pickle
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MatchEvent:
@@ -26,6 +27,7 @@ class MatchEvent:
     team_id: Optional[int] = None
     event_name: Optional[str] = None
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SubscriptionEvent:
@@ -38,11 +40,12 @@ class SubscriptionEvent:
         )
     )
     action: str
-    home_team:str
-    home_team_id:int
+    home_team: str
+    home_team_id: int
     away_team: str
     away_team_id: int
-    event_name:str
+    event_name: str
+
 
 class EventIcon(IntEnum):
 
@@ -61,6 +64,7 @@ class Event(Enum):
     GAME_START = "Game Start"
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
+
 
 STORAGE_KEY = "subscriptions"
 
@@ -81,7 +85,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             self.subsriptions = []
         self.subsriptions = [pickle.loads(v) for v in data.values()]
 
-
     def onShow(self):
         pass
 
@@ -99,15 +102,15 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 text=sub.event_name
             )
             frames.append(frame)
-        __class__.client.send_model(APPNAME.LIVESCORES, Content(frames=frames))
-
+        __class__.client.send_model(
+            APPNAME.LIVESCORES, Content(frames=frames)
+        )
 
     def on_event(self, payload):
         if isinstance(payload, list):
             self.on_match_events(MatchEvent.schema().load(payload, many=True))
         else:
             self.on_subscription_event(SubscriptionEvent.from_dict(payload))
-
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
@@ -133,4 +136,3 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             Storage.persist(STORAGE_KEY)
         self.load()
         self.update_frames()
-

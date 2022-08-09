@@ -83,7 +83,9 @@ class Client(object):
 
     def send_model(self, config_name: APPNAME, model: Content):
         data = model.to_dict()
+        data["model"] = clean_frame(data.get("model"))
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
+        logging.warning(data)
         return self.widget_call(
             config_name,
             Method.POST,
