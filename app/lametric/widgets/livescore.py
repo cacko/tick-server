@@ -13,6 +13,8 @@ from cachable.storage import Storage
 import requests
 import pickle
 from app.config import Config
+from string import punctuation
+import re
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -57,6 +59,108 @@ class SubscriptionEvent:
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
         return self.job_id
+
+
+STATUS_MAP = {
+    "Post.": "PPD",
+    "Ended": "FT",
+    "Canc.": "CNL",
+    "Sched.": "NS",
+    "Just Ended": "FT",
+    "After ET": "AET",
+    "After Pen": "AET",
+}
+
+
+class GameStatus(Enum):
+    FT = "Ended"
+    JE = "Just Ended"
+    SUS = "Susp"
+    ABD = "Aband."
+    AET = "After Pen"
+    UNKNOWN = ""
+    NS = "NS"
+    FN = "Final"
+
+
+class OrderWeight(Enum):
+    INPLAY = 1
+    HT = pow(2, 1)
+    LIVE = pow(2, 1)
+    FT = pow(2, 2)
+    EAT = pow(2, 3)
+    ET = pow(2, 3)
+    NS = pow(2, 3)
+    PPD = pow(2, 4)
+    JUNK = pow(2, 5)
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class LivescoreEvent:
+    id: str
+    idEvent: int
+    strSport: str
+    idLeague: int
+    strLeague: str
+    idHomeTeam: int
+    idAwayTeam: int
+    strHomeTeam: str
+    strAwayTeam: str
+    strStatus: str
+    startTime: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso", tzinfo=timezone.utc),
+        )
+    )
+    intHomeScore: Optional[int] = -1
+    intAwayScore: Optional[int] = -1
+    sort: int = 0
+    details: Optional[str] = None
+    displayScore: Optional[str] = ""
+    displayStatus: Optional[str] = ""
+    source: Optional[str] = ""
+    strWinDescription: Optional[str] = ""
+
+    def __post_init__(self):
+        if self.strStatus in STATUS_MAP:
+            self.strStatus = STATUS_MAP[self.strStatus]
+
+        delta = (datetime.now(timezone.utc) -
+                 self.startTime).total_seconds() / 60
+        try:
+            self.displayStatus = GameStatus(self.strStatus)
+            if delta < 0 and self.displayStatus in [
+                    GameStatus.UNKNOWN, GameStatus.NS]:
+                self.displayStatus = self.startTime.astimezone(
+                    ZoneInfo("Europe/London")).strftime("%H:%M")
+            else:
+                self.displayStatus = self.displayStatus.name
+        except Exception:
+            self.displayStatus = self.strStatus
+        try:
+            if re.match(r"^\d+$", self.strStatus):
+                self.sort = OrderWeight.INPLAY.value * int(self.strStatus)
+                self.displayStatus = f"{self.strStatus}\""
+            else:
+                self.sort = OrderWeight[
+                    self.strStatus.translate(punctuation).upper()
+                ].value * abs(delta)
+        except KeyError:
+            self.sort = OrderWeight.JUNK.value * abs(delta)
+        if any([self.intAwayScore == -1, self.intHomeScore == -1]):
+            self.displayScore = ""
+        else:
+            self.displayScore = ":".join([
+                f"{self.intHomeScore:.0f}",
+                f"{self.intAwayScore:.0f}"
+            ])
+
+    @property
+    def inProgress(self) -> bool:
+        return re.match(r"^\d+$", self.strStatus)
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -113,6 +217,7 @@ class Scores(dict):
         self.__has_changes = False
         return res
 
+
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     subsriptions: list[SubscriptionEvent] = []
@@ -124,8 +229,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         if self.subsriptions:
             self.load_scores()
             self.update_frames()
-            logging.warning(self.subsriptions)
-            logging.warning(self.scores)
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
@@ -140,10 +243,13 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         ids = [x.event_id for x in self.subsriptions]
 
         scores = list(filter(lambda x: x.get("idEvent") in ids, data))
-        for score in scores:
-            id = score.get("idEvent")
-            text = f"{score.get('intHomeScore')}:{score.get('intAwayScore')}"
-            self.scores[id] = text
+        if not len(scores):
+            return
+        events: list[LivescoreEvent] = LivescoreEvent.schema().load(
+            scores, many=True)
+        for event in events:
+            text = event.displayScore
+            self.scores[event.idEvent] = text
 
     def onShow(self):
         pass
