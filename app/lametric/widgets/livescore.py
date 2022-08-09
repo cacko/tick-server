@@ -49,12 +49,23 @@ class SubscriptionEvent:
     event_name: str
     job_id: str
 
+    @property
+    def jobId(self):
+        if ':' in self.job_id:
+            return self.job_id.split(':')[0]
+        return self.job_id
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class CancelJobEvent:
     job_id: str
     action: str
+
+    @property
+    def jobId(self):
+        if ':' in self.job_id:
+            return self.job_id.split(':')[0]
+        return self.job_id
 
 class EventIcon(IntEnum):
 
@@ -143,7 +154,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         action = ACTION(payload.get("action"))
         if action == ACTION.CANCEL_JOB:
             event = CancelJobEvent.from_dict(payload)
-            sub = next(filter(lambda x: x.job_id == event.job_id, self.subsriptions), None)
+            sub = next(filter(lambda x: x.jobId == event.jobId, self.subsriptions), None)
             if sub:
                 Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
                 Storage.persist(STORAGE_KEY)            
