@@ -4,12 +4,14 @@ from enum import Enum
 from requests import get, post
 from app.znayko.models import (
     LivescoreEvent, 
-    SubscriptionEvent
+    SubscriptionEvent,
+    Game
 )
 
 class ENDPOINT(Enum):
     LIVESCORE = 'livescore'
     UNSUBSCRIBE = 'unsubscribe'
+    TEAM_SCHEDULE = 'team_schedule'
 
 class ClientMeta(type):
 
@@ -36,6 +38,15 @@ class ClientMeta(type):
             "id": sub.job_id
         }
         return cls().do_post(ENDPOINT.UNSUBSCRIBE.value, json=json)
+
+    def team_schedule(cls, team_id: int) -> list[Game]:
+        try:
+            data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE}/{team_id}")
+            if data:
+                return Game.schema().load(data, many=True)
+        except Exception as e:
+            logging.error(e)
+        return []
 
 
 class Client(object, metaclass=ClientMeta):

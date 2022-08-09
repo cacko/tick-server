@@ -143,6 +143,15 @@ STATUS_MAP = {
 }
 
 
+class EventStatus(Enum):
+    HT = "HT"
+    FT = "FT"
+    PPD = "PPD"
+    CNL = "CNL"
+    AET = "AET"
+    NS = "NS"
+
+
 class GameStatus(Enum):
     FT = "Ended"
     JE = "Just Ended"
@@ -245,3 +254,105 @@ class CancelJobEvent:
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
         return self.job_id
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class GameCompetitor:
+    id: Optional[int] = None
+    countryId: Optional[int] = None
+    sportId: Optional[int] = None
+    name: Optional[str] = None
+    score: Optional[int] = None
+    isQualified: Optional[bool] = None
+    toQualify: Optional[bool] = None
+    isWinner: Optional[bool] = None
+    type: Optional[int] = None
+    imageVersion: Optional[int] = None
+    mainCompetitionId: Optional[int] = None
+    redCards: Optional[int] = None
+    popularityRank: Optional[int] = None
+    symbolicName: Optional[str] = None
+
+    @property
+    def flag(self) -> str:
+        pass
+
+    @property
+    def shortName(self) -> str:
+        if self.symbolicName:
+            return self.symbolicName
+        parts = self.name.split(' ')
+        if len(parts) == 1:
+            return self.name[:3].upper()
+        return f"{parts[0][:1]}{parts[1][:2]}".upper()
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class Game:
+    id: int
+    sportId: int
+    competitionId: int
+    competitionDisplayName: str
+    startTime: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso"),
+        )
+    )
+    statusGroup: int
+    statusText: str
+    shortStatusText: str
+    gameTimeAndStatusDisplayType: int
+    gameTime: int
+    gameTimeDisplay: str
+    homeCompetitor: GameCompetitor
+    awayCompetitor: GameCompetitor
+    seasonNum: Optional[int] = 0
+    stageNum: Optional[int] = 0
+    justEnded: Optional[bool] = None
+    hasLineups: Optional[bool] = None
+    hasMissingPlayers: Optional[bool] = None
+    hasFieldPositions: Optional[bool] = None
+    hasTVNetworks: Optional[bool] = None
+    hasBetsTeaser: Optional[bool] = None
+    winDescription: Optional[str] = ""
+    aggregateText: Optional[str] = ""
+
+    @property
+    def postponed(self) -> bool:
+        try:
+            status = EventStatus(self.shortStatusText)
+            return status == EventStatus.PPD
+        except ValueError:
+            return False
+
+    @property
+    def canceled(self) -> bool:
+        try:
+            status = EventStatus(self.shortStatusText)
+            return status == EventStatus.CNL
+        except ValueError:
+            return False
+
+    @property
+    def not_started(self) -> bool:
+        res = self.startTime > datetime.now(tz=timezone.utc)
+        return res
+
+    @property
+    def ended(self) -> bool:
+        if self.not_started:
+            return False
+
+        status = self.shortStatusText
+
+        try:
+            _status = EventStatus(status)
+            if _status in (EventStatus.FT, EventStatus.AET, EventStatus.PPD):
+                return True
+            return _status == EventStatus.HT or re.match(r"^\d+$", status)
+        except ValueError:
+            return False

@@ -1,134 +1,41 @@
 import logging
+from re import L
 from .base import BaseWidget, WidgetMeta
-from datetime import datetime, timezone
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config, Undefined
-from marshmallow import fields
-from typing import Optional
-import re
-from enum import Enum
-import requests
-from app.config import Config
+from app.znayko.models import (
+    Game
+)
+from app.znayko.client import Client as ZnaykoClient
+from cachable.storage import Storage
+import pickle
 
 TEAM_ID = 131
+STORAGE_KEY = "real_madrid_schedule"
 
 
-class EventStatus(Enum):
-    HT = "HT"
-    FT = "FT"
-    PPD = "PPD"
-    CNL = "CNL"
-    AET = "AET"
-    NS = "NS"
+class Schedule(dict):
 
+    def __init__(self, data: list[Game]):
+        d = {f"{game.id}":game for game in data}
+        super().__init__(d)
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class GameCompetitor:
-    id: Optional[int] = None
-    countryId: Optional[int] = None
-    sportId: Optional[int] = None
-    name: Optional[str] = None
-    score: Optional[int] = None
-    isQualified: Optional[bool] = None
-    toQualify: Optional[bool] = None
-    isWinner: Optional[bool] = None
-    type: Optional[int] = None
-    imageVersion: Optional[int] = None
-    mainCompetitionId: Optional[int] = None
-    redCards: Optional[int] = None
-    popularityRank: Optional[int] = None
-    symbolicName: Optional[str] = None
+    def persist(self):
+        d = {k:pickle.dumps(v) for k,v in self.items()}
+        Storage.pipeline().hset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
 
-    @property
-    def flag(self) -> str:
-        pass
-
-    @property
-    def shortName(self) -> str:
-        if self.symbolicName:
-            return self.symbolicName
-        parts = self.name.split(' ')
-        if len(parts) == 1:
-            return self.name[:3].upper()
-        return f"{parts[0][:1]}{parts[1][:2]}".upper()
-
-
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Game:
-    id: int
-    sportId: int
-    competitionId: int
-    competitionDisplayName: str
-    startTime: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso"),
-        )
-    )
-    statusGroup: int
-    statusText: str
-    shortStatusText: str
-    gameTimeAndStatusDisplayType: int
-    gameTime: int
-    gameTimeDisplay: str
-    homeCompetitor: GameCompetitor
-    awayCompetitor: GameCompetitor
-    seasonNum: Optional[int] = 0
-    stageNum: Optional[int] = 0
-    justEnded: Optional[bool] = None
-    hasLineups: Optional[bool] = None
-    hasMissingPlayers: Optional[bool] = None
-    hasFieldPositions: Optional[bool] = None
-    hasTVNetworks: Optional[bool] = None
-    hasBetsTeaser: Optional[bool] = None
-    winDescription: Optional[str] = ""
-    aggregateText: Optional[str] = ""
-
-    @property
-    def postponed(self) -> bool:
-        try:
-            status = EventStatus(self.shortStatusText)
-            return status == EventStatus.PPD
-        except ValueError:
-            return False
-
-    @property
-    def canceled(self) -> bool:
-        try:
-            status = EventStatus(self.shortStatusText)
-            return status == EventStatus.CNL
-        except ValueError:
-            return False
-
-    @property
-    def not_started(self) -> bool:
-        res = self.startTime > datetime.now(tz=timezone.utc)
-        return res
-
-    @property
-    def ended(self) -> bool:
-        if self.not_started:
-            return False
-
-        status = self.shortStatusText
-
-        try:
-            _status = EventStatus(status)
-            if _status in (EventStatus.FT, EventStatus.AET, EventStatus.PPD):
-                return True
-            return _status == EventStatus.HT or re.match(r"^\d+$", status)
-        except ValueError:
-            return False
-
+    @classmethod
+    def load(cls) -> 'Schedule':
+        data = Storage.hgetall(STORAGE_KEY)
+        games = [pickle.loads(v) for v in data.values()]
+        return cls(games)
 
 class RMWidget(BaseWidget, metaclass=WidgetMeta):
 
+    _schedule: Schedule = None
+
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
-        self.get_schedule()
+        self.load()
+        logging.warning(self._schedule)
 
     def onShow(self):
         pass
@@ -136,8 +43,66 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
     def onHide(self):
         pass
 
+    def load(self):
+        if not Storage.exists(STORAGE_KEY):
+            schedule = self.get_schedule()
+            self._schedule = Schedule(schedule)
+            self._schedule.persist()
+        else:
+            self._schedule = Schedule.load()
+
+
     def get_schedule(self):
-        url = f"{Config.znayko.host}/team_schedule/{TEAM_ID}"
-        res = requests.get(url)
-        data = res.json()
-        schedule = Game.schema().load(data, many=True)
+        schedule = ZnaykoClient.team_schedule(TEAM_ID)
+        return schedule
+
+
+    # def on_event(self, payload):
+    #     if isinstance(payload, list):
+    #         try:
+    #             self.on_match_events(
+    #                 MatchEvent.schema().load(payload, many=True))
+    #         except Exception as e:
+    #             logging.error(e)
+    #             logging.warning(payload)
+    #     else:
+    #         self.on_subscription_event(payload)
+
+    # def on_match_events(self, events: list[MatchEvent]):
+    #     for event in events:
+    #         logging.warning(event)
+    #         if not event.is_old_event:
+    #             sub = next(filter(lambda x: x.event_id ==
+    #                        event.event_id, self.subscriptions), None)
+    #             frame = event.getContentFrame(
+    #                 league_icon=sub.icon if sub else None)
+    #             __class__.client.send_notification(Notification(
+    #                 model=Content(
+    #                     frames=[frame],
+    #                     sound=event.getIcon()
+    #                 ),
+    #                 priority='critical'
+    #             ))
+    #         if event.score:
+    #             self.scores[event.event_id] = event.score
+    #     if self.scores.has_changes:
+    #         self.update_frames()
+
+    # def on_subscription_event(self, payload):
+    #     action = ACTION(payload.get("action"))
+    #     if action == ACTION.CANCEL_JOB:
+    #         event = CancelJobEvent.from_dict(payload)
+    #         sub = next(filter(lambda x: x.jobId ==
+    #                    event.jobId, self.subscriptions), None)
+    #         if sub:
+    #             Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(STORAGE_KEY).execute()
+    #     elif action == ACTION.SUBSCRIBED:
+    #         event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
+    #         logging.warning(event)
+    #         Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event)).persist(STORAGE_KEY).execute()
+    #     else:
+    #         event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
+    #         Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(STORAGE_KEY).execute()
+    #         logging.warning(f"DELETING {event.event_name}")
+    #     self.load()
+    #     self.update_frames()
