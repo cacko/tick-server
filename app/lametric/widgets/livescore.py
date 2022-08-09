@@ -69,7 +69,7 @@ class EventIcon(IntEnum):
     GOAL = 8627
 
 
-class Event(Enum):
+class ACTION(Enum):
     SUBSTITUTION = "Subsctitution"
     GOAL = "Goal"
     YELLOW_CARD = "Yellow Card"
@@ -148,18 +148,17 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             ))
 
     def on_subscription_event(self, payload):
-        action = Event(payload.get("action"))
-        logging.warning(payload)
-        if action == Event.CANCEL_JOB:
+        action = ACTION(payload.get("action"))
+        if action == ACTION.CANCEL_JOB:
             event = CancelJobEvent.from_dict(payload)
             sub = next(filter(lambda x: x.job_id == event.job_id, self.subsriptions), None)
             if sub:
                 Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
                 Storage.persist(STORAGE_KEY)            
-        elif action == Event.SUBSCRIBED:
+        elif action == ACTION.SUBSCRIBED:
+            logging.warning(payload)
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
             logging.warning(event)
-
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
