@@ -1,8 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
-from re import L
-from telnetlib import GA
-from time import timezone
 from .base import BaseWidget, WidgetMeta
 from app.znayko.models import (
     Game
@@ -19,12 +16,10 @@ class Schedule(dict):
 
     def __init__(self, data: list[Game]):
         d = {f"{game.id}":game for game in data}
-        logging.warning(d)
         super().__init__(d)
 
     def persist(self):
         d = {k:pickle.dumps(v) for k,v in self.items()}
-        logging.warning(d)
         Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
 
     @classmethod
