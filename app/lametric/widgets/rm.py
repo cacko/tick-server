@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import logging
 from .base import BaseWidget, WidgetMeta
 from app.znayko.models import (
@@ -21,11 +21,25 @@ STORAGE_KEY = "real_madrid_schedule"
 
 
 def cron_func():
-    games = ZnaykoClient.team_schedule(TEAM_ID)
-    for game in games:
-        if is_today(game.startTime):
-            res = ZnaykoClient.subscribe(game.id)
-            logging.warn(res)
+    try:
+        games = ZnaykoClient.team_schedule(TEAM_ID)
+        for game in games:
+            if is_today(game.startTime):
+                res = ZnaykoClient.subscribe(game.id)
+                logging.warn(res)
+    except Exception as e:
+        logging.error(e)
+        n = datetime.now(timezone.utc)
+        td = timedelta(minutes=1)
+        Scheduler.add_job(
+            id=f"{STORAGE_KEY}_retry",
+            name=f"{STORAGE_KEY}_retry",
+            func=cron_func,
+            trigger="date",
+            run_date=n+td,
+            replace_existing=True,
+            misfire_grace_time=180
+        )        
 
 
 def schedule_cron():
@@ -44,7 +58,6 @@ def schedule_cron():
 class Schedule(dict):
 
     def __init__(self, data: list[Game]):
-        schedule_cron()
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
 
@@ -78,6 +91,8 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         self.load()
         if not self.isHidden:
             self.update_frames()
+        schedule_cron()
+        cron_func()
 
     def onShow(self):
         pass
