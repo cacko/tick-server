@@ -73,6 +73,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         super().__init__(widget_id, widget)
         self.load()
         logging.warning(self.subsriptions)
+        self.update_frames()
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
