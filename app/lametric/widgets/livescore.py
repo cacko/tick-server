@@ -76,14 +76,13 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
-        logging.warning(self.subsriptions)
-        self.update_frames()
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
             self.subsriptions = []
         self.subsriptions = [pickle.loads(v) for v in data.values()]
+        self.update_frames()
 
     def onShow(self):
         pass
@@ -97,9 +96,11 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
-        for sub in self.subsriptions:
+        for idx, sub in enumerate(self.subsriptions):
             frame = ContentFrame(
-                text=sub.event_name
+                text=sub.event_name,
+                index=idx,
+                icon=5588
             )
             frames.append(frame)
         __class__.client.send_model(
