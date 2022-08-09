@@ -283,13 +283,16 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             return
         events: list[LivescoreEvent] = LivescoreEvent.schema().load(
             scores, many=True)
+        store = Storage.pipeline()
         for event in events:
             text = event.displayScore
             sub = next(filter(lambda x: x.event_id == event.idEvent, self.subsriptions), None)
+            if not sub:
+                return
             sub.status = event.displayStatus
-            Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(sub))
-            Storage.persist(STORAGE_KEY)
+            store.hset(STORAGE_KEY, f"{sub.event_id}", pickle.dumps(sub))
             self.scores[event.idEvent] = text
+        store.persist(STORAGE_KEY).execute()
 
     def onShow(self):
         pass
