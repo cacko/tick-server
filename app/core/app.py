@@ -4,6 +4,7 @@ from app.config import Config
 from app.core.thread import StoppableThread
 from app.lametric import LaMetric
 from app.scheduler import Scheduler
+from cachable.storage import Storage
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 
@@ -18,6 +19,7 @@ class AppMeta(type):
         return self._instance
 
     def start(cls):
+        Storage.register(Config.storage.redis_url)
         cls().run()
 
 
