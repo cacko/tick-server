@@ -303,6 +303,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
+            logging.warning(event)
             frame = ContentFrame(
                 text=f"{event.time:.0f}' {event.event_name} {event.score}"
             )
