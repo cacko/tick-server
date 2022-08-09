@@ -20,7 +20,7 @@ class LaMetricMeta(type):
     def __call__(self, *args, **kwds):
         if not self._instance:
             self._queue = LifoQueue()
-            self._instance = super().__call__(*args, **kwds)
+            self._instance = type.__call__(self, *args, **kwds)
         return self._instance
 
     def start(cls, mainQueue):
