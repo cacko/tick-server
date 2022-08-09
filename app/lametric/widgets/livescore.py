@@ -71,8 +71,14 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
-        self.subsriptions = Storage.hgetall(STORAGE_KEY)
+        self.load()
         logging.warning(self.subsriptions)
+
+    def load(self):
+        data = Storage.hgetall(STORAGE_KEY)
+        if not data:
+            self.subsriptions = []
+        self.subsriptions = [pickle.loads(v) for v in data.values()]
 
     def onShow(self):
         pass
@@ -111,7 +117,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
-            Storage.hdel(STORAGE_KEY, event.event_id)
+            Storage.hdel(STORAGE_KEY, f"{event.event_id}")
             Storage.persist(STORAGE_KEY)
-        self.subsriptions = Storage.hgetall(STORAGE_KEY)
+        self.load()
 
