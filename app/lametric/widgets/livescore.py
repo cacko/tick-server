@@ -90,12 +90,10 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def onHide(self):
-        limit = timedelta(hours=5)
         pipe = Storage.pipeline()
         has_changes = False
         for sub in self.subscriptions:
-            n = datetime.now(tz=timezone.utc)
-            if (n - sub.start_time) > limit:
+            if sub.isExpired:
                 pipe.hdel(STORAGE_KEY, f"{sub.event_id}")
                 has_changes = True
         if has_changes:

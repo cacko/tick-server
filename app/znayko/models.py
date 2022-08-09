@@ -122,14 +122,13 @@ class SubscriptionEvent:
     @property
     def isExpired(self):
         n = datetime.now(tz=timezone.utc)
-        limit = timedelta(hours=5)
+        limit = timedelta(hours=4)
         if self.start_time > n:
             return False
         return (n - self.start_time) > limit
 
     @property
     def inProgress(self) -> bool:
-        logging.warning(f"{self.event_name} {self.status}")
         return re.match(r"^\d+", self.status)
 
 STATUS_MAP = {
