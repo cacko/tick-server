@@ -10,6 +10,7 @@ from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
 from enum import IntEnum, Enum
 from cachable.storage import Storage
+from cachable.cacheable import CachableFile
 import pickle
 
 
@@ -48,6 +49,7 @@ class SubscriptionEvent:
     event_id: int
     event_name: str
     job_id: str
+    icon: str
 
     @property
     def jobId(self):
@@ -125,7 +127,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             frame = ContentFrame(
                 text=sub.event_name,
                 index=idx,
-                icon=5588
+                icon=sub.icon
             )
             frames.append(frame)
         __class__.client.send_model(
