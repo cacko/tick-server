@@ -52,7 +52,8 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
-        logging.warning(self._schedule.current)
+        if not self.isHidden:
+            self.update_frames()
 
     def onShow(self):
         pass
@@ -102,7 +103,6 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
 
     def get_schedule(self):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
-        logging.warning(schedule)
         return schedule
 
     # def on_event(self, payload):
