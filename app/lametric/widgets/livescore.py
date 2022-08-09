@@ -4,7 +4,7 @@ from app.lametric.models import APPNAME, Content, ContentFrame, ContentSound, No
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
 from zoneinfo import ZoneInfo
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
@@ -27,6 +27,7 @@ class EventIcon(IntEnum):
     FULL__TIME = 2541
     GAME__START = 2541
 
+
 class ACTION(Enum):
     SUBSTITUTION = "Substitution"
     GOAL = "Goal"
@@ -40,7 +41,6 @@ class ACTION(Enum):
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
     CANCEL_JOB = "Cancel Job"
-
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -74,7 +74,7 @@ class MatchEvent:
 
         if league_icon:
             res.icon = league_icon
-        
+
         try:
             icon = EventIcon[constcase(self.action)]
             res.icon = icon.value
@@ -123,6 +123,14 @@ class SubscriptionEvent:
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
         return self.job_id
+
+    @property
+    def isExpired(self):
+        n = datetime.now(tz=timezone.utc)
+        limit = timedelta(hours=5)
+        if self.start_time > n:
+            return False
+        return (n - self.start_time) > limit
 
 
 STATUS_MAP = {
@@ -240,7 +248,6 @@ class CancelJobEvent:
         return self.job_id
 
 
-
 STORAGE_KEY = "subscriptions"
 TIMEZONE = ZoneInfo("Europe/London")
 
@@ -266,28 +273,31 @@ class Scores(dict):
 
 class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
-    subsriptions: list[SubscriptionEvent] = []
+    subscriptions: list[SubscriptionEvent] = []
     scores: Scores = {}
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.scores = Scores(())
         self.load()
-        if self.subsriptions:
+        if self.subscriptions:
+            for sub in self.subscriptions:
+                if sub.isExpired:
+                    self.cancel_sub(sub)
             self.load_scores()
             self.update_frames()
 
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
-            self.subsriptions = []
-        self.subsriptions = [pickle.loads(v) for v in data.values()]
+            self.subscriptions = []
+        self.subscriptions = [pickle.loads(v) for v in data.values()]
 
     def load_scores(self):
         url = f"{Config.znayko.host}/livescore"
         res = requests.get(url)
         data = res.json()
-        ids = [x.event_id for x in self.subsriptions]
+        ids = [x.event_id for x in self.subscriptions]
 
         scores = list(filter(lambda x: x.get("idEvent") in ids, data))
         if not len(scores):
@@ -297,7 +307,8 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         store = Storage.pipeline()
         for event in events:
             text = event.displayScore
-            sub = next(filter(lambda x: x.event_id == event.idEvent, self.subsriptions), None)
+            sub = next(filter(lambda x: x.event_id ==
+                       event.idEvent, self.subscriptions), None)
             if not sub:
                 return
             sub.status = event.displayStatus
@@ -306,6 +317,15 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             self.scores[event.idEvent] = text
         store.persist(STORAGE_KEY).execute()
 
+    def cancel_sub(self, sub: SubscriptionEvent):
+        url = f"{Config.znayko.host}/unsubscribe"
+        res = requests.post(url, {
+            "webhook": f"http://{Config.api.host}:{Config.api.port}/api/subscription",
+            "group": Config.api.secret,
+            "id": sub.job_id
+        })
+        logging.warning(res.content)
+
     def onShow(self):
         pass
 
@@ -313,17 +333,16 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def duration(self, duration: int):
-        res = len(self.subsriptions) * 8000
+        res = len(self.subscriptions) * 8000
         return res
 
     @property
     def isHidden(self):
-        return len(self.subsriptions) == 0
+        return len(self.subscriptions) == 0
 
     def update_frames(self):
         frames = []
-        n = datetime.now(tz=timezone.utc)
-        for idx, sub in enumerate(self.subsriptions):
+        for idx, sub in enumerate(self.subscriptions):
             text = []
             text.append(sub.status)
             text.append(sub.event_name)
@@ -343,7 +362,8 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     def on_event(self, payload):
         if isinstance(payload, list):
             try:
-                self.on_match_events(MatchEvent.schema().load(payload, many=True))
+                self.on_match_events(
+                    MatchEvent.schema().load(payload, many=True))
             except Exception as e:
                 logging.error(e)
                 logging.warning(payload)
@@ -354,8 +374,10 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         for event in events:
             logging.warning(event)
             if not event.is_old_event:
-                sub = next(filter(lambda x: x.event_id == event.event_id, self.subsriptions), None)
-                frame = event.getContentFrame(league_icon=sub.icon if sub else None)
+                sub = next(filter(lambda x: x.event_id ==
+                           event.event_id, self.subscriptions), None)
+                frame = event.getContentFrame(
+                    league_icon=sub.icon if sub else None)
                 __class__.client.send_notification(Notification(
                     model=Content(
                         frames=[frame],
@@ -373,7 +395,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         if action == ACTION.CANCEL_JOB:
             event = CancelJobEvent.from_dict(payload)
             sub = next(filter(lambda x: x.jobId ==
-                       event.jobId, self.subsriptions), None)
+                       event.jobId, self.subscriptions), None)
             if sub:
                 Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
                 Storage.persist(STORAGE_KEY)
