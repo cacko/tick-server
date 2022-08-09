@@ -343,7 +343,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         for event in events:
             logging.warning(event)
             if not event.is_old_event:
-                sub = next(filter(lambda x: x.event_id == event.idEvent, self.subsriptions), None)
+                sub = next(filter(lambda x: x.event_id == event.event_id, self.subsriptions), None)
                 frame = event.getContentFrame(league_icon=sub.icon if sub else None)
                 __class__.client.send_notification(Notification(
                     model=Content(
