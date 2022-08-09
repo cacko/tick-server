@@ -1,11 +1,10 @@
-from argparse import Action
 from enum import IntEnum, Enum
 import logging
 
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
@@ -32,8 +31,7 @@ class MatchEvent:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SubscriptionEvent:
-    event_id: int
-    time: datetime = field(
+    start_time: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
             decoder=datetime.fromisoformat,
@@ -47,6 +45,7 @@ class SubscriptionEvent:
     home_team_id: int
     away_team: str
     away_team_id: int
+    event_id: int
     event_name: str
     job_id: str
 
@@ -59,6 +58,7 @@ class SubscriptionEvent:
 @dataclass
 class CancelJobEvent:
     job_id: str
+    action: str
 
     def __init__(self) -> None:
         if ':' in self.job_id:
