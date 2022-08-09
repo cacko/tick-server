@@ -21,10 +21,10 @@ from stringcase import constcase
 @dataclass
 class MatchEvent:
     event_id: int
-    time: str
     action: str
     order: int
     is_old_event: bool
+    time: Optional[int|str] = None
     team: Optional[str] = None
     player: Optional[str] = None
     score: Optional[str] = None
