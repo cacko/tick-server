@@ -4,7 +4,7 @@ import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
 from marshmallow import fields
@@ -123,9 +123,13 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
+        n = datetime.now(tz=timezone.utc)
         for idx, sub in enumerate(self.subsriptions):
+            text = sub.event_name
+            if sub.start_time > n:
+                text = f"{sub.start_time.strftime('H:M')} {text}"
             frame = ContentFrame(
-                text=sub.event_name,
+                text=text,
                 index=idx,
                 icon=sub.icon
             )
@@ -161,9 +165,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 Storage.hdel(STORAGE_KEY, f"{sub.event_id}")
                 Storage.persist(STORAGE_KEY)            
         elif action == ACTION.SUBSCRIBED:
-            logging.warning(payload)
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
-            logging.warning(event)
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
