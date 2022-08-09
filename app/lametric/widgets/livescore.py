@@ -305,7 +305,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         for event in events:
             logging.warning(event)
             frame = ContentFrame(
-                text=f"{event.time:.0f}' {event.event_name} {event.score}"
+                text=f"{event.time:.0f}' {event.event_name} {event.player} {event.score}"
             )
             try:
                 icon = EventIcon[constcase(event.action)]
