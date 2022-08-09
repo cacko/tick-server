@@ -229,6 +229,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
     scores: Scores = {}
 
     def __init__(self, widget_id: str, widget):
+        self.scores = Scores(())
         super().__init__(widget_id, widget)
         self.load()
         if self.subsriptions:
