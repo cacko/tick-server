@@ -17,6 +17,32 @@ from string import punctuation
 import re
 from stringcase import constcase
 
+
+class EventIcon(IntEnum):
+    GOAL = 8627
+    SUBSTITUTION = 31567
+    YELLOW__CARD = 43845
+    RED__CARD = 43844
+    GOAL__DISALLOWED = 10723
+    FULL__TIME = 2541
+    GAME__START = 2541
+
+class ACTION(Enum):
+    SUBSTITUTION = "Subsctitution"
+    GOAL = "Goal"
+    YELLOW_CARD = "Yellow Card"
+    RED_CARD = "Red Card"
+    WOODWORK = "Woodwork"
+    PENALTY_MISS = "Penalty Miss"
+    GOAL_DISALLOWED = "Goal Disallowed"
+    FULL_TIME = "Full Time"
+    GAME_START = "Game Start"
+    SUBSCRIBED = "Subscribed"
+    UNSUBSUBSCRIBED = "Unsubscribed"
+    CANCEL_JOB = "Cancel Job"
+
+
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MatchEvent:
@@ -30,6 +56,32 @@ class MatchEvent:
     score: Optional[str] = None
     team_id: Optional[int] = None
     event_name: Optional[str] = None
+
+    def getContentFrame(self, league_icon: str = None) -> ContentFrame:
+        parts = []
+        if self.time:
+            parts.append(f"{self.time}'")
+        if self.action:
+            parts.append(f"{self.action}")
+        if self.player:
+            parts.append(f"{self.player}")
+        if self.event_name:
+            parts.append(f"{self.event_name}")
+        if self.score:
+            parts.append(f"{self.score}")
+
+        res = ContentFrame(text=' '.join(parts))
+
+        if league_icon:
+            res.icon = league_icon
+        
+        try:
+            icon = EventIcon[constcase(self.action)]
+            res.icon = icon.value
+        except:
+            pass
+
+        return res
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -53,6 +105,7 @@ class SubscriptionEvent:
     event_name: str
     job_id: str
     icon: str
+    status: str = ""
 
     @property
     def jobId(self):
@@ -176,29 +229,6 @@ class CancelJobEvent:
         return self.job_id
 
 
-class EventIcon(IntEnum):
-    GOAL = 8627
-    SUBSTITUTION = 31567
-    YELLOW__CARD = 43845
-    RED__CARD = 43844
-    GOAL__DISALLOWED = 10723
-    FULL__TIME = 2541
-    GAME__START = 2541
-
-class ACTION(Enum):
-    SUBSTITUTION = "Subsctitution"
-    GOAL = "Goal"
-    YELLOW_CARD = "Yellow Card"
-    RED_CARD = "Red Card"
-    WOODWORK = "Woodwork"
-    PENALTY_MISS = "Penalty Miss"
-    GOAL_DISALLOWED = "Goal Disallowed"
-    FULL_TIME = "Full Time"
-    GAME_START = "Game Start"
-    SUBSCRIBED = "Subscribed"
-    UNSUBSUBSCRIBED = "Unsubscribed"
-    CANCEL_JOB = "Cancel Job"
-
 
 STORAGE_KEY = "subscriptions"
 TIMEZONE = ZoneInfo("Europe/London")
@@ -255,6 +285,10 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             scores, many=True)
         for event in events:
             text = event.displayScore
+            sub = next(filter(lambda x: x.event_id == event.idEvent, self.subsriptions), None)
+            sub.status = event.displayStatus
+            Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(sub))
+            Storage.persist(STORAGE_KEY)
             self.scores[event.idEvent] = text
 
     def onShow(self):
@@ -336,6 +370,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
                 Storage.persist(STORAGE_KEY)
         elif action == ACTION.SUBSCRIBED:
             event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
+            logging.warning(event)
             Storage.hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event))
             Storage.persist(STORAGE_KEY)
         else:
