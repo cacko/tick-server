@@ -298,7 +298,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         res = requests.get(url)
         data = res.json()
         ids = [x.event_id for x in self.subscriptions]
-
         scores = list(filter(lambda x: x.get("idEvent") in ids, data))
         if not len(scores):
             return
@@ -327,8 +326,7 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         logging.warning(res.content)
 
     def onShow(self):
-        self.load_scores()
-        self.update_frames()
+        pass
 
     def onHide(self):
         pass
