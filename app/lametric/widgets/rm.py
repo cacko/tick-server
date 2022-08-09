@@ -53,12 +53,12 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def load(self):
-        if not Storage.exists(STORAGE_KEY):
-            schedule = self.get_schedule()
-            self._schedule = Schedule(schedule)
-            self._schedule.persist()
-        else:
-            self._schedule = Schedule.load()
+        # if not Storage.exists(STORAGE_KEY):
+        schedule = self.get_schedule()
+        self._schedule = Schedule(schedule)
+        self._schedule.persist()
+        # else:
+        #     self._schedule = Schedule.load()
 
 
     def get_schedule(self):
