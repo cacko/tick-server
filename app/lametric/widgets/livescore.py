@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
-from time import timezone
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
 from .base import BaseWidget, WidgetMeta
 from zoneinfo import ZoneInfo
