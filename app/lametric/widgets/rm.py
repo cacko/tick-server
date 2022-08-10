@@ -3,6 +3,7 @@ import logging
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     ACTION,
+    EventStatus,
     Game,
     MatchEvent,
     CancelJobEvent,
@@ -138,6 +139,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             text = []
             if game.not_started:
                 text.append(to_local_time(game.startTime))
+            elif game.shortStatusText in [EventStatus.HT.value, EventStatus.FT.value]:
+                text.append(game.shortStatusText)
             else:
                 text.append(game.gameTimeDisplay)
             text.append(
