@@ -1,3 +1,4 @@
+import time
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
@@ -11,6 +12,7 @@ from cachable.request import Method
 from app.config import Config
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from time import time
 from dataclasses_json import dataclass_json, Undefined
 from typing import Optional
 from app.lametric.widgets import *
@@ -24,11 +26,11 @@ class DisplayItem:
     duration: int
     appname: APPNAME
     hidden: bool = False
-    activated_at: Optional[datetime] = None
+    activated_at: float = None
 
     def activate(self):
         self.widget.activate()
-        self.activated_at = datetime.now()
+        self.activated_at = time()
         self.widget.onShow()
 
     def deactivate(self):
@@ -37,8 +39,7 @@ class DisplayItem:
 
     @property
     def isExpired(self):
-        td = datetime.now() - self.activated_at
-        return td > timedelta(milliseconds=self.widget.duration(self.duration))
+        time() - self.activated_at > self.widget.duration(self.duration)
 
     @property
     def isActive(self):

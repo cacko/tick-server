@@ -46,7 +46,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
         queue = __class__.queue
         while True:
             if queue.empty():
-                time.sleep(0.1)
+                time.sleep(0.2)
                 self._display.update()
                 continue
             cmd, payload = queue.get_nowait()

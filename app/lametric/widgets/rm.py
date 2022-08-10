@@ -129,7 +129,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         pass
 
     def duration(self, duration: int):
-        multiplier = 30000 if self._schedule.in_progress else 10000
+        multiplier = 30 if self._schedule.in_progress else duration
+        print(multiplier)
         res = len(self._schedule.current) * multiplier
         return res
 

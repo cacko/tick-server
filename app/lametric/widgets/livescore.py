@@ -99,7 +99,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def duration(self, duration: int):
-        res = len(self.subscriptions) * 8000
+        res = len(self.subscriptions) * duration
         return res
 
     @property
