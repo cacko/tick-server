@@ -50,7 +50,7 @@ class MatchEvent:
     score: Optional[str] = None
     team_id: Optional[int] = None
     event_name: Optional[str] = None
-    extraPlayers: Optional[list] = None
+    extraPlayers: Optional[list[str]] = None
 
     def getContentFrame(self, league_icon: str = None) -> ContentFrame:
         parts = []
@@ -59,7 +59,7 @@ class MatchEvent:
         if self.action:
             parts.append(f"{self.action}")
         if self.player:
-            if self.extraPlayers:
+            if self.extraPlayers is not None:
                 extra = ','.join(self.extraPlayers)
                 parts.append(f"{extra} -> {self.player}")
             else:

@@ -87,7 +87,7 @@ class ConfigMeta(type):
         return cls().struct.api
 
     @property
-    def display(cls) -> list:
+    def display(cls) -> list[str]:
         return cls().struct.display
 
 class Config(object, metaclass=ConfigMeta):
