@@ -70,6 +70,7 @@ class SubscriptionWidget(BaseWidget):
                     MatchEvent.schema().load(payload, many=True)
                 )
             except Exception as e:
+                raise e
                 logging.error(e)
                 logging.warning(payload)
             finally:
@@ -85,6 +86,7 @@ class SubscriptionWidget(BaseWidget):
                     case ACTION.UNSUBSUBSCRIBED:
                         self.on_unsubscribed_event(SubscriptionEvent.from_dict(payload))
             except Exception as e:
+                raise e
                 logging.error(e)
             finally:
                 return self.filter_payload(payload)   
