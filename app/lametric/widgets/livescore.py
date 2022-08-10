@@ -136,7 +136,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 __class__.client.send_notification(Notification(
                     model=Content(
                         frames=[frame],
-                        sound=event.getIcon()
+                        sound=event.getSound()
                     ),
                     priority='critical'
                 ))

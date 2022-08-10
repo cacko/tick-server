@@ -82,7 +82,7 @@ class MatchEvent:
 
         return res
 
-    def getIcon(self):
+    def getSound(self):
         try:
             action = ACTION(self.action)
             if action in [ACTION.GOAL, ACTION.FULL_TIME]:

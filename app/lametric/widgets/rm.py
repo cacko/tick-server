@@ -152,6 +152,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
+            if not self._schedule.isIn(event.event_id):
+                continue
             logging.warning(event)
             if not event.is_old_event:
                 sub = next(filter(lambda x: x.event_id ==
@@ -161,7 +163,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 __class__.client.send_notification(Notification(
                     model=Content(
                         frames=[frame],
-                        sound=event.getIcon()
+                        sound=event.getSound()
                     ),
                     priority='critical'
                 ))

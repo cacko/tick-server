@@ -101,7 +101,6 @@ class SubscriptionWidget(BaseWidget):
     def on_subscribed_event(self, event: SubscriptionEvent):
         raise NotImplementedError
 
-
     def on_unsubscribed_event(self, event: SubscriptionEvent):
         raise NotImplementedError
 
