@@ -113,9 +113,13 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def onShow(self):
         for game in self._schedule.current:
             if game.in_progress:
-                self.load()
+                # self.load()
+                events = ZnaykoClient.livescores()
+                current_event = next(filter(lambda e: e.idEvent == game.id , events), None)
+                game.homeCompetitor.score = current_event.intHomeScore
+                game.awayCompetitor.score = current_event.intAwayScore
                 self.update_frames()
-                ZnaykoClient.livescores()
+
 
     def onHide(self):
         pass
