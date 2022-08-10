@@ -153,7 +153,7 @@ class SubscriptionEvent:
     @property
     def isExpired(self):
         n = datetime.now(tz=timezone.utc)
-        limit = timedelta(hours=4)
+        limit = timedelta(minutes=30)
         if self.start_time > n:
             return False
         return (n - self.start_time) > limit
