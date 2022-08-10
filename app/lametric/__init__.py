@@ -1,6 +1,5 @@
-from datetime import datetime
 import logging
-from queue import LifoQueue
+from queue import Queue
 
 from app.lametric.client import Client
 from app.config import Config
@@ -15,11 +14,11 @@ import time
 class LaMetricMeta(type):
 
     _instance = None
-    _queue: LifoQueue = None
+    _queue: Queue = None
 
     def __call__(self, *args, **kwds):
         if not self._instance:
-            self._queue = LifoQueue()
+            self._queue = Queue()
             self._instance = type.__call__(self, *args, **kwds)
         return self._instance
 
