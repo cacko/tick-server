@@ -30,7 +30,7 @@ def cron_func():
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
-                logging.warn(res)
+                logging.debug(res)
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
@@ -159,7 +159,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         for event in events:
             if not self._schedule.isIn(event.event_id):
                 continue
-            logging.warning(event)
             if event.is_old_event:
                 continue
             game: Game = self._schedule.get(f"{event.event_id}")

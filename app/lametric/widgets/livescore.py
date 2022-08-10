@@ -127,7 +127,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            logging.warning(event)
             if not event.is_old_event:
                 sub = next(filter(lambda x: x.event_id ==
                            event.event_id, self.subscriptions), None)
@@ -153,7 +152,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 STORAGE_KEY).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        logging.warning(event)
         Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
             event)).persist(STORAGE_KEY).execute()
         self.load()
