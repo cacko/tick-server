@@ -85,6 +85,13 @@ class Schedule(dict):
             (n - g.startTime).days) < 2, self.values()))
         return events
 
+    @property
+    def in_progress(self) -> bool:
+        for game in self.current:
+            if game.in_progress:
+                return True
+        return False
+
 
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
@@ -117,12 +124,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 ZnaykoClient.livescores()
                 self.update_frames()
 
-
     def onHide(self):
         pass
 
     def duration(self, duration: int):
-        res = len(self._schedule.current) * 20000
+        multiplier = 30000 if self._schedule.in_progress else 10000
+        res = len(self._schedule.current) * multiplier
         return res
 
     def update_frames(self):
