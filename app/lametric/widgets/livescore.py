@@ -1,18 +1,18 @@
 import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification
-from .base import BaseWidget, WidgetMeta
+from .base import SubscriptionWidget, WidgetMeta
 from cachable.storage import Storage
 import pickle
 from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
     MatchEvent,
-    ACTION,
 )
 from app.znayko.client import Client as ZnaykoClient
 
 
 STORAGE_KEY = "subscriptions"
+
 
 class Scores(dict):
 
@@ -33,7 +33,7 @@ class Scores(dict):
         return res
 
 
-class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
+class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     subscriptions: list[SubscriptionEvent] = []
     scores: Scores = {}
@@ -125,17 +125,6 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
             APPNAME.LIVESCORES, Content(frames=frames)
         )
 
-    def on_event(self, payload):
-        if isinstance(payload, list):
-            try:
-                self.on_match_events(
-                    MatchEvent.schema().load(payload, many=True))
-            except Exception as e:
-                logging.error(e)
-                logging.warning(payload)
-        else:
-            self.on_subscription_event(payload)
-
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             logging.warning(event)
@@ -156,21 +145,23 @@ class LivescoresWidget(BaseWidget, metaclass=WidgetMeta):
         if self.scores.has_changes:
             self.update_frames()
 
-    def on_subscription_event(self, payload):
-        action = ACTION(payload.get("action"))
-        if action == ACTION.CANCEL_JOB:
-            event = CancelJobEvent.from_dict(payload)
-            sub = next(filter(lambda x: x.jobId ==
-                       event.jobId, self.subscriptions), None)
-            if sub:
-                Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(STORAGE_KEY).execute()
-        elif action == ACTION.SUBSCRIBED:
-            event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
-            logging.warning(event)
-            Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event)).persist(STORAGE_KEY).execute()
-        else:
-            event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
-            Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(STORAGE_KEY).execute()
-            logging.warning(f"DELETING {event.event_name}")
+    def on_cancel_job_event(self, event: CancelJobEvent):
+        sub = next(filter(lambda x: x.jobId ==
+                          event.jobId, self.subscriptions), None)
+        if sub:
+            Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(
+                STORAGE_KEY).execute()
+
+    def on_subscribed_event(self, event: SubscriptionEvent):
+        logging.warning(event)
+        Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
+            event)).persist(STORAGE_KEY).execute()
+        self.load()
+        self.update_frames()
+
+    def on_unsubscribed_event(self, event: SubscriptionEvent):
+        Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
+            STORAGE_KEY).execute()
+        logging.warning(f"DELETING {event.event_name}")
         self.load()
         self.update_frames()

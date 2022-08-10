@@ -1,15 +1,18 @@
 from datetime import datetime, timedelta, timezone
 import logging
-from .base import BaseWidget, WidgetMeta
+from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     Game,
+    MatchEvent,
+    CancelJobEvent,
+    SubscriptionEvent
 )
 from app.lametric.models import (
     Content,
     ContentFrame,
-    APPNAME
+    APPNAME,
+    Notification
 )
-from zoneinfo import ZoneInfo
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
 from app.scheduler import Scheduler
@@ -18,7 +21,7 @@ from app.core.time import to_local_time, is_today
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
-
+SUBSCRIPTIONS_KEY = "real_madrid_subscriptions"
 
 def cron_func():
     try:
@@ -82,7 +85,7 @@ class Schedule(dict):
         return events
 
 
-class RMWidget(BaseWidget, metaclass=WidgetMeta):
+class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     _schedule: Schedule = None
 
@@ -92,6 +95,14 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         if not self.isHidden:
             self.update_frames()
         schedule_cron()
+
+    def filter_payload(self, payload):
+        if isinstance(payload, list):
+            return list(filter(lambda x: not self._schedule.isIn(x.get("event_id")), payload))
+        event_id = payload.get("event_id")
+        if event_id and self._schedule.isIn(event_id):
+            return None
+        return payload
 
     def onShow(self):
         pass
@@ -139,52 +150,43 @@ class RMWidget(BaseWidget, metaclass=WidgetMeta):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
         return schedule
 
-    # def on_event(self, payload):
-    #     if isinstance(payload, list):
-    #         try:
-    #             self.on_match_events(
-    #                 MatchEvent.schema().load(payload, many=True))
-    #         except Exception as e:
-    #             logging.error(e)
-    #             logging.warning(payload)
-    #     else:
-    #         self.on_subscription_event(payload)
+    def on_match_events(self, events: list[MatchEvent]):
+        for event in events:
+            logging.warning(event)
+            if not event.is_old_event:
+                sub = next(filter(lambda x: x.event_id ==
+                           event.event_id, self.subscriptions), None)
+                frame = event.getContentFrame(
+                    league_icon=sub.icon if sub else None)
+                __class__.client.send_notification(Notification(
+                    model=Content(
+                        frames=[frame],
+                        sound=event.getIcon()
+                    ),
+                    priority='critical'
+                ))
+            if event.score:
+                self.scores[event.event_id] = event.score
+        if self.scores.has_changes:
+            self.update_frames()
 
-    # def on_match_events(self, events: list[MatchEvent]):
-    #     for event in events:
-    #         logging.warning(event)
-    #         if not event.is_old_event:
-    #             sub = next(filter(lambda x: x.event_id ==
-    #                        event.event_id, self.subscriptions), None)
-    #             frame = event.getContentFrame(
-    #                 league_icon=sub.icon if sub else None)
-    #             __class__.client.send_notification(Notification(
-    #                 model=Content(
-    #                     frames=[frame],
-    #                     sound=event.getIcon()
-    #                 ),
-    #                 priority='critical'
-    #             ))
-    #         if event.score:
-    #             self.scores[event.event_id] = event.score
-    #     if self.scores.has_changes:
-    #         self.update_frames()
+    def on_cancel_job_event(self, event: CancelJobEvent):
+        sub = next(filter(lambda x: x.jobId ==
+                          event.jobId, self.subscriptions), None)
+        if sub:
+            Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(
+                STORAGE_KEY).execute()
 
-    # def on_subscription_event(self, payload):
-    #     action = ACTION(payload.get("action"))
-    #     if action == ACTION.CANCEL_JOB:
-    #         event = CancelJobEvent.from_dict(payload)
-    #         sub = next(filter(lambda x: x.jobId ==
-    #                    event.jobId, self.subscriptions), None)
-    #         if sub:
-    #             Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(STORAGE_KEY).execute()
-    #     elif action == ACTION.SUBSCRIBED:
-    #         event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
-    #         logging.warning(event)
-    #         Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(event)).persist(STORAGE_KEY).execute()
-    #     else:
-    #         event: SubscriptionEvent = SubscriptionEvent.from_dict(payload)
-    #         Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(STORAGE_KEY).execute()
-    #         logging.warning(f"DELETING {event.event_name}")
-    #     self.load()
-    #     self.update_frames()
+    def on_subscribed_event(self, event: SubscriptionEvent):
+        logging.warning(event)
+        Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
+            event)).persist(STORAGE_KEY).execute()
+        self.load()
+        self.update_frames()
+
+    def on_unsubscribed_event(self, event: SubscriptionEvent):
+        Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
+            STORAGE_KEY).execute()
+        logging.warning(f"DELETING {event.event_name}")
+        self.load()
+        self.update_frames()
