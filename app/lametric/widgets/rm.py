@@ -122,7 +122,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         pass
 
     def duration(self, duration: int):
-        res = len(self._schedule.current) * 8000
+        res = len(self._schedule.current) * 20000
         return res
 
     def update_frames(self):
