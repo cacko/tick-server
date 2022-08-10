@@ -195,8 +195,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                                 case False:
                                     is_winner = False
                             break
-            except:
-                raise e
+            except ValueError:
+                pass
             __class__.client.send_notification(Notification(
                 model=Content(
                     frames=[frame],

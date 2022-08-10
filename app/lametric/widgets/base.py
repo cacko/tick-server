@@ -65,31 +65,26 @@ class SubscriptionWidget(BaseWidget):
         if isinstance(payload, list):
             if not len(payload):
                 return payload
-            try:
-                self.on_match_events(
-                    MatchEvent.schema().load(payload, many=True)
-                )
-            except Exception as e:
-                raise e
-                logging.error(e)
-                logging.warning(payload)
-            finally:
-                return self.filter_payload(payload)
-        else:
-            try:
-                action = ACTION(payload.get("action"))
-                match(action):
-                    case ACTION.CANCEL_JOB:
-                        self.on_cancel_job_event(CancelJobEvent.from_dict(payload))
-                    case ACTION.SUBSCRIBED:
-                        self.on_subscribed_event(SubscriptionEvent.from_dict(payload))
-                    case ACTION.UNSUBSUBSCRIBED:
-                        self.on_unsubscribed_event(SubscriptionEvent.from_dict(payload))
-            except Exception as e:
-                raise e
-                logging.error(e)
-            finally:
-                return self.filter_payload(payload)   
+            self.on_match_events(
+                MatchEvent.schema().load(payload, many=True)
+            )
+            return self.filter_payload(payload)
+        try:
+            action = ACTION(payload.get("action"))
+            match(action):
+                case ACTION.CANCEL_JOB:
+                    self.on_cancel_job_event(
+                        CancelJobEvent.from_dict(payload))
+                case ACTION.SUBSCRIBED:
+                    self.on_subscribed_event(
+                        SubscriptionEvent.from_dict(payload))
+                case ACTION.UNSUBSUBSCRIBED:
+                    self.on_unsubscribed_event(
+                        SubscriptionEvent.from_dict(payload))
+        except ValueError:
+            pass
+        finally:
+            return self.filter_payload(payload)
 
     def filter_payload(self, payload):
         return payload
@@ -105,4 +100,3 @@ class SubscriptionWidget(BaseWidget):
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
         raise NotImplementedError
-
