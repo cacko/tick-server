@@ -1,11 +1,9 @@
-from ast import Sub
 from app.lametric.client import Client
 from app.lametric.models import (
     Widget,
 )
 from cachable.request import Method
-from app.znayko.models import CancelJobEvent, MatchEvent, SubscriptionEvent
-from znayko.models import (
+from app.znayko.models import (
     MatchEvent,
     SubscriptionEvent,
     CancelJobEvent,
