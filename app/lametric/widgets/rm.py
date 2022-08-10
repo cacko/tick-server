@@ -81,10 +81,10 @@ class Schedule(dict):
 
     @property
     def current(self) -> list[Game]:
-        # n = datetime.now(tz=timezone.utc)
-        # events = list(filter(lambda g: abs(
-        #     (n - g.startTime).days) < 2, self.values()))
-        return list(self.values())
+        n = datetime.now(tz=timezone.utc)
+        events = list(filter(lambda g: abs(
+            (n - g.startTime).days) < 2, self.values()))
+        return events
 
     @property
     def in_progress(self) -> bool:
@@ -159,7 +159,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return  not len(self._schedule.current)
+        return not len(self._schedule.current)
 
     def load(self):
         schedule = self.get_schedule()
