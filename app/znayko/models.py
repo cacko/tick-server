@@ -69,7 +69,7 @@ class MatchEvent:
         if self.score:
             parts.append(f"{self.score}")
 
-        res = ContentFrame(text=' '.join(parts))
+        res = ContentFrame(text=' '.join(parts),duration=0)
 
         if league_icon:
             res.icon = league_icon

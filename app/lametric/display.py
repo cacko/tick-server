@@ -83,7 +83,7 @@ class Display(object):
             DisplayItem(
                 app=lametricaps.get(name),
                 widget=self.getWidget(APPNAME(name), app.package),
-                duration=0,
+                duration=app.duration,
                 hidden=False,
                 appname=APPNAME(name)
             )

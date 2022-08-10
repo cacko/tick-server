@@ -118,7 +118,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             frame = ContentFrame(
                 text=' '.join(text),
                 index=idx,
-                icon=sub.icon
+                icon=sub.icon,
+                duration=0
             )
             frames.append(frame)
         __class__.client.send_model(
