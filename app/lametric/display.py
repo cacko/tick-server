@@ -39,7 +39,7 @@ class DisplayItem:
 
     @property
     def isExpired(self):
-        time() - self.activated_at > self.widget.duration(self.duration)
+        return time() - self.activated_at > self.widget.duration(self.duration)
 
     @property
     def isActive(self):
