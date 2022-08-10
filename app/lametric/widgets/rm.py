@@ -99,7 +99,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
-            return list(filter(lambda x: not self._schedule.isIn(x.get("event_id")), payload))
+            return list(
+                filter(
+                    lambda x: not self._schedule.isIn(x.get("event_id")),
+                    payload
+                )
+            )
         event_id = payload.get("event_id")
         if event_id and self._schedule.isIn(event_id):
             return None
