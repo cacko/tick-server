@@ -105,6 +105,7 @@ class Display(object):
             self._current_idx = next_idx
         else:
             self._current_idx = 0
+            self._device_display = self._client.get_display()
 
     def update(self):
         if self.is_screensaver_active and self._current_idx != 0:
