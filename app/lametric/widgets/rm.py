@@ -119,11 +119,10 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return payload
 
     def onShow(self):
-        for game in self._schedule.current:
-            if game.in_progress:
-                self.load()
-                ZnaykoClient.livescores()
-                self.update_frames()
+        if self._schedule.in_progress:
+            self.load()
+            ZnaykoClient.livescores()
+            self.update_frames()
 
     def onHide(self):
         pass
@@ -132,7 +131,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         multiplier = 30 if self._schedule.in_progress else duration
         print(multiplier)
         res = len(self._schedule.current) * multiplier
-        return res
+        return max(res, duration)
 
     def update_frames(self):
         frames = []
@@ -161,7 +160,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return len(self._schedule.current) == 0
+        return False
 
     def load(self):
         schedule = self.get_schedule()
