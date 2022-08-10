@@ -137,7 +137,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
             if not game.not_started:
                 text.append(
-                    f"{game.homeCompetitor.score:.0f}:{game.awayCompetitor.score:.9f}")
+                    f"{game.homeCompetitor.score:.0f}:{game.awayCompetitor.score:.0f}")
             frame = ContentFrame(
                 text=' '.join(text),
                 index=idx,
