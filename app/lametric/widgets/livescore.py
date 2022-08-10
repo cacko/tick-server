@@ -152,13 +152,13 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 STORAGE_KEY).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
+        Storage.pipeline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
             event)).persist(STORAGE_KEY).execute()
         self.load()
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
+        Storage.pipeline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
             STORAGE_KEY).execute()
         logging.warning(f"DELETING {event.event_name}")
         self.load()
