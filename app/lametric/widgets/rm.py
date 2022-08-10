@@ -88,6 +88,7 @@ class Schedule(dict):
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     _schedule: Schedule = None
+    subscriptions: list[SubscriptionEvent] = []
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
@@ -146,6 +147,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         self._schedule = Schedule(schedule)
         self._schedule.persist()
 
+    def loadSubscriptions(self):
+        data = Storage.hgetall(SUBSCRIPTIONS_KEY)
+        if not data:
+            self.subscriptions = []
+        self.subscriptions = [pickle.loads(v) for v in data.values()]
+
     def get_schedule(self):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
         return schedule
@@ -173,22 +180,27 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):
-        sub = next(filter(lambda x: x.jobId ==
-                          event.jobId, self.subscriptions), None)
-        if sub:
-            Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(
-                STORAGE_KEY).execute()
+        pass
+        # sub = next(filter(lambda x: x.jobId ==
+        #                   event.jobId, self.subscriptions), None)
+        # if sub:
+        #     Storage.pipeline().hdel(SUBSCRIPTIONS_KEY, f"{sub.event_id}").persist(
+        #         SUBSCRIPTIONS_KEY).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
         logging.warning(event)
-        Storage.pipline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
-            event)).persist(STORAGE_KEY).execute()
+        if not self._schedule.isIn(event.event_id):
+            return
+        Storage.pipline().hset(SUBSCRIPTIONS_KEY, f"{event.event_id}", pickle.dumps(
+            event)).persist(SUBSCRIPTIONS_KEY).execute()
         self.load()
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        Storage.pipline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
-            STORAGE_KEY).execute()
+        if not self._schedule.isIn(event.event_id):
+            return
+        Storage.pipline().hdel(SUBSCRIPTIONS_KEY, f"{event.event_id}").persist(
+            SUBSCRIPTIONS_KEY).execute()
         logging.warning(f"DELETING {event.event_name}")
         self.load()
         self.update_frames()
