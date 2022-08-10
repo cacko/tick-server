@@ -93,6 +93,33 @@ class MatchEvent:
             pass
         return None
 
+    def getTeamSound(self, team_id, is_winner=None):
+        try:
+            action = ACTION(self.action)
+            if action in [ACTION.GOAL]:
+                return ContentSound(
+                    id=SOUNDS.POSITIVE1.value if self.team_id == team_id else SOUNDS.NEGATIVE1.value
+                )
+            elif action in [ACTION.YELLOW_CARD, ACTION.RED_CARD]:
+                return ContentSound(
+                    id=SOUNDS.NEGATIVE2.value if self.team_id == team_id else SOUNDS.POSITIVE2.value
+                )
+            elif action == ACTION.FULL_TIME:
+                match(is_winner):
+                    case True:
+                        return ContentSound(
+                            id=SOUNDS.WIN.value
+                        )
+                    case False:
+                        return ContentSound(
+                            id=SOUNDS.LOSE1.value
+                        )
+        except:
+            pass
+        return ContentSound(
+            id=SOUNDS.BICYCLE.value
+        )
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -350,13 +377,26 @@ class Game:
     def ended(self) -> bool:
         if self.not_started:
             return False
-
         status = self.shortStatusText
-
         try:
             _status = EventStatus(status)
-            if _status in (EventStatus.FT, EventStatus.AET, EventStatus.PPD):
-                return True
+            return _status in (EventStatus.FT, EventStatus.AET, EventStatus.PPD)
+        except ValueError:
+            return False
+
+    @property
+    def in_progress(self) -> bool:
+        if self.canceled:
+            return False
+        if self.postponed:
+            return False
+        if self.ended:
+            return False
+        if self.not_started:
+            return False
+        status = self.shortStatusText
+        try:
+            _status = EventStatus(status)
             return _status == EventStatus.HT or re.match(r"^\d+$", status)
         except ValueError:
             return False

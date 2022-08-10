@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import logging
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
+    ACTION,
     Game,
     MatchEvent,
     CancelJobEvent,
@@ -21,7 +22,7 @@ from app.core.time import to_local_time, is_today
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
-SUBSCRIPTIONS_KEY = "real_madrid_subscriptions"
+
 
 def cron_func():
     try:
@@ -42,7 +43,7 @@ def cron_func():
             run_date=n+td,
             replace_existing=True,
             misfire_grace_time=180
-        )        
+        )
 
 
 def schedule_cron():
@@ -88,7 +89,6 @@ class Schedule(dict):
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     _schedule: Schedule = None
-    subscriptions: list[SubscriptionEvent] = []
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
@@ -106,7 +106,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return payload
 
     def onShow(self):
-        pass
+        for game in self._schedule.current:
+            if game.in_progress:
+                self.load()
+                self.update_frames()
+                ZnaykoClient.livescores()
 
     def onHide(self):
         pass
@@ -147,12 +151,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         self._schedule = Schedule(schedule)
         self._schedule.persist()
 
-    def loadSubscriptions(self):
-        data = Storage.hgetall(SUBSCRIPTIONS_KEY)
-        if not data:
-            self.subscriptions = []
-        self.subscriptions = [pickle.loads(v) for v in data.values()]
-
     def get_schedule(self):
         schedule = ZnaykoClient.team_schedule(TEAM_ID)
         return schedule
@@ -162,45 +160,41 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if not self._schedule.isIn(event.event_id):
                 continue
             logging.warning(event)
-            if not event.is_old_event:
-                sub = next(filter(lambda x: x.event_id ==
-                           event.event_id, self.subscriptions), None)
-                frame = event.getContentFrame(
-                    league_icon=sub.icon if sub else None)
-                __class__.client.send_notification(Notification(
-                    model=Content(
-                        frames=[frame],
-                        sound=event.getSound()
-                    ),
-                    priority='critical'
-                ))
-            if event.score:
-                self.scores[event.event_id] = event.score
-        if self.scores.has_changes:
-            self.update_frames()
+            if event.is_old_event:
+                continue
+            game: Game = self._schedule.get(f"{event.event_id}")
+            is_winner = None
+            if not game:
+                return
+            frame = event.getContentFrame(league_icon=game.icon)
+            try:
+                action = ACTION(event.action)
+                if action == ACTION.FULL_TIME:
+                    self.load()
+                    game = self._schedule.get(f"{event.event_id}")
+                    for competitor in [game.homeCompetitor, game.awayCompetitor]:
+                        if competitor.id == TEAM_ID:
+                            match(competitor.isWinner):
+                                case True:
+                                    is_winner = True
+                                case False:
+                                    is_winner = False
+                            break
+            except:
+                pass
+            __class__.client.send_notification(Notification(
+                model=Content(
+                    frames=[frame],
+                    sound=event.getTeamSound(TEAM_ID, is_winner)
+                ),
+                priority='critical'
+            ))
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         pass
-        # sub = next(filter(lambda x: x.jobId ==
-        #                   event.jobId, self.subscriptions), None)
-        # if sub:
-        #     Storage.pipeline().hdel(SUBSCRIPTIONS_KEY, f"{sub.event_id}").persist(
-        #         SUBSCRIPTIONS_KEY).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        logging.warning(event)
-        if not self._schedule.isIn(event.event_id):
-            return
-        Storage.pipline().hset(SUBSCRIPTIONS_KEY, f"{event.event_id}", pickle.dumps(
-            event)).persist(SUBSCRIPTIONS_KEY).execute()
-        self.load()
-        self.update_frames()
+        pass
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        if not self._schedule.isIn(event.event_id):
-            return
-        Storage.pipline().hdel(SUBSCRIPTIONS_KEY, f"{event.event_id}").persist(
-            SUBSCRIPTIONS_KEY).execute()
-        logging.warning(f"DELETING {event.event_name}")
-        self.load()
-        self.update_frames()
+        pass
