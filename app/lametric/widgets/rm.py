@@ -144,6 +144,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
+        logging.warning(self._schedule)
         return len(self._schedule.current) == 0
 
     def load(self):
