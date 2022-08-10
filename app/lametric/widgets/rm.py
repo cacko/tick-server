@@ -132,7 +132,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if game.not_started:
                 text.append(to_local_time(game.startTime))
             else:
-                text.append(game.shortStatusText)
+                text.append(game.gameTimeDisplay)
             text.append(
                 f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
             if not game.not_started:
@@ -163,17 +163,20 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
+            print(event)
             if not self._schedule.isIn(event.event_id):
                 continue
             if event.is_old_event:
                 continue
             game: Game = self._schedule.get(f"{event.event_id}")
+            print(game)
             is_winner = None
             if not game:
                 return
             frame = event.getContentFrame(league_icon=game.icon)
             try:
                 action = ACTION(event.action)
+                print(action)
                 if action == ACTION.FULL_TIME:
                     self.load()
                     game = self._schedule.get(f"{event.event_id}")
