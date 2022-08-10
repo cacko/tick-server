@@ -97,9 +97,7 @@ class Display(object):
             case CONTENT_TYPE.YANKOSTATUS:
                 self._widgets.get(APPNAME.YANKO).yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
-                print(payload)
                 payload = self._widgets.get(APPNAME.RM).on_event(payload)
-                print(payload)
                 self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
 
     def get_next_idx(self):
@@ -111,11 +109,13 @@ class Display(object):
             self._device_display = self._client.get_display()
 
     def update(self):
-        if self.is_screensaver_active and self._current_idx != 0:
-            self._current_idx = 0
-            current = self._items[0]
-            current.activate()
+        if self.is_screensaver_active:
+            if self._current_idx != 0:
+                self._current_idx = 0
+                current = self._items[0]
+                current.activate()
             return 0
+        
         current = self._items[self._current_idx]
 
         if not current.isAllowed:

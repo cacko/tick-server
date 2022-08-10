@@ -1,11 +1,9 @@
-import logging
 from queue import Queue
 
 from app.lametric.client import Client
 from app.config import Config
 from app.lametric.models import (
     CONTENT_TYPE,
-    DeviceDisplay
 )
 from app.lametric.display import Display
 import time
