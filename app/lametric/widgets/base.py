@@ -81,7 +81,7 @@ class SubscriptionWidget(BaseWidget):
                     case ACTION.CANCEL_JOB:
                         self.on_cancel_job_event(CancelJobEvent.from_dict(payload))
                     case ACTION.SUBSCRIBED:
-                        self.on_subscribed_event(SubscriptionEvent.fromt_dict(payload))
+                        self.on_subscribed_event(SubscriptionEvent.from_dict(payload))
                     case ACTION.UNSUBSUBSCRIBED:
                         self.on_unsubscribed_event(SubscriptionEvent.from_dict(payload))
             except Exception as e:
