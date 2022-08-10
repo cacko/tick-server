@@ -96,7 +96,9 @@ class Display(object):
             case CONTENT_TYPE.YANKOSTATUS:
                 self._widgets.get(APPNAME.YANKO).yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
+                print(payload)
                 payload = self._widgets.get(APPNAME.RM).on_event(payload)
+                print(payload)
                 self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
 
     def get_next_idx(self):
