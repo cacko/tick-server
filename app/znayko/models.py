@@ -397,6 +397,6 @@ class Game:
         status = self.shortStatusText
         try:
             _status = EventStatus(status)
-            return _status == EventStatus.HT or re.match(r"^\d+$", status)
+            return _status == EventStatus.HT or re.match(r"^\d+", status)
         except ValueError:
             return False
