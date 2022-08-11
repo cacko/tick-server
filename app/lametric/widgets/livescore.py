@@ -41,7 +41,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.scores = Scores(())
-        self.__load()
+        self.load()
         if self.subscriptions:
             # for sub in self.subscriptions:
             #     if sub.isExpired:
@@ -49,7 +49,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.load_scores()
             self.update_frames()
 
-    def __load(self):
+    def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
             self.subscriptions = []
@@ -90,7 +90,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         pipe = Storage.pipeline()
         has_changes = False
         for sub in self.subscriptions:
-            __class__.hasLivescoreGamesInProgress ^= sub.inProgress
+            __class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
                 pipe.hdel(STORAGE_KEY, f"{sub.event_id}")
                 has_changes = True

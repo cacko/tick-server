@@ -50,9 +50,9 @@ class LaMetric(object, metaclass=LaMetricMeta):
             queue.task_done()
             match(cmd):
                 case CONTENT_TYPE.NOWPLAYING:
-                    self._display.load(cmd, payload)
+                    self._display.on_response(cmd, payload)
                 case CONTENT_TYPE.YANKOSTATUS:
-                    self._display.load(cmd, payload)
+                    self._display.on_response(cmd, payload)
                 case CONTENT_TYPE.LIVESCOREEVENT:
-                    self._display.load(cmd, payload)
+                    self._display.on_response(cmd, payload)
             self._display.update()

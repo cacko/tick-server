@@ -47,7 +47,7 @@ class DisplayItem:
 
     @property
     def isAllowed(self):
-        return all([not self.hidden, not self.widget.isHidden])
+        return not(self.hidden or self.widget.isHidden)
 
 
 class Display(object):
@@ -90,7 +90,7 @@ class Display(object):
             for name in Config.display
         ]
 
-    def load(self, content_type: CONTENT_TYPE, payload):
+    def on_response(self, content_type: CONTENT_TYPE, payload):
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
                 self._widgets.get(APPNAME.YANKO).nowplaying(payload)
