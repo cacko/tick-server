@@ -90,6 +90,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         pipe = Storage.pipeline()
         has_changes = False
         for sub in self.subscriptions:
+            __class__.hasLivescoreGamesInProgress ^= sub.inProgress
             if sub.isExpired:
                 pipe.hdel(STORAGE_KEY, f"{sub.event_id}")
                 has_changes = True
@@ -121,7 +122,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 icon=sub.icon,
                 duration=0
             )
-            __class__.hasLivescoreGamesInProgress ^= sub.inProgress
             frames.append(frame)
         __class__.client.send_model(
             APPNAME.LIVESCORES, Content(frames=frames)
