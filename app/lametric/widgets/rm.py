@@ -81,17 +81,16 @@ class Schedule(dict):
 
     @property
     def current(self) -> list[Game]:
+        if game := self.in_progress:
+            return [game]
         n = datetime.now(tz=timezone.utc)
-        events = list(filter(lambda g: abs(
-            (n - g.startTime).days) < 2, self.values()))
-        return events
+        games = sorted(self.values(), key=lambda g: g.startTime)
+        past = list(filter(lambda g: n > g.startTime, games))
+        return [past[-1], games[len(past)]]
 
     @property
-    def in_progress(self) -> bool:
-        for game in self.current:
-            if game.in_progress:
-                return True
-        return False
+    def in_progress(self) -> Game:
+        return next(filter(lambda g: g.in_progress, self.values()), None)
 
 
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
