@@ -161,7 +161,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return not len(self._schedule.current)
+        if not len(self._schedule.current):
+            return True
+        if self._schedule.in_progress:
+            return False
+        return __class__.hasLivescoreGamesInProgress
 
     def load(self):
         schedule = self.get_schedule()

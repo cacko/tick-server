@@ -41,7 +41,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.scores = Scores(())
-        self.load()
+        self.__load()
         if self.subscriptions:
             # for sub in self.subscriptions:
             #     if sub.isExpired:
@@ -49,7 +49,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.load_scores()
             self.update_frames()
 
-    def load(self):
+    def __load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
             self.subscriptions = []
@@ -121,6 +121,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 icon=sub.icon,
                 duration=0
             )
+            __class__.hasLivescoreGamesInProgress ^= sub.inProgress
             frames.append(frame)
         __class__.client.send_model(
             APPNAME.LIVESCORES, Content(frames=frames)

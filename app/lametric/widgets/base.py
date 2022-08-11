@@ -16,6 +16,7 @@ class WidgetMeta(type):
 
     _instances = {}
     client: Client = None
+    __live_games_in_progress = False
 
     def __call__(cls, widget: Widget, *args, **kwds):
         if cls.__name__ not in cls._instances:
@@ -25,6 +26,14 @@ class WidgetMeta(type):
 
     def register(cls, client: Client):
         cls.client = client
+
+    @property
+    def hasLivescoreGamesInProgress(cls):
+        return cls.__live_games_in_progress
+
+    @hasLivescoreGamesInProgress.setter
+    def hasLivescoreGamesInProgress(cls, value):
+        cls.__live_games_in_progress = value
 
 
 class BaseWidget(object, metaclass=WidgetMeta):

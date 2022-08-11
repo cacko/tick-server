@@ -69,7 +69,7 @@ class MatchEvent:
         if self.score:
             parts.append(f"{self.score}")
 
-        res = ContentFrame(text=' '.join(parts),duration=0)
+        res = ContentFrame(text=' '.join(parts), duration=0)
 
         if league_icon:
             res.icon = league_icon
@@ -85,11 +85,16 @@ class MatchEvent:
     def getSound(self):
         try:
             action = ACTION(self.action)
-            if action in [ACTION.GOAL, ACTION.FULL_TIME]:
-                return ContentSound(
-                    id=SOUNDS.BICYCLE.value
-                )
-        except:
+            match(action):
+                case ACTION.GOAL:
+                    return ContentSound(
+                        id=SOUNDS.CAR
+                    )
+                case ACTION.FULL_TIME:
+                    return ContentSound(
+                        id=SOUNDS.BICYCLE.value
+                    )
+        except ValueError:
             pass
         return None
 
