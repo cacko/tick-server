@@ -165,7 +165,7 @@ class SubscriptionEvent:
 
     @property
     def inProgress(self) -> bool:
-        return re.match(r"^\d+", self.status)
+        return re.match(r"^\d+", self.status) is not None
 
 
 STATUS_MAP = {
