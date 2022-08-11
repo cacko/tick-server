@@ -29,7 +29,6 @@ class WidgetMeta(type):
 
     @property
     def hasLivescoreGamesInProgress(cls):
-        logging.debug(cls.live_games_in_progress)
         return cls.live_games_in_progress
 
     @hasLivescoreGamesInProgress.setter
