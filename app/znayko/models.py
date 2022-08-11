@@ -1,4 +1,5 @@
 from enum import IntEnum, Enum
+import logging
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional
@@ -165,6 +166,7 @@ class SubscriptionEvent:
 
     @property
     def inProgress(self) -> bool:
+        logging.debug(f"status {self.status}")
         return re.match(r"^\d+", self.status) is not None
 
 
