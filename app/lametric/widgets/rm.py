@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import logging
+from plistlib import FMT_XML
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     ACTION,
@@ -136,6 +137,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         for idx, game in enumerate(self._schedule.current):
             text = []
             if game.not_started:
+                if not is_today(game.startTime):
+                    text.append(to_local_time(game.startTime,fmt="%a %d / "))
                 text.append(to_local_time(game.startTime))
             elif game.shortStatusText in [EventStatus.HT.value, EventStatus.FT.value]:
                 text.append(game.shortStatusText)
