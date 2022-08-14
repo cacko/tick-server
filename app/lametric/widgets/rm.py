@@ -97,7 +97,7 @@ class Schedule(dict):
             return [past[-1], next_game]
         except IndexError:
             logging.warning(f"getting index failed")
-            return [past[-1]]
+            return []
 
     @property
     def in_progress(self) -> Game:
