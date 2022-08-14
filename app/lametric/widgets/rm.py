@@ -67,8 +67,11 @@ class Schedule(dict):
         super().__init__(d)
 
     def persist(self):
-        d = {k: pickle.dumps(v) for k, v in self.items()}
-        Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
+        try:
+            d = {k: pickle.dumps(v) for k, v in self.items()}
+            Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
+        except Exception as e:
+            logging.error(e)
 
     @classmethod
     def load(cls) -> 'Schedule':
