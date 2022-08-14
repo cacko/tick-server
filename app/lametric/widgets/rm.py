@@ -114,6 +114,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         if not self.isHidden:
             self.update_frames()
         schedule_cron()
+        cron_func()
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
