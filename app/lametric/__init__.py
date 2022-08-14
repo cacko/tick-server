@@ -44,15 +44,14 @@ class LaMetric(object, metaclass=LaMetricMeta):
         while True:
             if queue.empty():
                 time.sleep(0.2)
-                self._display.update()
-                continue
-            cmd, payload = queue.get_nowait()
-            queue.task_done()
-            match(cmd):
-                case CONTENT_TYPE.NOWPLAYING:
-                    self._display.on_response(cmd, payload)
-                case CONTENT_TYPE.YANKOSTATUS:
-                    self._display.on_response(cmd, payload)
-                case CONTENT_TYPE.LIVESCOREEVENT:
-                    self._display.on_response(cmd, payload)
+            else:
+                cmd, payload = queue.get_nowait()
+                queue.task_done()
+                match(cmd):
+                    case CONTENT_TYPE.NOWPLAYING:
+                        self._display.on_response(cmd, payload)
+                    case CONTENT_TYPE.YANKOSTATUS:
+                        self._display.on_response(cmd, payload)
+                    case CONTENT_TYPE.LIVESCOREEVENT:
+                        self._display.on_response(cmd, payload)
             self._display.update()
