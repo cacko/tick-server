@@ -114,12 +114,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _sleep_start: datetime = None
 
     def __init__(self, widget_id: str, widget):
-        super().__init__(widget_id, widget)
         self.load()
         if not self.isHidden:
             self.update_frames()
         schedule_cron()
         cron_func()
+        super().__init__(widget_id, widget)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
@@ -197,6 +197,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def load(self):
         schedule = self.get_schedule()
+        logging.debug(schedule)
+        print(schedule)
         self._schedule = Schedule(schedule)
         self._schedule.persist()
 
