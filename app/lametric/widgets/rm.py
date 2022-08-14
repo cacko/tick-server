@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import logging
+from time import time
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     ACTION,
@@ -23,6 +24,7 @@ from app.core.time import to_local_time, is_today
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
+STORAGE_LAST_UPDATE = "real_madrid_last_update"
 
 
 def cron_func():
@@ -59,8 +61,35 @@ def schedule_cron():
         misfire_grace_time=180
     )
 
+class ScheduleMeta(type):
 
-class Schedule(dict):
+    __instance = None
+
+    def __call__(cls, *args, **kwargs):
+        cls.__instance = type.__call__(cls, *args, **kwargs)
+        return cls.__instance
+
+    def load(cls) -> 'Schedule':
+        if cls.needsUpdate():
+            schedule = ZnaykoClient.team_schedule(TEAM_ID)
+            obj = cls(schedule)
+            obj.persist()
+            return obj
+        if not cls.__instance:
+            data = Storage.hgetall(STORAGE_KEY)
+            games = [pickle.loads(v) for v in data.values()]
+            return cls(games)
+        return cls.__instance
+
+    def needsUpdate(cls) -> bool:
+        if not Storage.exists(STORAGE_KEY):
+            return True
+        if not Storage.exists(STORAGE_LAST_UPDATE):
+            return True
+        last_update = Storage.get(STORAGE_LAST_UPDATE)
+        return time() - last_update > (60 * 60)
+
+class Schedule(dict, metaclass=ScheduleMeta):
 
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
@@ -69,15 +98,11 @@ class Schedule(dict):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
+            Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).set(
+                STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception:
             logging.warning(f"failed pesistance")
 
-    @classmethod
-    def load(cls) -> 'Schedule':
-        data = Storage.hgetall(STORAGE_KEY)
-        games = [pickle.loads(v) for v in data.values()]
-        return cls(games)
 
     def isIn(self, event_id: int):
         return f"{event_id}" in self
@@ -89,7 +114,7 @@ class Schedule(dict):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-        
+
         try:
             next_game = games[len(past)]
             if is_today(next_game.startTime):
@@ -135,7 +160,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             return None
         return payload
 
-
     @property
     def isHidden(self):
         if not len(self._schedule.current):
@@ -147,8 +171,9 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
-        # if self._schedule.in_progress:
-        #     return False
+        return False
+        if self._schedule.in_progress:
+            return False
         return is_today(self.next_game.startTime)
 
     def onShow(self):
@@ -169,10 +194,9 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         frames = []
         for idx, game in enumerate(self._schedule.current):
             text = []
-            print(game.not_started, game.shortStatusText)
             if game.not_started:
                 if not is_today(game.startTime):
-                    text.append(to_local_time(game.startTime,fmt="%a %d / "))
+                    text.append(to_local_time(game.startTime, fmt="%a %d / "))
                 text.append(to_local_time(game.startTime))
             elif game.shortStatusText in [EventStatus.HT.value, EventStatus.FT.value]:
                 text.append(game.shortStatusText)
@@ -193,19 +217,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             APPNAME.RM, Content(frames=frames)
         )
 
-
     def load(self):
-        schedule = self.get_schedule()
-        self._schedule = Schedule(schedule)
-        self._schedule.persist()
-
-    def get_schedule(self):
-        schedule = ZnaykoClient.team_schedule(TEAM_ID)
-        return schedule
+        self._schedule = Schedule.load()
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            logging.debug(event)
             if not self._schedule.isIn(event.event_id):
                 continue
             if event.is_old_event:
@@ -215,7 +231,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if not game:
                 return
             frame = event.getContentFrame(league_icon=game.icon)
-            logging.debug(frame)
             try:
                 action = ACTION(event.action)
                 logging.debug(action)
