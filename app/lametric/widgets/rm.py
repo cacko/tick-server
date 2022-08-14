@@ -216,6 +216,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if not game:
                 return
             frame = event.getContentFrame(league_icon=game.icon)
+            logging.debug(frame)
+            print(frame)
             try:
                 action = ACTION(event.action)
                 print(action)
