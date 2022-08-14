@@ -91,7 +91,6 @@ class Schedule(dict):
         past = list(filter(lambda g: n > g.startTime, games))
         next_game = games[len(past)]
         if is_today(next_game.startTime):
-            print("next game is today")
             return [next_game]
         return [past[-1], next_game]
 
@@ -112,11 +111,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _sleep_start: datetime = None
 
     def __init__(self, widget_id: str, widget):
-        super().__init__(widget_id, widget)
         self.load()
         self.update_frames()
         schedule_cron()
         cron_func()
+        super().__init__(widget_id, widget)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):

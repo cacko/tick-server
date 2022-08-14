@@ -402,7 +402,10 @@ class Game:
             return False
         status = self.shortStatusText
         try:
+            if re.match(r"^\d+", status):
+                return True
+            logging.debug(f"Game status={status}")
             _status = EventStatus(status)
-            return _status == EventStatus.HT or re.match(r"^\d+", status)
+            return _status == EventStatus.HT
         except ValueError:
             return False
