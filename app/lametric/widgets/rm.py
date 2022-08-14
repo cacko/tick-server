@@ -114,7 +114,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.load()
-        #if not self.isHidden:
         self.update_frames()
         schedule_cron()
         cron_func()
@@ -144,15 +143,14 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
-        if self._schedule.in_progress:
-            return False
+        # if self._schedule.in_progress:
+        #     return False
         return is_today(self.next_game.startTime)
 
     def onShow(self):
-        # if self._schedule.in_progress:
         self.load()
-        # else:
-        ZnaykoClient.livescores()
+        if self._schedule.in_progress:
+            ZnaykoClient.livescores()
         self.update_frames()
 
     def onHide(self):
@@ -194,7 +192,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def load(self):
         schedule = self.get_schedule()
-        logging.debug(schedule)
         self._schedule = Schedule(schedule)
         self._schedule.persist()
 

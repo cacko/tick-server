@@ -68,6 +68,7 @@ class Display(object):
 
     @property
     def is_screensaver_active(self):
+        return False
         if not self._device_display.screensaver.enabled:
             return False
         if not self._device_display.screensaver.modes.time_based.enabled:
