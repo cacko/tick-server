@@ -89,7 +89,6 @@ class Schedule(dict):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-        print(games)
         next_game = games[len(past)]
         if is_today(next_game.startTime):
             print("next game is today")
@@ -204,24 +203,21 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return schedule
 
     def on_match_events(self, events: list[MatchEvent]):
-        logging.debug(events)
         for event in events:
-            print(event)
+            logging.debug(event)
             if not self._schedule.isIn(event.event_id):
                 continue
             if event.is_old_event:
                 continue
             game: Game = self._schedule.get(f"{event.event_id}")
-            print(game)
             is_winner = None
             if not game:
                 return
             frame = event.getContentFrame(league_icon=game.icon)
             logging.debug(frame)
-            print(frame)
             try:
                 action = ACTION(event.action)
-                print(action)
+                logging.debug(action)
                 if action == ACTION.FULL_TIME:
                     self.load()
                     game = self._schedule.get(f"{event.event_id}")
