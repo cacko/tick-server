@@ -70,8 +70,8 @@ class Schedule(dict):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
             Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
-        except Exception as e:
-            logging.warning(e)
+        except Exception:
+            logging.warning(f"failed pesistance")
 
     @classmethod
     def load(cls) -> 'Schedule':
@@ -95,8 +95,8 @@ class Schedule(dict):
             if is_today(next_game.startTime):
                 return [next_game]
             return [past[-1], next_game]
-        except IndexError as e:
-            logging.error(e)
+        except IndexError:
+            logging.warning(f"getting index failed")
             return [past[-1]]
 
     @property
