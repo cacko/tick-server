@@ -1,3 +1,4 @@
+import logging
 import time
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
@@ -8,13 +9,10 @@ from app.lametric.models import (
     APPNAME,
     DeviceDisplay
 )
-from cachable.request import Method
 from app.config import Config
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from time import time
 from dataclasses_json import dataclass_json, Undefined
-from typing import Optional
 from app.lametric.widgets import *
 
 
@@ -109,7 +107,7 @@ class Display(object):
 
     def update(self):
         if self.is_screensaver_active:
-            print(self.is_screensaver_active)
+            logging.debug(self.is_screensaver_active)
             if self._current_idx != 0:
                 self._current_idx = 0
                 current = self._items[0]
