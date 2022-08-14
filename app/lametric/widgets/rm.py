@@ -91,6 +91,7 @@ class Schedule(dict):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
+        print(games)
         next_game = games[len(past)]
         if is_today(next_game.startTime):
             print("next game is today")
@@ -137,7 +138,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return False
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
@@ -147,7 +147,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
-        return False
         if self._schedule.in_progress:
             return False
         return is_today(self.next_game.startTime)
