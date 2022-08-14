@@ -143,7 +143,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def isSleeping(self, sleep_minutes: int):
         if self._schedule.in_progress:
             return False
-        return is_today(self.next_game)
+        return is_today(self.next_game.startTime)
 
     def onShow(self):
         if self._schedule.in_progress:
