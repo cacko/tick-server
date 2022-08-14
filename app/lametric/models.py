@@ -3,6 +3,7 @@ from dataclasses_json import dataclass_json, Undefined
 from datetime import time, datetime, timezone
 from typing import Optional
 from enum import Enum
+from app.core.time import LOCAL_TIMEZONE
 
 
 class CONTENT_TYPE(Enum):
@@ -81,10 +82,12 @@ class ModeTimeBased:
     def isActive(self):
         if not self.enabled:
             return False
-        n = datetime.now(tz=timezone.utc).time()
+        n = datetime.now(tz=LOCAL_TIMEZONE).time()
         return all([
-            time.fromisoformat(self.start_time) < n,
-            time.fromisoformat(self.end_time) > n
+            time.fromisoformat(self.local_start_time).replace(
+                tzinfo=LOCAL_TIMEZONE) < n,
+            time.fromisoformat(self.local_end_time).replace(
+                tzinfo=LOCAL_TIMEZONE) > n
         ])
 
 
