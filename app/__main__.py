@@ -1,14 +1,17 @@
 
 
 import logging
-from app.core.app import App
-from os import environ
+
 
 logging.basicConfig(
-    level=getattr(logging, environ.get("TICK_LOG_LEVEL", "INFO")),
+    level=logging.DEBUG,
     format="%(filename)s %(message)s",
     datefmt="%H:%M:%S",
 )
+
+from app.core.app import App
+
+
 
 
 try:
