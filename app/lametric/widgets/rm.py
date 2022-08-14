@@ -71,7 +71,7 @@ class Schedule(dict):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hset(STORAGE_KEY, d).persist(STORAGE_KEY).execute()
+            Storage.pipeline().hset(STORAGE_KEY, mapping=d).persist(STORAGE_KEY).execute()
         except Exception as e:
             logging.error(e)
 
@@ -114,12 +114,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _sleep_start: datetime = None
 
     def __init__(self, widget_id: str, widget):
+        super().__init__(widget_id, widget)
         self.load()
-        if not self.isHidden:
-            self.update_frames()
+        #if not self.isHidden:
+        self.update_frames()
         schedule_cron()
         cron_func()
-        super().__init__(widget_id, widget)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
