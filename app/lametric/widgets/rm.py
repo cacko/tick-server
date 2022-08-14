@@ -28,7 +28,9 @@ STORAGE_KEY = "real_madrid_schedule"
 def cron_func():
     try:
         games = ZnaykoClient.team_schedule(TEAM_ID)
+        print(games)
         for game in games:
+            print(game.startTime, is_today(game.startTime))
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
                 logging.debug(res)
