@@ -162,6 +162,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
+        return False
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
