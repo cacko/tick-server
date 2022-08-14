@@ -5,12 +5,15 @@ from pathlib import Path
 from typing import Optional
 from dataclasses_json import dataclass_json, Undefined
 from yaml import load, Loader
+
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class StorageConfig:
     storage: str
     redis_url: str
     attachments: str
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -19,6 +22,7 @@ class LametricApp:
     duration: Optional[int] = None
     endpoint: Optional[str] = None
     token: Optional[str] = None
+    sleep_minutes: Optional[int] = None
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -27,10 +31,12 @@ class YankoConfig:
     host: str
     secret: str
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ZnaykoConfig:
     host: str
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -38,6 +44,7 @@ class ApiConfig:
     host: str
     port: int
     secret: str
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -48,6 +55,7 @@ class LametricConfig:
     apps: dict[str, LametricApp]
     timezone: str
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ConfigStruct:
@@ -57,6 +65,7 @@ class ConfigStruct:
     api: ApiConfig
     znayko: ZnaykoConfig
     display: list[str]
+
 
 class ConfigMeta(type):
     _instance = None
@@ -89,6 +98,7 @@ class ConfigMeta(type):
     @property
     def display(cls) -> list[str]:
         return cls().struct.display
+
 
 class Config(object, metaclass=ConfigMeta):
 

@@ -65,6 +65,10 @@ class BaseWidget(object, metaclass=WidgetMeta):
     def isHidden(self):
         return False
 
+    @property
+    def isSleeping(self):
+        return False
+
 
 class SubscriptionWidget(BaseWidget):
 

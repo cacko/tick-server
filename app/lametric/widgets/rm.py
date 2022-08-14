@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import logging
-from plistlib import FMT_XML
+from logging.config import _RootLoggerConfiguration
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     ACTION,
@@ -87,16 +87,26 @@ class Schedule(dict):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-        return [past[-1], games[len(past)]]
+        next_game = games[len(past)]
+        if is_today(next_game):
+            return [next_game]
+        return [past[-1], next_game]
 
     @property
     def in_progress(self) -> Game:
         return next(filter(lambda g: g.in_progress, self.values()), None)
 
+    @property
+    def next_game(self) -> Game:
+        if self.in_progress:
+            return self.current[0]
+        return self.current[-1]
+
 
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     _schedule: Schedule = None
+    _sleep_start: datetime = None
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
@@ -117,6 +127,22 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         if event_id and self._schedule.isIn(event_id):
             return None
         return payload
+
+
+    @property
+    def isHidden(self):
+        if not len(self._schedule.current):
+            return True
+        if self._schedule.in_progress:
+            return False
+        if __class__.hasLivescoreGamesInProgress:
+            return False
+        return self.isSleeping
+
+    def isSleeping(self, sleep_minutes: int):
+        if self._schedule.in_progress:
+            return False
+        return is_today(self.next_game)
 
     def onShow(self):
         if self._schedule.in_progress:
@@ -159,13 +185,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             APPNAME.RM, Content(frames=frames)
         )
 
-    @property
-    def isHidden(self):
-        if not len(self._schedule.current):
-            return True
-        if self._schedule.in_progress:
-            return False
-        return __class__.hasLivescoreGamesInProgress
 
     def load(self):
         schedule = self.get_schedule()
