@@ -86,7 +86,7 @@ class ScheduleMeta(type):
             return True
         if not Storage.exists(STORAGE_LAST_UPDATE):
             return True
-        last_update = Storage.get(STORAGE_LAST_UPDATE)
+        last_update = float(Storage.get(STORAGE_LAST_UPDATE))
         return time() - last_update > (60 * 60)
 
 class Schedule(dict, metaclass=ScheduleMeta):
