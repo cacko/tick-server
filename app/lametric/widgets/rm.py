@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 import logging
-from logging.config import _RootLoggerConfiguration
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
     ACTION,
