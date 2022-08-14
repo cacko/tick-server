@@ -55,6 +55,7 @@ class Server(object, metaclass=ServerMeta):
 
     def handle_subscription(self, payload):
         LaMetric.queue.put_nowait((CONTENT_TYPE.LIVESCOREEVENT, payload))
+        return "OK"
 
 @app.route('/api/nowplaying', method='POST')
 @auth_required
