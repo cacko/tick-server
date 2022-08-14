@@ -171,6 +171,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         frames = []
         for idx, game in enumerate(self._schedule.current):
             text = []
+            print(game.not_started, game.shortStatusText)
             if game.not_started:
                 if not is_today(game.startTime):
                     text.append(to_local_time(game.startTime,fmt="%a %d / "))
