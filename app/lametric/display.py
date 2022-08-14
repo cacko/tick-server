@@ -66,6 +66,7 @@ class Display(object):
 
     @property
     def is_screensaver_active(self):
+        logging.debug(self._device_display)
         if not self._device_display.screensaver.enabled:
             return False
         if not self._device_display.screensaver.modes.time_based.enabled:
@@ -106,8 +107,8 @@ class Display(object):
             self._current_idx = 0
 
     def update(self):
+        logging.debug(self.is_screensaver_active)
         if self.is_screensaver_active:
-            logging.debug(self.is_screensaver_active)
             if self._current_idx != 0:
                 self._current_idx = 0
                 current = self._items[0]
