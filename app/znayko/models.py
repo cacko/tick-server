@@ -195,9 +195,9 @@ class GameStatus(Enum):
     SUS = "Susp"
     ABD = "Aband."
     AET = "After Pen"
-    UNKNOWN = ""
     NS = "NS"
     FN = "Final"
+    PP = "Post."
 
 
 class OrderWeight(Enum):
@@ -385,8 +385,8 @@ class Game:
             return False
         status = self.shortStatusText
         try:
-            _status = EventStatus(status)
-            return _status in (EventStatus.FT, EventStatus.AET, EventStatus.PPD)
+            _status = GameStatus(status)
+            return _status in (GameStatus.FT, GameStatus.AET, GameStatus.PPD)
         except ValueError:
             return False
 
@@ -404,8 +404,7 @@ class Game:
         try:
             if re.match(r"^\d+", status):
                 return True
-            logging.debug(f"Game status={status}")
-            _status = EventStatus(status)
+            _status = GameStatus(status)
             return _status == EventStatus.HT
         except ValueError:
             return False
