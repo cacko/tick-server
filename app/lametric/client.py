@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import logging
 from app.core import clean_frame
 from app.config import LametricConfig, LametricApp
@@ -79,7 +80,7 @@ class Client(object):
             Method.GET,
             "device/display"
         )
-        return DeviceDisplay.from_dict(res)
+        return DeviceDisplay.from_dict({"updated_at": datetime.now(tz=timezone.utc), **res})
 
     def send_model(self, config_name: APPNAME, model: Content):
         data = model.to_dict()

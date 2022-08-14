@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, Undefined
-from datetime import time, datetime, timezone
+from datetime import time, datetime, timezone, timedelta
 from typing import Optional
 from enum import Enum
 from app.core.time import LOCAL_TIMEZONE
@@ -109,6 +109,11 @@ class DisplayScreensave:
 class DeviceDisplay:
     brightness: int
     screensaver: DisplayScreensave
+    updated_at: Optional[datetime] = None
+
+    @property
+    def needs_update(self) -> bool:
+        return (datetime.now(tz=timezone.utc) - self.updated_at) > timedelta(minutes=5)
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)

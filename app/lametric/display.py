@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import time
 from app.lametric.widgets.base import BaseWidget
@@ -66,6 +67,8 @@ class Display(object):
 
     @property
     def is_screensaver_active(self):
+        if self._device_display.needs_update:
+            self._device_display = self._client.get_display()
         if not self._device_display.screensaver.enabled:
             return False
         if not self._device_display.screensaver.modes.time_based.enabled:
