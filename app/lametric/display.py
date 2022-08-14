@@ -107,7 +107,6 @@ class Display(object):
 
     def update(self):
         if self.is_screensaver_active:
-            logging.debug("scr active")
             if self._current_idx != 0:
                 self._current_idx = 0
                 current = self._items[0]
