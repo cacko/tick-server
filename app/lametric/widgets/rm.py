@@ -28,9 +28,7 @@ STORAGE_KEY = "real_madrid_schedule"
 def cron_func():
     try:
         games = ZnaykoClient.team_schedule(TEAM_ID)
-        print(games)
         for game in games:
-            print(game.startTime, is_today(game.startTime))
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
                 logging.debug(res)
@@ -89,7 +87,7 @@ class Schedule(dict):
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
         next_game = games[len(past)]
-        if is_today(next_game):
+        if is_today(next_game.startTime):
             print("next game is today")
             return [next_game]
         return [past[-1], next_game]
