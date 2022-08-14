@@ -64,8 +64,6 @@ class Schedule(dict):
 
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
-        logging.debug(d)
-        print(d)
         super().__init__(d)
 
     def persist(self):
@@ -198,7 +196,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def load(self):
         schedule = self.get_schedule()
         logging.debug(schedule)
-        print(schedule)
         self._schedule = Schedule(schedule)
         self._schedule.persist()
 
