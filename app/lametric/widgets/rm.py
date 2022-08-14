@@ -64,6 +64,8 @@ class Schedule(dict):
 
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
+        logging.debug(d)
+        print(d)
         super().__init__(d)
 
     def persist(self):
@@ -149,10 +151,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return is_today(self.next_game.startTime)
 
     def onShow(self):
-        if self._schedule.in_progress:
-            self.load()
-            ZnaykoClient.livescores()
-            self.update_frames()
+        # if self._schedule.in_progress:
+        self.load()
+        # else:
+        ZnaykoClient.livescores()
+        self.update_frames()
 
     def onHide(self):
         pass
@@ -200,6 +203,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return schedule
 
     def on_match_events(self, events: list[MatchEvent]):
+        logging.debug(events)
         for event in events:
             print(event)
             if not self._schedule.isIn(event.event_id):
