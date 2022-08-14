@@ -89,10 +89,15 @@ class Schedule(dict):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-        next_game = games[len(past)]
-        if is_today(next_game.startTime):
-            return [next_game]
-        return [past[-1], next_game]
+        
+        try:
+            next_game = games[len(past)]
+            if is_today(next_game.startTime):
+                return [next_game]
+            return [past[-1], next_game]
+        except IndexError as e:
+            logging.error(e)
+            return [past[-1]]
 
     @property
     def in_progress(self) -> Game:
