@@ -63,8 +63,8 @@ class Display(object):
         self._client = client
         self._apps = client.get_apps()
         BaseWidget.register(self._client)
-        self.__init()
         self._device_display = self._client.get_display()
+        self.__init()
 
     @property
     def is_screensaver_active(self):
