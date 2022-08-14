@@ -197,7 +197,7 @@ class GameStatus(Enum):
     AET = "After Pen"
     NS = "NS"
     FN = "Final"
-    PP = "Post."
+    PPD = "Post."
 
 
 class OrderWeight(Enum):
