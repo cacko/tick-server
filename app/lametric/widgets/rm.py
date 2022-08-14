@@ -88,6 +88,7 @@ class Schedule(dict):
         past = list(filter(lambda g: n > g.startTime, games))
         next_game = games[len(past)]
         if is_today(next_game):
+            print("next game is today")
             return [next_game]
         return [past[-1], next_game]
 
