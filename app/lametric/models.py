@@ -72,10 +72,10 @@ class SOUNDS(Enum):
 @dataclass
 class ModeTimeBased:
     enabled: bool
-    end_time: time
-    start_time: time
-    local_end_time: time
-    local_start_time: time
+    end_time: str
+    start_time: str
+    local_end_time: str
+    local_start_time: str
 
     @property
     def isActive(self):
