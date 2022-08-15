@@ -127,7 +127,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             APPNAME.LIVESCORES, Content(frames=frames)
         )
 
-    def on_match_events(self, events: list[MatchEvent]):
+    def on_match_events(self, events: list[MatchEvent], only_notify=False):
         for event in events:
             if not event.is_old_event:
                 sub = next(filter(lambda x: x.event_id ==
@@ -143,7 +143,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 ))
             if event.score:
                 self.scores[event.event_id] = event.score
-        if self.scores.has_changes:
+        if not only_notify and self.scores.has_changes:
             self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):

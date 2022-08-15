@@ -30,7 +30,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
     def isHidden(self):
         return (self.status in [MUSIC_STATUS.STOPPED, MUSIC_STATUS.EXIT])
 
-    def nowplaying(self, payload):
+    def nowplaying(self, payload, only_notify=False):
         frame = NowPlayingFrame(**payload)
         __class__.client.send_notification(Notification(
             model=Content(
@@ -38,7 +38,8 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
             ),
             priority='critical'
         ))
-        __class__.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
+        if not only_notify:
+            __class__.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
         return True
 
     def yankostatus(self, payload):

@@ -91,15 +91,15 @@ class Display(object):
             for name in Config.display
         ]
 
-    def on_response(self, content_type: CONTENT_TYPE, payload):
+    def on_response(self, content_type: CONTENT_TYPE, payload, only_notify=False):
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
-                self._widgets.get(APPNAME.YANKO).nowplaying(payload)
+                self._widgets.get(APPNAME.YANKO).nowplaying(payload, only_notify)
             case CONTENT_TYPE.YANKOSTATUS:
-                self._widgets.get(APPNAME.YANKO).yankostatus(payload)
+                self._widgets.get(APPNAME.YANKO).yankostatus(payload, only_notify)
             case CONTENT_TYPE.LIVESCOREEVENT:
-                payload = self._widgets.get(APPNAME.RM).on_event(payload)
-                self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
+                payload = self._widgets.get(APPNAME.RM).on_event(payload, only_notify)
+                self._widgets.get(APPNAME.LIVESCORES).on_event(payload, only_notify)
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
