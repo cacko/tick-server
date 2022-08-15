@@ -70,7 +70,6 @@ class GameStatus(Enum):
     PPD = "Post."
 
 
-
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MatchEvent:
@@ -122,7 +121,7 @@ class MatchEvent:
             match(action):
                 case ACTION.GOAL:
                     return ContentSound(
-                        id=SOUNDS.CAR
+                        id=SOUNDS.CAR.value
                     )
                 case ACTION.FULL_TIME:
                     return ContentSound(
