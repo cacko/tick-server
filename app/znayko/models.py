@@ -11,6 +11,7 @@ from enum import IntEnum, Enum
 from string import punctuation
 import re
 from stringcase import constcase
+from app.core.time import to_local_time
 
 
 class EventIcon(IntEnum):
@@ -36,6 +37,38 @@ class ACTION(Enum):
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
     CANCEL_JOB = "Cancel Job"
+
+
+STATUS_MAP = {
+    "Post.": "PPD",
+    "Ended": "FT",
+    "Canc.": "CNL",
+    "Sched.": "NS",
+    "Just Ended": "FT",
+    "After ET": "AET",
+    "After Pen": "AET",
+}
+
+
+class EventStatus(Enum):
+    HT = "HT"
+    FT = "FT"
+    PPD = "PPD"
+    CNL = "CNL"
+    AET = "AET"
+    NS = "NS"
+
+
+class GameStatus(Enum):
+    FT = "Ended"
+    JE = "Just Ended"
+    SUS = "Susp"
+    ABD = "Aband."
+    AET = "After Pen"
+    NS = "NS"
+    FN = "Final"
+    PPD = "Post."
+
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -168,35 +201,15 @@ class SubscriptionEvent:
     def inProgress(self) -> bool:
         return re.match(r"^\d+", f"{self.status}") is not None
 
-STATUS_MAP = {
-    "Post.": "PPD",
-    "Ended": "FT",
-    "Canc.": "CNL",
-    "Sched.": "NS",
-    "Just Ended": "FT",
-    "After ET": "AET",
-    "After Pen": "AET",
-}
-
-
-class EventStatus(Enum):
-    HT = "HT"
-    FT = "FT"
-    PPD = "PPD"
-    CNL = "CNL"
-    AET = "AET"
-    NS = "NS"
-
-
-class GameStatus(Enum):
-    FT = "Ended"
-    JE = "Just Ended"
-    SUS = "Susp"
-    ABD = "Aband."
-    AET = "After Pen"
-    NS = "NS"
-    FN = "Final"
-    PPD = "Post."
+    @property
+    def displayStatus(self) -> str:
+        try:
+            status = EventStatus(self.status)
+            if status == EventStatus.NS:
+                return to_local_time(self.start_time)
+        except ValueError:
+            pass
+        return self.status
 
 
 class OrderWeight(Enum):

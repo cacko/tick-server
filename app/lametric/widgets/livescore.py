@@ -111,7 +111,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         frames = []
         for idx, sub in enumerate(self.subscriptions):
             text = []
-            text.append(sub.status)
+            text.append(sub.displayStatus)
             text.append(sub.event_name)
             score = self.scores.get(sub.event_id, "")
             if score:
