@@ -92,15 +92,14 @@ class Display(object):
         ]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
-        only_notify = self.is_screensaver_active
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
-                self._widgets.get(APPNAME.YANKO).nowplaying(payload, only_notify)
+                self._widgets.get(APPNAME.YANKO).nowplaying(payload)
             case CONTENT_TYPE.YANKOSTATUS:
                 self._widgets.get(APPNAME.YANKO).yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
-                payload = self._widgets.get(APPNAME.RM).on_event(payload, only_notify)
-                self._widgets.get(APPNAME.LIVESCORES).on_event(payload, only_notify)
+                payload = self._widgets.get(APPNAME.RM).on_event(payload)
+                self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1

@@ -221,7 +221,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def load(self):
         self._schedule = Schedule.load()
 
-    def on_match_events(self, events: list[MatchEvent], only_notify=False):
+    def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             if not self._schedule.isIn(event.event_id):
                 continue
