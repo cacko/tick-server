@@ -43,9 +43,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         self.scores = Scores(())
         self.load()
         if self.subscriptions:
-            # for sub in self.subscriptions:
-            #     if sub.isExpired:
-            #         self.cancel_sub(sub)
             self.load_scores()
             self.update_frames()
 
