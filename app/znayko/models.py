@@ -121,7 +121,7 @@ class MatchEvent:
             match(action):
                 case ACTION.GOAL:
                     return ContentSound(
-                        id=SOUNDS.CAR.value
+                        id=SOUNDS.POSITIVE5.value
                     )
                 case ACTION.FULL_TIME:
                     return ContentSound(
