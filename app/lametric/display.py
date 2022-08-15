@@ -96,7 +96,7 @@ class Display(object):
             case CONTENT_TYPE.NOWPLAYING:
                 self._widgets.get(APPNAME.YANKO).nowplaying(payload, only_notify)
             case CONTENT_TYPE.YANKOSTATUS:
-                self._widgets.get(APPNAME.YANKO).yankostatus(payload, only_notify)
+                self._widgets.get(APPNAME.YANKO).yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
                 payload = self._widgets.get(APPNAME.RM).on_event(payload, only_notify)
                 self._widgets.get(APPNAME.LIVESCORES).on_event(payload, only_notify)
