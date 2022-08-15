@@ -168,7 +168,6 @@ class SubscriptionEvent:
     def inProgress(self) -> bool:
         return re.match(r"^\d+", f"{self.status}") is not None
 
-
 STATUS_MAP = {
     "Post.": "PPD",
     "Ended": "FT",
