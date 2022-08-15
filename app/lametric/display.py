@@ -91,7 +91,8 @@ class Display(object):
             for name in Config.display
         ]
 
-    def on_response(self, content_type: CONTENT_TYPE, payload, only_notify=False):
+    def on_response(self, content_type: CONTENT_TYPE, payload):
+        only_notify = self.is_screensaver_active
         match(content_type):
             case CONTENT_TYPE.NOWPLAYING:
                 self._widgets.get(APPNAME.YANKO).nowplaying(payload, only_notify)
