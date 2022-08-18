@@ -143,11 +143,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _sleep_start: datetime = None
 
     def __init__(self, widget_id: str, widget):
+        super().__init__(widget_id, widget)
         self.load()
         self.update_frames()
         schedule_cron()
         cron_func()
-        super().__init__(widget_id, widget)
 
     @property
     def sleep_start(self):
@@ -176,13 +176,13 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return False
-        # if not len(self._schedule.current):
-        #     return True
-        # if self._schedule.in_progress:
-        #     return False
-        # if __class__.hasLivescoreGamesInProgress:
-        #     return False
+        print(len(self._schedule), len(self._schedule.current))
+        if not len(self._schedule.current):
+            return True
+        if self._schedule.in_progress:
+            return False
+        if __class__.hasLivescoreGamesInProgress:
+            return False
         return self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
