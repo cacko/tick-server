@@ -176,7 +176,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        print(len(self._schedule), len(self._schedule.current))
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
@@ -188,7 +187,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def isSleeping(self, sleep_minutes: int):
         if self._schedule.in_progress:
             return False
-        if is_today(self.next_game.startTime):
+        if is_today(self._schedule.next_game.startTime):
             return False
         td = timedelta(minutes=sleep_minutes)
         st = self.sleep_start
