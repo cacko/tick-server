@@ -37,6 +37,7 @@ class ACTION(Enum):
     SUBSCRIBED = "Subscribed"
     UNSUBSUBSCRIBED = "Unsubscribed"
     CANCEL_JOB = "Cancel Job"
+    HALF_TIME = "Half Time"
 
 
 STATUS_MAP = {
