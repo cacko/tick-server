@@ -183,7 +183,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             return False
         if __class__.hasLivescoreGamesInProgress:
             return False
-        return self.isSleeping
+        return False #self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
         if self._schedule.in_progress:
