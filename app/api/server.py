@@ -80,7 +80,9 @@ def on_button():
 @app.route("/api/subscription", method="POST")
 @auth_required
 def on_subscription():
-    return Server.subscription(request.json)
+    data = request.json
+    logging.debug(data)
+    return Server.subscription(data)
 
 @app.route('/privacy')
 def privacy():
