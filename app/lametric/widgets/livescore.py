@@ -7,6 +7,7 @@ from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
     MatchEvent,
+    ACTION
 )
 from app.znayko.client import Client as ZnaykoClient
 
@@ -129,6 +130,12 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if not event.is_old_event:
                 sub = next(filter(lambda x: x.event_id ==
                            event.event_id, self.subscriptions), None)
+                try:
+                    act = ACTION(event.action)
+                    if act == ACTION.HALF_TIME:
+                        sub.status = 'HT'
+                except ValueError:
+                    pass
                 frame = event.getContentFrame(
                     league_icon=sub.icon if sub else None)
                 __class__.client.send_notification(Notification(
