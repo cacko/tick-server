@@ -183,14 +183,14 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             return False
         if __class__.hasLivescoreGamesInProgress:
             return False
-        return False #self.isSleeping
+        return self.isSleeping(20)
 
     def isSleeping(self, sleep_minutes: int):
         if self._schedule.in_progress:
             return False
         if is_today(self.next_game.startTime):
             return False
-        td = timedelta(minutes=20)
+        td = timedelta(minutes=sleep_minutes)
         st = self.sleep_start
         n = datetime.now(tz=timezone.utc)
         if not st:
