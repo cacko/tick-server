@@ -25,6 +25,7 @@ from app.core.time import to_local_time, is_today
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
 STORAGE_LAST_UPDATE = "real_madrid_last_update"
+STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 
 def cron_func():
@@ -61,6 +62,7 @@ def schedule_cron():
         misfire_grace_time=180
     )
 
+
 class ScheduleMeta(type):
 
     __instance = None
@@ -89,6 +91,7 @@ class ScheduleMeta(type):
         last_update = float(Storage.get(STORAGE_LAST_UPDATE))
         return time() - last_update > (60 * 60)
 
+
 class Schedule(dict, metaclass=ScheduleMeta):
 
     def __init__(self, data: list[Game]):
@@ -102,7 +105,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception:
             logging.warning(f"failed pesistance")
-
 
     def isIn(self, event_id: int):
         return f"{event_id}" in self
@@ -147,6 +149,18 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         cron_func()
         super().__init__(widget_id, widget)
 
+    @property
+    def sleep_start(self):
+        data = Storage.get(STORAGE_LAST_SLEEP_START)
+        if data:
+            return pickle.loads(data)
+        return None
+
+    @sleep_start.setter
+    def sleep_start(self, value):
+        Storage.pipeline().set(STORAGE_LAST_SLEEP_START, pickle.dumps(value)
+                               ).persist(STORAGE_LAST_SLEEP_START).execute()
+
     def filter_payload(self, payload):
         if isinstance(payload, list):
             return list(
@@ -166,14 +180,25 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             return True
         if self._schedule.in_progress:
             return False
-        if __class__.hasLivescoreGamesInProgress:
-            return False
+        # if __class__.hasLivescoreGamesInProgress:
+        #     return False
         return self.isSleeping
 
     def isSleeping(self, sleep_minutes: int):
         if self._schedule.in_progress:
             return False
-        return is_today(self.next_game.startTime)
+        if is_today(self.next_game.startTime):
+            return False
+        td = timedelta(minutes=20)
+        st = self.sleep_start
+        n = datetime.now(tz=timezone.utc)
+        if not st:
+            self.sleep_start = n
+            return False
+        if n - st < td:
+            return True
+        self.sleep_start = n
+        return False
 
     def onShow(self):
         self.load()
