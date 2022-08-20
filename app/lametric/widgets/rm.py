@@ -227,8 +227,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 text.append(to_local_time(game.startTime))
             elif game.shortStatusText in [EventStatus.HT.value, EventStatus.FT.value]:
                 text.append(game.shortStatusText)
+            elif game.ended:
+                text.append("FT")
             else:
                 text.append(game.gameTimeDisplay)
+
             text.append(
                 f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
             if not game.not_started:
