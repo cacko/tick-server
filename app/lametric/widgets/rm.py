@@ -85,6 +85,7 @@ class ScheduleMeta(type):
 
     def needsUpdate(cls) -> bool:
         if cls().in_progress:
+            print("needs update in progress")
             return True
         if not Storage.exists(STORAGE_KEY):
             return True
@@ -130,6 +131,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
 
     @property
     def in_progress(self) -> Game:
+        print("in progress")
         return next(filter(lambda g: g.in_progress, self.values()), None)
 
     @property
