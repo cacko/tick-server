@@ -84,7 +84,7 @@ class ScheduleMeta(type):
         return cls.__instance
 
     def needsUpdate(cls) -> bool:
-        if cls.__instance.in_progress:
+        if cls.__instance and cls.__instance.in_progress:
             print("needs update in progress")
             return True
         if not Storage.exists(STORAGE_KEY):
