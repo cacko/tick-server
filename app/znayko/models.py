@@ -77,8 +77,8 @@ class MatchEvent:
     time: int
     action: str
     order: int
-    event_id: Optional[int] = None
     is_old_event: bool
+    event_id: Optional[int] = None
     team: Optional[str] = None
     player: Optional[str] = None
     score: Optional[str] = None
