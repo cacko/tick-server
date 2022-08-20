@@ -97,6 +97,7 @@ class ScheduleMeta(type):
 
 class Schedule(dict, metaclass=ScheduleMeta):
 
+
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
@@ -131,7 +132,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
 
     @property
     def in_progress(self) -> Game:
-        print("in progress")
         return next(filter(lambda g: g.in_progress, self.values()), None)
 
     @property
