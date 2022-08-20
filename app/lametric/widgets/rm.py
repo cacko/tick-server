@@ -84,6 +84,7 @@ class ScheduleMeta(type):
         return cls.__instance
 
     def needsUpdate(cls) -> bool:
+        return True
         if cls.__instance and cls.__instance.in_progress:
             print("needs update in progress")
             return True
