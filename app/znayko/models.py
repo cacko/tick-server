@@ -74,10 +74,10 @@ class GameStatus(Enum):
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MatchEvent:
-    event_id: int
     time: int
     action: str
     order: int
+    event_id: Optional[int] = None
     is_old_event: bool
     team: Optional[str] = None
     player: Optional[str] = None

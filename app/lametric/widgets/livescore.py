@@ -50,8 +50,11 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
+            print("no data")
             self.subscriptions = []
         self.subscriptions = [pickle.loads(v) for v in data.values()]
+        print(self.subscriptions)
+
 
     def load_scores(self):
         data = ZnaykoClient.livescores()
@@ -103,7 +106,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return len(self.subscriptions) == 0
+        return not len(self.subscriptions)
 
     def update_frames(self):
         frames = []
