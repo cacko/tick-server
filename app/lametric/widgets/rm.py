@@ -67,8 +67,8 @@ class ScheduleMeta(type):
 
     __instance = None
 
-    def __call__(cls, *args, **kwargs):
-        cls.__instance = type.__call__(cls, *args, **kwargs)
+    def __call__(cls, data, *args, **kwargs):
+        cls.__instance = type.__call__(cls, data, *args, **kwargs)
         return cls.__instance
 
     def load(cls) -> 'Schedule':
@@ -84,7 +84,7 @@ class ScheduleMeta(type):
         return cls.__instance
 
     def needsUpdate(cls) -> bool:
-        if cls().in_progress:
+        if cls.__instance.in_progress:
             print("needs update in progress")
             return True
         if not Storage.exists(STORAGE_KEY):
