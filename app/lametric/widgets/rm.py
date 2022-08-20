@@ -97,7 +97,6 @@ class ScheduleMeta(type):
 
 class Schedule(dict, metaclass=ScheduleMeta):
 
-
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
@@ -105,7 +104,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hmset(STORAGE_KEY, d).persist(STORAGE_KEY).set(
+            Storage.pipeline().hset(STORAGE_KEY, , mapping=d).persist(STORAGE_KEY).set(
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception:
             logging.warning(f"failed pesistance")
