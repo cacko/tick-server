@@ -104,7 +104,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hset(STORAGE_KEY, , mapping=d).persist(STORAGE_KEY).set(
+            Storage.pipeline().hset(STORAGE_KEY, mapping=d).persist(STORAGE_KEY).set(
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception:
             logging.warning(f"failed pesistance")
