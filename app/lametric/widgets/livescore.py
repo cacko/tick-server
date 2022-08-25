@@ -38,6 +38,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     subscriptions: list[SubscriptionEvent] = []
     scores: Scores = {}
+    __loaded = False
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
@@ -50,10 +51,11 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def load(self):
         data = Storage.hgetall(STORAGE_KEY)
         if not data:
-            print("no data")
+            logging.debug("no data")
             self.subscriptions = []
         self.subscriptions = [pickle.loads(v) for v in data.values()]
-        print(self.subscriptions)
+        logging.debug(self.subscriptions)
+        self.__loaded = True
 
 
     def load_scores(self):

@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 app/settings.toml
 app/settings.yaml
+.envrc
