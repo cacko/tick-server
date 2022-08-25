@@ -8,7 +8,7 @@ vars:
 tasks:
   default:
     cmds:
-      - $CONDA_EXE run --live-stream -n {{.PROJECT}} python -m app
+      - conda run --live-stream -n {{.PROJECT}} python -m app
     silent: true
 
   logs:
@@ -59,7 +59,7 @@ tasks:
   update:
     desc: uypdat env
     cmds:
-      -  ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}};conda env update -n {{.PROJECT}} -f environment.yml --prune'
+      -  ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}}; conda env update -n {{.PROJECT}} -f environment.yml --prune'
 
   deploy:
     desc: shortcut for stop -> push -> pull -> restart
@@ -72,4 +72,4 @@ tasks:
   systemd-exec:
     desc: run the server
     cmds:
-      - direnv exec . $CONDA_EXE run --live-stream -n {{.PROJECT}} python -m app
+      - direnv exec . conda run --live-stream -n {{.PROJECT}} python -m app
