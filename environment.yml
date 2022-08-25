@@ -2,21 +2,21 @@ name: tick-server
 channels:
   - conda-forge
 dependencies:
-  - bzip2=1.0.8=h3422bc3_4
-  - ca-certificates=2022.6.15=h4653dfc_0
-  - libffi=3.4.2=h3422bc3_5
-  - libsqlite=3.39.2=h2c9beb0_1
-  - libzlib=1.2.12=ha287fd2_2
-  - ncurses=6.3=h07bb92c_1
-  - openssl=3.0.5=h7aea29f_1
-  - pip=22.2.2=pyhd8ed1ab_0
-  - python=3.10.6=hae75cb6_0_cpython
-  - python_abi=3.10=2_cp310
-  - readline=8.1.2=h46ed386_0
-  - setuptools=65.3.0=py310hbe9552e_0
-  - tk=8.6.12=he1e0b03_0
-  - wheel=0.37.1=pyhd8ed1ab_0
-  - xz=5.2.6=h57fd34a_0
+  - bzip2=1.0.8
+  - ca-certificates=2022.6.15
+  - libffi=3.4.2
+  - libsqlite=3.39.2
+  - libzlib=1.2.12
+  - ncurses=6.3
+  - openssl=3.0.5
+  - pip=22.2.2
+  - python=3.10.6
+  - python_abi=3.10
+  - readline=8.1.2
+  - setuptools=65.3.0
+  - tk=8.6.12
+  - wheel=0.37.1
+  - xz=5.2.6
   - pip:
     - anyio==3.6.1
     - apscheduler==4.0.0a1.post1
