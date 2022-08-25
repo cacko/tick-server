@@ -54,6 +54,12 @@ tasks:
       - task: export
       - task: push
       - task: pull
+      - task: update
+
+  update:
+    desc: uypdat env
+    cmds:
+      -  ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}};conda env update -n {{.PROJECT}} -f environment.yml --prune
 
   deploy:
     desc: shortcut for stop -> push -> pull -> restart
