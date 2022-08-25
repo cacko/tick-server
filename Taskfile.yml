@@ -8,7 +8,7 @@ vars:
 tasks:
   default:
     cmds:
-      - poetry run python -m app
+      - conda run --live-stream -n tick python -m app
     silent: true
 
   logs:
@@ -49,21 +49,15 @@ tasks:
       - task: push
       - task: pull
 
-  install:
-    desc: calls poetry install and npm ci
-    cmds:
-      - ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}};poetry install'
-
   deploy:
     desc: shortcut for stop -> push -> pull -> restart
     cmds:
       - task: stop
       - task: push
       - task: pull
-      - task: install
       - task: restart
 
   systemd-exec:
     desc: run the server
     cmds:
-      - direnv exec . poetry run python -m app
+      - direnv exec . conda run --live-stream -n tick python -m app
