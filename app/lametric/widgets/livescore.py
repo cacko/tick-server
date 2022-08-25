@@ -108,6 +108,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
+        if not self.__loaded:
+            self.load()
         return not len(self.subscriptions)
 
     def update_frames(self):
