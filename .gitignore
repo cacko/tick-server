@@ -128,5 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 app/settings.toml
-.envrc
 app/settings.yaml
