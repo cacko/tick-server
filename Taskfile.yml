@@ -3,12 +3,12 @@
 version: "3"
 
 vars:
-  PROJECT: tick
+  PROJECT: tick-server
 
 tasks:
   default:
     cmds:
-      - $CONDA_EXE run --live-stream -n tick python -m app
+      - $CONDA_EXE run --live-stream -n {{.PROJECT}} python -m app
     silent: true
 
   logs:
@@ -60,4 +60,4 @@ tasks:
   systemd-exec:
     desc: run the server
     cmds:
-      - direnv exec . $CONDA_EXE run --live-stream -n tick python -m app
+      - direnv exec . $CONDA_EXE run --live-stream -n {{.PROJECT}} python -m app
