@@ -135,6 +135,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             if not event.is_old_event:
                 sub = next(filter(lambda x: x.event_id ==
                            event.event_id, self.subscriptions), None)
+                if not sub:
+                    continue
                 try:
                     act = ACTION(event.action)
                     if act == ACTION.HALF_TIME:
