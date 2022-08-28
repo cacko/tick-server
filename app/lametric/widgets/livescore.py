@@ -60,7 +60,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         frames = []
         logging.debug(f"UPDATE FRAMES")
         for idx, sub in enumerate(self.subscriptions.events):
-            logging.debug(f"FRAME {sub}")
             text = []
             text.append(sub.displayStatus)
             text.append(sub.event_name)

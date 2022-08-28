@@ -67,6 +67,7 @@ tasks:
       - task: stop
       - task: push
       - task: pull
+      - task: update
       - task: restart
 
   systemd-exec:

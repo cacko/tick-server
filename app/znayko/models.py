@@ -1,5 +1,4 @@
 from enum import IntEnum, Enum
-import logging
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional
@@ -166,13 +165,6 @@ class MatchEvent:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SubscriptionEvent:
-    start_time: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso"),
-        )
-    )
     id: str
     action: str
     league: str
@@ -185,6 +177,13 @@ class SubscriptionEvent:
     event_name: str
     job_id: str
     icon: str
+    start_time: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso"),
+        )
+    )
     status: str = ""
 
     @property
