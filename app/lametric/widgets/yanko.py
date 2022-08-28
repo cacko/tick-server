@@ -1,4 +1,5 @@
 import logging
+from pickletools import StackObject
 from app.lametric.models import (
     Widget,
     NowPlayingFrame,
@@ -34,6 +35,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
+        self.status = MUSIC_STATUS.PLAYING
         __class__.client.send_notification(Notification(
             model=Content(
                 frames=[frame],
