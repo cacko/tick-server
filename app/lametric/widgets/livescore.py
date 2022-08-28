@@ -10,71 +10,26 @@ from app.znayko.models import (
     ACTION
 )
 from app.znayko.client import Client as ZnaykoClient
-
+from app.lametric.widgets.items.subscriptions import Subscriptions, Scores
 
 STORAGE_KEY = "subscriptions"
 
 
-class Scores(dict):
-
-    __has_changes = False
-
-    def __setitem__(self, __k, __v) -> None:
-        if self.get(__k, "") != __v:
-            self.__has_changes = True
-        return super().__setitem__(__k, __v)
-
-    def __delitem__(self, __v) -> None:
-        return super().__delitem__(__v)
-
-    @property
-    def has_changes(self):
-        res = self.__has_changes
-        self.__has_changes = False
-        return res
-
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
-    subscriptions: list[SubscriptionEvent] = []
+    subscriptions: Subscriptions = None
     scores: Scores = {}
     __loaded = False
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
+        self.subscriptions = Subscriptions.livescores
         self.scores = Scores(())
         self.load()
         if self.subscriptions:
             self.load_scores()
             self.update_frames()
-
-    def load(self):
-        data = Storage.hgetall(STORAGE_KEY)
-        if not data:
-            logging.debug("no data")
-            self.subscriptions = []
-        self.subscriptions = [pickle.loads(v) for v in data.values()]
-        logging.debug(self.subscriptions)
-        self.__loaded = True
-
-
-    def load_scores(self):
-        data = ZnaykoClient.livescores()
-        ids = [x.event_id for x in self.subscriptions]
-        events = list(filter(lambda x: x.idEvent in ids, data))
-        if not len(events):
-            return
-        store = Storage.pipeline()
-        for event in events:
-            text = event.displayScore
-            sub = next(filter(lambda x: x.event_id ==
-                       event.idEvent, self.subscriptions), None)
-            if not sub:
-                return
-            sub.status = event.displayStatus
-            store.hset(STORAGE_KEY, f"{sub.event_id}", pickle.dumps(sub))
-            self.scores[event.idEvent] = text
-        store.persist(STORAGE_KEY).execute()
 
     def cancel_sub(self, sub: SubscriptionEvent):
         ZnaykoClient.unsubscribe(sub)
@@ -114,7 +69,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
-        for idx, sub in enumerate(self.subscriptions):
+        for idx, sub in enumerate(self.subscriptions.events):
             text = []
             text.append(sub.displayStatus)
             text.append(sub.event_name)
@@ -135,8 +90,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             if not event.is_old_event:
-                sub = next(filter(lambda x: x.event_id ==
-                           event.event_id, self.subscriptions), None)
+                sub = self.subscriptions.get(event.event_id)
                 if not sub:
                     continue
                 try:
@@ -156,8 +110,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 ))
             if event.score:
                 self.scores[event.event_id] = event.score
-        if self.scores.has_changes:
-            self.update_frames()
+        self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         sub = next(filter(lambda x: x.jobId ==
@@ -167,14 +120,10 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 STORAGE_KEY).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        Storage.pipeline().hset(STORAGE_KEY, f"{event.event_id}", pickle.dumps(
-            event)).persist(STORAGE_KEY).execute()
-        self.load()
+        self.subscriptions[f"{event.event_id}"] = event
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        Storage.pipeline().hdel(STORAGE_KEY, f"{event.event_id}").persist(
-            STORAGE_KEY).execute()
+        del self.subscriptions[f"{event.event_id}"]
         logging.warning(f"DELETING {event.event_name}")
-        self.load()
         self.update_frames()

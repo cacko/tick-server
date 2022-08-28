@@ -199,3 +199,4 @@ class Notification:
     model: Content
     priority: str = "info"
     icon_type: str = "none"
+
