@@ -59,20 +59,23 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def update_frames(self):
         frames = []
         logging.debug(f"UPDATE FRAMES")
-        for idx, sub in enumerate(self.subscriptions.events):
-            text = []
-            text.append(sub.displayStatus)
-            text.append(sub.event_name)
-            score = self.scores.get(sub.id, "")
-            if score:
-                text.append(score)
-            frame = ContentFrame(
-                text=' '.join(text),
-                index=idx,
-                icon=sub.icon,
-                duration=0
-            )
-            frames.append(frame)
+        try:
+            for idx, sub in enumerate(self.subscriptions.events):
+                text = []
+                text.append(sub.displayStatus)
+                text.append(sub.event_name)
+                score = self.scores.get(sub.id, "")
+                if score:
+                    text.append(score)
+                frame = ContentFrame(
+                    text=' '.join(text),
+                    index=idx,
+                    icon=sub.icon,
+                    duration=0
+                )
+                frames.append(frame)
+        except AttributeError as e:
+            logging.error(e)
         __class__.client.send_model(
             APPNAME.LIVESCORES, Content(frames=frames)
         )
@@ -91,7 +94,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                     if act == ACTION.HALF_TIME:
                         sub.status = 'HT'
                     elif act == ACTION.PROGRESS:
-                        sub.status = f"{event.time}'"
+                        sub.status = f'{event.time}"'
                         self.scores[event.id] = event.score
                         self.subscriptions[event.id] = sub
                     else:

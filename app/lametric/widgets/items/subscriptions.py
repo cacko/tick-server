@@ -44,7 +44,6 @@ class SubscriptionsMeta(type):
             logging.debug("no data")
             return []
         items = {k: pickle.loads(v) for k, v in data.items()}
-        logging.debug(items)
         return items
 
 
