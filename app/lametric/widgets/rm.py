@@ -18,6 +18,7 @@ from app.lametric.models import (
 )
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
+from cachable.cacheable import TimeCacheable
 from app.scheduler import Scheduler
 import pickle
 from app.core.time import to_local_time, is_today
@@ -28,9 +29,22 @@ STORAGE_LAST_UPDATE = "real_madrid_last_update"
 STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 
+
+
+class TeamSchedule(TimeCacheable):
+    cachetime: timedelta = timedelta(seconds=30)
+
+    @property
+    def content(self):
+        if not self.load():
+            schedule = ZnaykoClient.team_schedule(TEAM_ID)
+            self._struct = self.tocache(schedule)
+        return self._struct.struct
+
+
 def cron_func():
     try:
-        games = ZnaykoClient.team_schedule(TEAM_ID)
+        games = TeamSchedule.content
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
@@ -73,7 +87,7 @@ class ScheduleMeta(type):
 
     def load(cls) -> 'Schedule':
         if cls.needsUpdate():
-            schedule = ZnaykoClient.team_schedule(TEAM_ID)
+            schedule = TeamSchedule.content
             obj = cls(schedule)
             obj.persist()
             return obj

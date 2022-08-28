@@ -31,10 +31,6 @@ tasks:
     cmds:
       - ssh $REMOTE_HOST 'source ~/.zshrc;systemctl --user stop {{.PROJECT}}'
 
-  export:
-    desc: export env
-    cmds:
-      - conda env export --no-builds  -n {{.PROJECT}} > environment.yml
 
   push:
     desc: commit and pushes current changes
