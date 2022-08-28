@@ -56,7 +56,6 @@ def cron_func():
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
-                logging.debug(res)
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
@@ -120,7 +119,6 @@ class ScheduleMeta(type):
 
 class Schedule(dict, metaclass=ScheduleMeta):
     def __init__(self, data: list[Game]):
-        print(data)
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
 

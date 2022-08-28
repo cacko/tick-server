@@ -71,7 +71,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            logging.debug(f"ON MATCH CALL {event.id}")
             if event.is_old_event:
                 continue
             sub: SubscriptionEvent = self.subscriptions.get(event.id)

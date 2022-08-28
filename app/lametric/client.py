@@ -80,7 +80,6 @@ class Client(object):
             Method.GET,
             "device/display"
         )
-        logging.debug(res)
         return DeviceDisplay.from_dict({"updated_at": datetime.now(tz=timezone.utc), **res})
 
     def send_model(self, config_name: APPNAME, model: Content):
