@@ -22,9 +22,9 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         super().__init__(widget_id, widget)
         self.subscriptions = Subscriptions.livescores
         self.scores = Scores(())
-        self.load()
+        # self.load()
         if self.subscriptions:
-            self.load_scores()
+            # self.load_scores()
             self.update_frames()
 
     def cancel_sub(self, sub: SubscriptionEvent):
@@ -37,7 +37,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 do_update = True
                 break
         if do_update:
-            self.load_scores()
+            # self.load_scores()
             self.update_frames()
 
     def onHide(self):
@@ -50,7 +50,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 has_changes = True
         if has_changes:
             pipe.persist(STORAGE_KEY).execute()
-            self.load()
+            # self.load()
             self.update_frames()
 
     def duration(self, duration: int):
@@ -59,8 +59,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        if not self.__loaded:
-            self.load()
+        # if not self.__loaded:
+        #     self.load()
         return not len(self.subscriptions)
 
     def update_frames(self):
