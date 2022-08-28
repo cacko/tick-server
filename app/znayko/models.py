@@ -75,6 +75,7 @@ class GameStatus(Enum):
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MatchEvent:
+    id: str
     time: int
     action: str
     order: int
@@ -86,10 +87,6 @@ class MatchEvent:
     team_id: Optional[int] = None
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
-
-    @property
-    def id(self) -> str:
-        return f"{self.event_id}"
 
     def getContentFrame(self, league_icon: str = None) -> ContentFrame:
         parts = []
@@ -176,6 +173,7 @@ class SubscriptionEvent:
             mm_field=fields.DateTime(format="iso"),
         )
     )
+    id: str
     action: str
     league: str
     league_id: int

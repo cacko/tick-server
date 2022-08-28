@@ -71,21 +71,21 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
 
     def __load_scores(self):
         data = ZnaykoClient.livescores()
-        ids = [x.event_id for x in self.events]
-        events = list(filter(lambda x: x.idEvent in ids, data))
+        ids = [x.id for x in self.events]
+        events = list(filter(lambda x: x.id in ids, data))
         if not len(events):
             return
         store = Storage.pipeline()
         for event in events:
             text = event.displayScore
-            sub = next(filter(lambda x: x.event_id ==
-                       event.idEvent, self.subscriptions), None)
+            sub = next(filter(lambda x: x.id ==
+                       event.id, self.subscriptions), None)
             if not sub:
                 return
             sub.status = event.displayStatus
             store.hset(self.__storage_key,
-                       f"{sub.event_id}", pickle.dumps(sub))
-            self.__scores[event.idEvent] = text
+                       sub.id, pickle.dumps(sub))
+            self.__scores[event.id] = text
         store.persist(self.__storage_key).execute()
 
     @property
