@@ -47,7 +47,7 @@ class Yanko(object, metaclass=YankoMeta):
                 headers=self.__otp.headers,
                 **kwags
             )
-            return resp.status_code > 399
+            return resp.content.json()
         except Exception as e:
             logging.debug(e)
             return False

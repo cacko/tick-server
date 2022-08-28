@@ -1,3 +1,4 @@
+import logging
 from app.lametric.models import (
     Widget,
     NowPlayingFrame,
@@ -45,6 +46,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
         return True
 
     def yankostatus(self, payload):
+        logging.debug(payload)
         try:
             self.status = MUSIC_STATUS(payload.get("status"))
         except ValueError:
