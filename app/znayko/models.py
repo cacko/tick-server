@@ -185,6 +185,7 @@ class SubscriptionEvent:
         )
     )
     status: str = ""
+    score: Optional[str] = ""
 
     @property
     def jobId(self):

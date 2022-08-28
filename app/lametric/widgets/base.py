@@ -73,7 +73,6 @@ class BaseWidget(object, metaclass=WidgetMeta):
 class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
-        logging.debug(f"ON EVENT {payload}")
         if payload is None:
             return payload
         if isinstance(payload, list):

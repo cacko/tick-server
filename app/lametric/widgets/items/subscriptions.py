@@ -61,6 +61,8 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
     def __setitem__(self, __k, __v) -> None:
         Storage.pipeline().hset(self.__storage_key, __k, pickle.dumps(
             __v)).persist(self.__storage_key).execute()
+        if __v.score:
+            self.__scores[__k] = __v.score
         return super().__setitem__(__k, __v)
 
     def __delitem__(self, __v) -> None:

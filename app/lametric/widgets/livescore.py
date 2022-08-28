@@ -8,36 +8,26 @@ from app.znayko.models import (
     ACTION
 )
 from app.znayko.client import Client as ZnaykoClient
-from app.lametric.widgets.items.subscriptions import Subscriptions, Scores
+from app.lametric.widgets.items.subscriptions import Subscriptions
 
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     subscriptions: Subscriptions = None
-    scores: Scores = {}
-    __loaded = False
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)
         self.subscriptions = Subscriptions.livescores
-        self.scores = Scores(())
         if self.subscriptions:
             self.update_frames()
 
     def cancel_sub(self, sub: SubscriptionEvent):
         ZnaykoClient.unsubscribe(sub)
 
-    def onShow(self):
-        pass
-        # do_update = False
-        # for sub in self.subscriptions.events:
-        #     if sub.inProgress:
-        #         do_update = True
-        #         break
-        # if do_update:
-        #     self.update_frames()
-
     def onHide(self):
+        pass
+
+    def onShow(self):
         expired = []
         for k, sub in self.subscriptions.items():
             __class__.hasLivescoreGamesInProgress = sub.inProgress
@@ -64,9 +54,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 text = []
                 text.append(sub.displayStatus)
                 text.append(sub.event_name)
-                score = self.scores.get(sub.id, "")
-                if score:
-                    text.append(score)
+                if sub.score:
+                    text.append(sub.score)
                 frame = ContentFrame(
                     text=' '.join(text),
                     index=idx,
@@ -83,33 +72,33 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             logging.debug(f"ON MATCH CALL {event.id}")
-            if not event.is_old_event:
-                sub: SubscriptionEvent = self.subscriptions.get(event.id)
-                logging.debug(f"ON MATCH CALL {event}")
-                if not sub:
-                    continue
-                try:
-                    act = ACTION(event.action)
-                    if act == ACTION.HALF_TIME:
-                        sub.status = 'HT'
-                    elif act == ACTION.PROGRESS:
-                        sub.status = f'{event.time}"'
-                        self.scores[event.id] = event.score
-                        self.subscriptions[event.id] = sub
-                    else:
-                        frame = event.getContentFrame(
-                            league_icon=sub.icon if sub else None)
-                        __class__.client.send_notification(Notification(
-                            model=Content(
-                                frames=[frame],
-                                sound=event.getSound()
-                            ),
-                            priority='critical'
-                        ))
-                except ValueError:
-                    pass
-            if event.score:
-                self.scores[event.id] = event.score
+            if event.is_old_event:
+                continue
+            sub: SubscriptionEvent = self.subscriptions.get(event.id)
+            logging.debug(f"ON MATCH CALL {event}")
+            if not sub:
+                continue
+            try:
+                act = ACTION(event.action)
+                if act == ACTION.HALF_TIME:
+                    sub.status = 'HT'
+                elif act == ACTION.PROGRESS:
+                    sub.status = f'{event.time}"'
+                else:
+                    frame = event.getContentFrame(
+                        league_icon=sub.icon if sub else None)
+                    __class__.client.send_notification(Notification(
+                        model=Content(
+                            frames=[frame],
+                            sound=event.getSound()
+                        ),
+                        priority='critical'
+                    ))
+                if event.score:
+                    sub.score = event.score
+                self.subscriptions[event.id] = sub
+            except ValueError:
+                pass
         self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):
