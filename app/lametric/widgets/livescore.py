@@ -83,7 +83,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 if act == ACTION.HALF_TIME:
                     sub.status = 'HT'
                 elif act == ACTION.PROGRESS:
-                    sub.status = f'{event.time}"'
+                    sub.status = f"{event.time}'"
                 else:
                     frame = event.getContentFrame(
                         league_icon=sub.icon if sub else None)
