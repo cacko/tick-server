@@ -36,9 +36,11 @@ class TeamSchedule(TimeCacheable):
 
     @property
     def content(self):
+        logging.debug(self.load())
+        logging.debug(self._struct)
         if not self.load():
             schedule = ZnaykoClient.team_schedule(TEAM_ID)
-            print(schedule)
+            logging.debug(schedule)
             self._struct = self.tocache(schedule)
         print(schedule)
         return self._struct.struct
