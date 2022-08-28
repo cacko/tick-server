@@ -274,7 +274,9 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            if not self._schedule.isIn(event.event_id):
+            logging.debug(f"ON RM CALL {event}")
+            if not self._schedule.isIn(event.id):
+                logging.debug(f"not in schedule")
                 continue
             if event.is_old_event:
                 continue
