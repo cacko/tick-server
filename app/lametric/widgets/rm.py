@@ -275,15 +275,17 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                                 case False:
                                     is_winner = False
                             break
+                if action != ACTION.PROGRESS:
+                    __class__.client.send_notification(Notification(
+                        model=Content(
+                            frames=[frame],
+                            sound=event.getTeamSound(TEAM_ID, is_winner)
+                        ),
+                        priority='critical'
+                    ))
             except ValueError:
                 pass
-            __class__.client.send_notification(Notification(
-                model=Content(
-                    frames=[frame],
-                    sound=event.getTeamSound(TEAM_ID, is_winner)
-                ),
-                priority='critical'
-            ))
+
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         pass
