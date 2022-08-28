@@ -38,7 +38,7 @@ class EventManagerMeta(type):
         ev = cls().get(ev)
         if ev not in cls.__listeners:
             cls.__listeners[ev] = []
-        cls.__listeners[ev].append(callable)
+        cls.__listeners[ev].append(callback)
         return ev
 
 
