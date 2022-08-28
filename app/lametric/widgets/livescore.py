@@ -37,13 +37,14 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def onHide(self):
-        has_changes = False
+        expired = []
         for k, sub in self.subscriptions.items():
             __class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
-                del self.subscriptions[k]
-                has_changes = True
-        if has_changes:
+                expired.append[k]
+        if expired:
+            for id in expired:
+                del self.subscriptions[id]
             self.update_frames()
 
     def duration(self, duration: int):
