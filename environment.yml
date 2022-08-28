@@ -27,7 +27,7 @@ dependencies:
     - attrs==22.1.0
     - beautifulsoup4==4.11.1
     - bottle==0.12.23
-    - cachable==0.3.10
+    - cachable==0.3.11
     - certifi==2022.6.15
     - charset-normalizer==2.1.1
     - dataclasses-json==0.5.7

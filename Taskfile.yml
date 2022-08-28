@@ -11,6 +11,11 @@ tasks:
       - conda run --live-stream -n {{.PROJECT}} python -m app
     silent: true
 
+  export:
+    desc: export env
+    cmds:
+      - conda env export --no-builds  -n {{.PROJECT}} > environment.yml
+
   logs:
     desc: monitor logs
     cmds:

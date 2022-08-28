@@ -38,9 +38,14 @@ class TeamSchedule(TimeCacheable):
     def content(self):
         if not self.load():
             schedule = ZnaykoClient.team_schedule(TEAM_ID)
+            print(schedule)
             self._struct = self.tocache(schedule)
+        print(schedule)
         return self._struct.struct
 
+    @property
+    def id(self):
+        return TEAM_ID
 
 def cron_func():
     try:
