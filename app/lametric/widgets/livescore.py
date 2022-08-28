@@ -28,13 +28,14 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         ZnaykoClient.unsubscribe(sub)
 
     def onShow(self):
-        do_update = False
-        for sub in self.subscriptions.events:
-            if sub.inProgress:
-                do_update = True
-                break
-        if do_update:
-            self.update_frames()
+        pass
+        # do_update = False
+        # for sub in self.subscriptions.events:
+        #     if sub.inProgress:
+        #         do_update = True
+        #         break
+        # if do_update:
+        #     self.update_frames()
 
     def onHide(self):
         expired = []
