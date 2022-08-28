@@ -1,7 +1,6 @@
 import logging
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification, STORAGE_KEY
 from .base import SubscriptionWidget, WidgetMeta
-from cachable.storage import Storage
 from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
@@ -22,9 +21,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         super().__init__(widget_id, widget)
         self.subscriptions = Subscriptions.livescores
         self.scores = Scores(())
-        # self.load()
         if self.subscriptions:
-            # self.load_scores()
             self.update_frames()
 
     def cancel_sub(self, sub: SubscriptionEvent):
@@ -37,20 +34,16 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 do_update = True
                 break
         if do_update:
-            # self.load_scores()
             self.update_frames()
 
     def onHide(self):
-        pipe = Storage.pipeline()
         has_changes = False
-        for sub in self.subscriptions.events:
+        for k, sub in self.subscriptions.items():
             __class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
-                pipe.hdel(STORAGE_KEY, f"{sub.event_id}")
+                del self.subscriptions[k]
                 has_changes = True
         if has_changes:
-            pipe.persist(STORAGE_KEY).execute()
-            # self.load()
             self.update_frames()
 
     def duration(self, duration: int):
@@ -59,8 +52,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        # if not self.__loaded:
-        #     self.load()
         return not len(self.subscriptions)
 
     def update_frames(self):
@@ -114,10 +105,9 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         sub = next(filter(lambda x: x.jobId ==
-                          event.jobId, self.subscriptions), None)
+                          event.jobId, self.subscriptions.events), None)
         if sub:
-            Storage.pipeline().hdel(STORAGE_KEY.LIVESCORES.value, f"{sub.event_id}").persist(
-                STORAGE_KEY.LIVESCORES.value).execute()
+            del self.subscriptions[f"{sub.event_id}"]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
         self.subscriptions[f"{event.event_id}"] = event
