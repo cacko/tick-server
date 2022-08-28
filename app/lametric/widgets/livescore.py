@@ -6,8 +6,7 @@ from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
     MatchEvent,
-    ACTION,
-    ST
+    ACTION
 )
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions, Scores
