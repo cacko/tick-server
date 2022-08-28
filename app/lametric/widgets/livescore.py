@@ -86,24 +86,28 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
             if not event.is_old_event:
-                sub = self.subscriptions.get(event.event_id)
+                sub: SubscriptionEvent = self.subscriptions.get(event.event_id)
                 if not sub:
                     continue
                 try:
                     act = ACTION(event.action)
                     if act == ACTION.HALF_TIME:
                         sub.status = 'HT'
+                    elif act == ACTION.PROGRESS:
+                        sub.status = f"{event.time}'"
+                        self.subscriptions[event.event_id] = sub
+                    else:
+                        frame = event.getContentFrame(
+                            league_icon=sub.icon if sub else None)
+                        __class__.client.send_notification(Notification(
+                            model=Content(
+                                frames=[frame],
+                                sound=event.getSound()
+                            ),
+                            priority='critical'
+                        ))
                 except ValueError:
                     pass
-                frame = event.getContentFrame(
-                    league_icon=sub.icon if sub else None)
-                __class__.client.send_notification(Notification(
-                    model=Content(
-                        frames=[frame],
-                        sound=event.getSound()
-                    ),
-                    priority='critical'
-                ))
             if event.score:
                 self.scores[event.event_id] = event.score
         self.update_frames()

@@ -161,6 +161,7 @@ class MatchEvent:
         )
 
 
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SubscriptionEvent:
