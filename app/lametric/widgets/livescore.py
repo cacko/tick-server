@@ -58,7 +58,9 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
+        logging.debug(f"UPDATE FRAMES")
         for idx, sub in enumerate(self.subscriptions.events):
+            logging.debug(f"FRAME {sub}")
             text = []
             text.append(sub.displayStatus)
             text.append(sub.event_name)
@@ -78,9 +80,10 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            logging.debug(f"ON MATCH CALL {event}")
+            logging.debug(f"ON MATCH CALL {event.id}")
             if not event.is_old_event:
                 sub: SubscriptionEvent = self.subscriptions.get(event.id)
+                logging.debug(f"ON MATCH CALL {event}")
                 if not sub:
                     continue
                 try:
