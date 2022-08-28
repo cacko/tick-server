@@ -44,6 +44,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
+        return True
         return not len(self.subscriptions)
 
     def update_frames(self):
