@@ -18,11 +18,9 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
-        self.status = MUSIC_STATUS.STOPPED
-        if not Yanko.state():
-            self.status = MUSIC_STATUS.STOPPED
         EventManager.listen(BUTTON_EVENTS.YANKO_PLAY_PAUSE, Yanko.toggle)
         EventManager.listen(BUTTON_EVENTS.YANKO_NEXT, Yanko.next)
+        self.yankostatus(Yanko.state())
 
     def onShow(self):
         pass

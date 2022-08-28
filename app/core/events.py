@@ -49,7 +49,7 @@ class EventManager(dict[BUTTON_EVENTS, Event], metaclass=EventManagerMeta):
         return super().__getitem__(__k)
 
     def __setitem__(self, __k, __v):
-        ev: Event = self.get(__k)
+        ev: Event = self.__getitem__(__k)
         if __v:
             ev.set()
         else:
