@@ -8,6 +8,7 @@ from app.lametric.models import (
 )
 from app.yanko import Yanko
 from .base import BaseWidget, WidgetMeta
+from app.core.events import EventManager, BUTTON_EVENTS
 
 
 class YankoWidget(BaseWidget, metaclass=WidgetMeta):
@@ -19,6 +20,8 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
         self.status = MUSIC_STATUS.STOPPED
         if not Yanko.state():
             self.status = MUSIC_STATUS.STOPPED
+        EventManager.listen(BUTTON_EVENTS.YANKO_PLAY_PAUSE, Yanko.toggle)
+        EventManager.listen(BUTTON_EVENTS.YANKO_NEXT, Yanko.next)
 
     def onShow(self):
         pass

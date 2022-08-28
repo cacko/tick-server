@@ -5,14 +5,14 @@ from typing import Optional
 from enum import Enum
 from app.core.time import LOCAL_TIMEZONE
 
-class STORAGE_KEY(Enum):
-    LIVESCORES = "subscriptions"
 
 class CONTENT_TYPE(Enum):
     NOWPLAYING = 'nowplaying'
     YANKOSTATUS = 'yanko_status'
     LIVESCOREEVENT = 'livescore_event'
 
+class STORAGE_KEY(Enum):
+    LIVESCORES = "subscriptions"
 
 class APPNAME(Enum):
     CLOCK = 'clock'

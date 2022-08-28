@@ -1,13 +1,15 @@
 import logging
 from pathlib import Path
 from queue import LifoQueue
+from threading import Event
 import bottle
 from bottle import Bottle, run, template, request
 from app.api.auth import auth_required
 from app.config import Config
-from app.lametric.models import CONTENT_TYPE
+from app.lametric.models import CONTENT_TYPE, BUTTON_EVENTS
 from app.lametric import LaMetric
 from app.yanko import Yanko
+from app.core.events import EventManager
 
 app = Bottle()
 
@@ -71,11 +73,8 @@ def status():
 
 @app.route('/api/button')
 def on_button():
-    logging.debug(
-        [f"{h}: {request.get_header(h)}" for h in request.headers.keys()])
-    logging.debug(
-        [f"{h}: {request.query.get(h)}" for h in request.query.keys()])
-    Yanko.toggle()
+    events = [f"{k}={v}".lower() for k,v in request.query.items()]
+    EventManager.on_trigger(events)
 
 @app.route("/api/subscription", method="POST")
 @auth_required

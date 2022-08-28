@@ -9,6 +9,7 @@ from app.znayko.models import (
 )
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions
+from app.core.events import EventManager, BUTTON_EVENTS
 
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
@@ -20,6 +21,19 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         self.subscriptions = Subscriptions.livescores
         if self.subscriptions:
             self.update_frames()
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
+
+
+    def clear_all(self):
+        keys = [id for id in self.subscriptions.keys()]
+        for id in keys:
+            del self.subscriptions[id]   
+
+    def clear_finished(self):
+        keys = [id for id,ev in self.subscriptions.items() if ev.status == 'FT']
+        for id in keys:
+            del self.subscriptions[id]         
 
     def cancel_sub(self, sub: SubscriptionEvent):
         ZnaykoClient.unsubscribe(sub)
@@ -44,7 +58,6 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        return False
         return not len(self.subscriptions)
 
     def update_frames(self):
