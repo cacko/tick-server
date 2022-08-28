@@ -89,6 +89,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                         sub.status = 'HT'
                     elif act == ACTION.PROGRESS:
                         sub.status = f"{event.time}'"
+                        self.scores[event.id] = event.score
                         self.subscriptions[event.id] = sub
                     else:
                         frame = event.getContentFrame(
@@ -110,13 +111,13 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         sub = next(filter(lambda x: x.jobId ==
                           event.jobId, self.subscriptions.events), None)
         if sub:
-            del self.subscriptions[f"{sub.event_id}"]
+            del self.subscriptions[sub.id]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        self.subscriptions[event.event_id] = event
+        self.subscriptions[event.id] = event
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        del self.subscriptions[f"{event.event_id}"]
+        del self.subscriptions[event.id]
         logging.warning(f"DELETING {event.event_name}")
         self.update_frames()

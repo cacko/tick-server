@@ -190,6 +190,10 @@ class SubscriptionEvent:
     status: str = ""
 
     @property
+    def id(self) -> str:
+        return f"{self.event_id}"
+
+    @property
     def jobId(self):
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
