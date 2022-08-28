@@ -5,11 +5,14 @@ from requests import request
 from enum import Enum
 from cachable.request import Method
 
+from app.lametric.models import MUSIC_STATUS
+
 
 class Endpoints(Enum):
     STATE = 'state'
     NEXT = 'command/next'
     TOGGLE = 'command/toggle'
+
 
 class YankoMeta(type):
 
@@ -50,4 +53,5 @@ class Yanko(object, metaclass=YankoMeta):
             return resp.json()
         except Exception as e:
             logging.debug(e)
-            return False
+            logging.debug(resp.content)
+            return {"status": MUSIC_STATUS.STOPPED}
