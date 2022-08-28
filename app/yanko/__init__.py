@@ -53,5 +53,4 @@ class Yanko(object, metaclass=YankoMeta):
             return resp.json()
         except Exception as e:
             logging.debug(e)
-            logging.debug(resp.content)
             return {"status": MUSIC_STATUS.STOPPED}
