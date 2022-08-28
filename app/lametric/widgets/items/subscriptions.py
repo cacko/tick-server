@@ -1,10 +1,9 @@
 from app.znayko.models import SubscriptionEvent
 from cachable.storage import Storage
-from app.lametric.widgets.livescore import STORAGE_KEY
 import logging
 import pickle
 from app.znayko.client import Client as ZnaykoClient
-
+from app.lametric.models import STORAGE_KEY
 
 class Scores(dict):
 
@@ -37,7 +36,7 @@ class SubscriptionsMeta(type):
 
     @property
     def livescores(cls) -> 'Subscriptions':
-        return cls(STORAGE_KEY)
+        return cls(STORAGE_KEY.LIVESCORES.value)
 
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         data = Storage.hgetall(storage_key)

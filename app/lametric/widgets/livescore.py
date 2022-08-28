@@ -1,19 +1,16 @@
 import logging
-from app.lametric.models import APPNAME, Content, ContentFrame, Notification
+from app.lametric.models import APPNAME, Content, ContentFrame, Notification, STORAGE_KEY
 from .base import SubscriptionWidget, WidgetMeta
 from cachable.storage import Storage
-import pickle
 from app.znayko.models import (
     SubscriptionEvent,
     CancelJobEvent,
     MatchEvent,
-    ACTION
+    ACTION,
+    ST
 )
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions, Scores
-
-STORAGE_KEY = "subscriptions"
-
 
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
@@ -116,8 +113,8 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         sub = next(filter(lambda x: x.jobId ==
                           event.jobId, self.subscriptions), None)
         if sub:
-            Storage.pipeline().hdel(STORAGE_KEY, f"{sub.event_id}").persist(
-                STORAGE_KEY).execute()
+            Storage.pipeline().hdel(STORAGE_KEY.LIVESCORES.value, f"{sub.event_id}").persist(
+                STORAGE_KEY.LIVESCORES.value).execute()
 
     def on_subscribed_event(self, event: SubscriptionEvent):
         self.subscriptions[f"{event.event_id}"] = event
