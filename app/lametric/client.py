@@ -41,7 +41,7 @@ class Client(object):
         app: LametricApp = self.__config.apps.get(config_name.value)
         url = app.endpoint
         token = app.token
-        logging.debug(f"WIDGET CALL {args}")
+        # logging.debug(f"WIDGET CALL {args}")
         try:
             response = requests.request(
                 method=method.value,
