@@ -32,7 +32,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         for k, sub in self.subscriptions.items():
             __class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
-                expired.append[k]
+                expired.append(k)
         if expired:
             for id in expired:
                 del self.subscriptions[id]
