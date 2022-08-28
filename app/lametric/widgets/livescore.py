@@ -27,8 +27,10 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def clear_all(self):
         keys = [id for id in self.subscriptions.keys()]
+        logging.debug(keys)
         for id in keys:
             del self.subscriptions[id]   
+        logging.debug(self.subscriptions)
 
     def clear_finished(self):
         keys = [id for id,ev in self.subscriptions.items() if ev.status == 'FT']
