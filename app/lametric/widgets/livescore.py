@@ -80,7 +80,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         for event in events:
             logging.debug(f"ON MATCH CALL {event}")
             if not event.is_old_event:
-                sub: SubscriptionEvent = self.subscriptions.get(event.event_id)
+                sub: SubscriptionEvent = self.subscriptions.get(event.id)
                 if not sub:
                     continue
                 try:
@@ -89,7 +89,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                         sub.status = 'HT'
                     elif act == ACTION.PROGRESS:
                         sub.status = f"{event.time}'"
-                        self.subscriptions[event.event_id] = sub
+                        self.subscriptions[event.id] = sub
                     else:
                         frame = event.getContentFrame(
                             league_icon=sub.icon if sub else None)
@@ -103,7 +103,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 except ValueError:
                     pass
             if event.score:
-                self.scores[event.event_id] = event.score
+                self.scores[event.id] = event.score
         self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):
@@ -113,7 +113,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             del self.subscriptions[f"{sub.event_id}"]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        self.subscriptions[f"{event.event_id}"] = event
+        self.subscriptions[event.event_id] = event
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):

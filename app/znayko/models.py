@@ -87,6 +87,10 @@ class MatchEvent:
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
 
+    @property
+    def id(self) -> str:
+        return f"{self.event_id}"
+
     def getContentFrame(self, league_icon: str = None) -> ContentFrame:
         parts = []
         if self.time:
