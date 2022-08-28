@@ -46,6 +46,8 @@ class EventManagerMeta(type):
 class EventManager(dict[BUTTON_EVENTS, Event], metaclass=EventManagerMeta):
 
     def __getitem__(self, __k) -> Event:
+        if __k not in self.keys():
+            super().__setitem__(__k, Event())
         return super().__getitem__(__k)
 
     def __setitem__(self, __k, __v):
