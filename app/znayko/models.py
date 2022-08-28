@@ -372,7 +372,8 @@ class Game:
     hasBetsTeaser: Optional[bool] = None
     winDescription: Optional[str] = ""
     aggregateText: Optional[str] = ""
-    icon: str = ""
+    icon: Optional[str] = ""
+    score: Optional[str] = ""
 
     @property
     def subscriptionId(self) -> str:

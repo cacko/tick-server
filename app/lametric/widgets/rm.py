@@ -29,8 +29,6 @@ STORAGE_LAST_UPDATE = "real_madrid_last_update"
 STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 
-
-
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
     __id = None
@@ -49,6 +47,7 @@ class TeamSchedule(TimeCacheable):
     @property
     def id(self):
         return self.__id
+
 
 def cron_func():
     try:
@@ -274,9 +273,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            logging.debug(f"ON RM CALL {event}")
             if not self._schedule.isIn(event.id):
-                logging.debug(f"not in schedule")
                 continue
             if event.is_old_event:
                 continue
@@ -284,31 +281,25 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             is_winner = None
             if not game:
                 return
-            frame = event.getContentFrame(league_icon=game.icon)
             try:
                 action = ACTION(event.action)
-                logging.debug(action)
+                if action == ACTION.PROGRESS:
+                    continue
                 if action == ACTION.FULL_TIME:
                     self.load()
                     game = self._schedule.get(f"{event.event_id}")
-                    for competitor in [game.homeCompetitor, game.awayCompetitor]:
-                        if competitor.id == TEAM_ID:
-                            match(competitor.isWinner):
-                                case True:
-                                    is_winner = True
-                                case False:
-                                    is_winner = False
-                            break
-                if action != ACTION.PROGRESS:
-                    __class__.client.send_notification(Notification(
-                        model=Content(
-                            frames=[frame],
-                            sound=event.getTeamSound(TEAM_ID, is_winner)
-                        ),
-                        priority='critical'
-                    ))
+                    is_winner = next(filter(lambda x: x.id == TEAM_ID, [
+                                     game.homeCompetitor, game.awayCompetitor]), None).isWinner
             except ValueError:
                 pass
+            frame = event.getContentFrame(league_icon=game.icon)
+            __class__.client.send_notification(Notification(
+                model=Content(
+                    frames=[frame],
+                    sound=event.getTeamSound(TEAM_ID, is_winner)
+                ),
+                priority='critical'
+            ))
 
 
     def on_cancel_job_event(self, event: CancelJobEvent):
