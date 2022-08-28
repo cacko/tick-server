@@ -32,7 +32,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         do_update = False
-        for sub in self.subscriptions:
+        for sub in self.subscriptions.events:
             if sub.inProgress:
                 do_update = True
                 break
