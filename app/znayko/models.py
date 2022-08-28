@@ -11,6 +11,7 @@ from string import punctuation
 import re
 from stringcase import constcase
 from app.core.time import to_local_time
+from hashlib import md5
 
 
 class EventIcon(IntEnum):
@@ -159,7 +160,6 @@ class MatchEvent:
         return ContentSound(
             id=SOUNDS.BICYCLE.value
         )
-
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -373,6 +373,10 @@ class Game:
     winDescription: Optional[str] = ""
     aggregateText: Optional[str] = ""
     icon: str = ""
+
+    @property
+    def subscriptionId(self) -> str:
+        return md5(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".encode()).hexdigest()
 
     @property
     def postponed(self) -> bool:

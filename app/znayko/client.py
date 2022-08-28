@@ -53,7 +53,6 @@ class ClientMeta(type):
     def team_schedule(cls, team_id: int) -> list[Game]:
         try:
             data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE.value}/{team_id}")
-            logging.debug(f"TEAM SCHEDULE {data}")
             if data:
                 return Game.schema().load(data, many=True)
         except Exception as e:

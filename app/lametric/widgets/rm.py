@@ -109,8 +109,9 @@ class Schedule(dict, metaclass=ScheduleMeta):
         except Exception:
             logging.warning(f"failed pesistance")
 
-    def isIn(self, event_id: int):
-        return f"{event_id}" in self
+    def isIn(self, id: str):
+        ids = [x.subscriptionId for x in self.values()]
+        return id in ids
 
     @property
     def current(self) -> list[Game]:
@@ -168,12 +169,12 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: not self._schedule.isIn(x.get("event_id")),
+                    lambda x: not self._schedule.isIn(x.get("id")),
                     payload
                 )
             )
-        event_id = payload.get("event_id")
-        if event_id and self._schedule.isIn(event_id):
+        subid = payload.get("id")
+        if subid and self._schedule.isIn(subid):
             return None
         return payload
 
