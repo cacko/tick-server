@@ -33,23 +33,26 @@ STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
+    __id = None
+
+    def __init__(self, id) -> None:
+        self.__id = id
+        super().__init__()
 
     @property
     def content(self):
-        if not self.load() or not self._struct.struct:
+        if not self.load():
             schedule = ZnaykoClient.team_schedule(TEAM_ID)
-            logging.debug(schedule)
             self._struct = self.tocache(schedule)
-        print(schedule)
         return self._struct.struct
 
     @property
     def id(self):
-        return TEAM_ID
+        return self.__id
 
 def cron_func():
     try:
-        games = TeamSchedule.content
+        games = TeamSchedule(TEAM_ID).content
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
@@ -92,7 +95,7 @@ class ScheduleMeta(type):
 
     def load(cls) -> 'Schedule':
         if cls.needsUpdate():
-            schedule = TeamSchedule.content
+            schedule = TeamSchedule(TEAM_ID).content
             obj = cls(schedule)
             obj.persist()
             return obj
