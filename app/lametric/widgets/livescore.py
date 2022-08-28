@@ -43,7 +43,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
     def onHide(self):
         pipe = Storage.pipeline()
         has_changes = False
-        for sub in self.subscriptions:
+        for sub in self.subscriptions.events:
             __class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
                 pipe.hdel(STORAGE_KEY, f"{sub.event_id}")
