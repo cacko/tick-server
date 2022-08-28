@@ -54,7 +54,6 @@ tasks:
       - task: export
       - task: push
       - task: pull
-      - task: update
 
   update:
     desc: uypdat env
