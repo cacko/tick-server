@@ -26,7 +26,10 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
 
     def clear_all(self):
+        logging.debug("TRIGGER CLEAR ALL")
         keys = [id for id in self.subscriptions.keys()]
+        logging.debug(keys)
+
         logging.debug(keys)
         for id in keys:
             del self.subscriptions[id]   
