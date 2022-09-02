@@ -93,16 +93,15 @@ class ScheduleMeta(type):
         return cls.__instance
 
     def load(cls) -> 'Schedule':
-        if cls.needsUpdate():
-            schedule = TeamSchedule(TEAM_ID).content
-            logging.warning(schedule)
-            cls.__instance.clear()
-            cls.__instance.update(schedule)
-            return obj
         if not cls.__instance:
             data = Storage.hgetall(STORAGE_KEY)
             games = [pickle.loads(v) for v in data.values()]
             return cls(games)
+        if cls.needsUpdate():
+            schedule = TeamSchedule(TEAM_ID).content
+            logging.warning(schedule)
+            cls.__instance.update(schedule)
+            return cls.__instance
         return cls.__instance
 
     def needsUpdate(cls) -> bool:
@@ -136,6 +135,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
         return id in ids
 
     def update(self, *args, **kwargs):
+        super().clear()
         super().update(*args, **kwargs)
         self.persist()
 
