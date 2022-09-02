@@ -15,6 +15,29 @@ class SchedulerMeta(type):
             cls._instance = type.__call__(cls, *args, **kwargs)
         return cls._instance
 
+    def start(cls):
+        cls._instance._scheduler.start()
+
+    def stop(cls):
+        try:
+            cls._instance._scheduler.shutdown()
+        except:
+            pass
+
+    def add_job(cls, *args, **kwargs):
+        return cls._instance._scheduler.add_job(*args, **kwargs)
+
+    def get_job(cls, id, jobstore=None):
+        return cls._instance._scheduler.get_job(id, jobstore)
+
+    def cancel_jobs(cls, id, jobstore=None):
+        return cls._instance._scheduler.remove_job(id, jobstore)
+
+    def remove_all_jobs(cls, jobstore=None):
+        return cls._instance._scheduler.remove_all_jobs(jobstore)
+
+    def get_jobs(cls, jobstore=None, pending=None):
+        return cls._instance._scheduler.get_jobs(jobstore, pending)
 
 class Scheduler(object, metaclass=SchedulerMeta):
 
@@ -44,27 +67,3 @@ class Scheduler(object, metaclass=SchedulerMeta):
         else:
             raise RedisNotConfiguredException("not valid REDIS_URL")
         self._scheduler.configure(jobstores=jobstores)
-
-    @classmethod
-    def start(cls):
-        cls._instance._scheduler.start()
-
-    @classmethod
-    def add_job(cls, *args, **kwargs):
-        return cls._instance._scheduler.add_job(*args, **kwargs)
-
-    @classmethod
-    def get_job(cls, id, jobstore=None):
-        return cls._instance._scheduler.get_job(id, jobstore)
-
-    @classmethod
-    def cancel_jobs(cls, id, jobstore=None):
-        return cls._instance._scheduler.remove_job(id, jobstore)
-
-    @classmethod
-    def remove_all_jobs(cls, jobstore=None):
-        return cls._instance._scheduler.remove_all_jobs(jobstore)
-
-    @classmethod
-    def get_jobs(cls, jobstore=None, pending=None):
-        return cls._instance._scheduler.get_jobs(jobstore, pending)
