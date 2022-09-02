@@ -126,7 +126,8 @@ class Schedule(dict, metaclass=ScheduleMeta):
             d = {k: pickle.dumps(v) for k, v in self.items()}
             Storage.pipeline().hset(STORAGE_KEY, mapping=d).persist(STORAGE_KEY).set(
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
-        except Exception:
+        except Exception as e:
+            logging.error(e)
             logging.warning(f"failed pesistance")
 
     def isIn(self, id: str):
@@ -146,7 +147,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-        logging.warning(games)
         try:
             next_game = games[len(past)]
             if is_today(next_game.startTime):
