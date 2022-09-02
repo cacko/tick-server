@@ -39,6 +39,7 @@ dependencies:
     - numpy==1.23.2
     - packaging==21.3
     - pandas==1.4.3
+    - paste==3.5.2
     - pillow==9.2.0
     - pyotp==2.6.0
     - pyparsing==3.0.9

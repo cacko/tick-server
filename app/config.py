@@ -44,6 +44,8 @@ class ApiConfig:
     host: str
     port: int
     secret: str
+    daemon_threads: bool
+    nworkers: int  
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
