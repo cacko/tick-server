@@ -94,6 +94,7 @@ class ScheduleMeta(type):
     def load(cls) -> 'Schedule':
         if cls.needsUpdate():
             schedule = TeamSchedule(TEAM_ID).content
+            logging.warning(schedule)
             obj = cls(schedule)
             obj.persist()
             return obj
