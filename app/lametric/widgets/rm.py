@@ -88,15 +88,16 @@ class ScheduleMeta(type):
     __instance = None
 
     def __call__(cls, data, *args, **kwargs):
-        cls.__instance = type.__call__(cls, data, *args, **kwargs)
+        if not cls.__instance:
+            cls.__instance = type.__call__(cls, data, *args, **kwargs)
         return cls.__instance
 
     def load(cls) -> 'Schedule':
         if cls.needsUpdate():
             schedule = TeamSchedule(TEAM_ID).content
             logging.warning(schedule)
-            obj = cls(schedule)
-            obj.persist()
+            cls.__instance.clear()
+            cls.__instance.update(schedule)
             return obj
         if not cls.__instance:
             data = Storage.hgetall(STORAGE_KEY)
@@ -133,6 +134,11 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def isIn(self, id: str):
         ids = [x.subscriptionId for x in self.values()]
         return id in ids
+
+    def update(self, *args, **kwargs):
+        super().update(*args, **kwargs)
+        self.persist()
+
 
     @property
     def current(self) -> list[Game]:
@@ -201,6 +207,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
+        self._schedule.load()
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
