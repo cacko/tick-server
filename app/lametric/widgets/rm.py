@@ -99,7 +99,7 @@ class ScheduleMeta(type):
             return cls(games)
         if cls.needsUpdate():
             schedule = TeamSchedule(TEAM_ID).content
-            cls.__instance.update(schedule)
+            cls.__instance.reload(schedule)
             return cls.__instance
         return cls.__instance
 
