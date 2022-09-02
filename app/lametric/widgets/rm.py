@@ -125,7 +125,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
             logging.warning(d)
-            Storage.pipeline().hset(name=STORAGE_KEY, items=d).persist(STORAGE_KEY).set(
+            Storage.pipeline().hset(name=STORAGE_KEY, mapping=d).persist(STORAGE_KEY).set(
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception as e:
             logging.error(e)
@@ -135,9 +135,10 @@ class Schedule(dict, metaclass=ScheduleMeta):
         ids = [x.subscriptionId for x in self.values()]
         return id in ids
 
-    def update(self, *args, **kwargs):
-        super().clear()
-        super().update(*args, **kwargs)
+    def reload(self, data: list[Game], *args, **kwargs):
+        self.clear()
+        d = {f"{game.id}": game for game in data}
+        self.update(d, *args, **kwargs)
         self.persist()
 
 
