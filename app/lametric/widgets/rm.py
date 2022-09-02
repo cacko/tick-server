@@ -99,7 +99,6 @@ class ScheduleMeta(type):
             return cls(games)
         if cls.needsUpdate():
             schedule = TeamSchedule(TEAM_ID).content
-            logging.warning(schedule)
             cls.__instance.update(schedule)
             return cls.__instance
         return cls.__instance
@@ -207,7 +206,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def isHidden(self):
-        self._schedule.load()
+        Schedule.load()
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
