@@ -53,5 +53,5 @@ class App(object, metaclass=AppMeta):
         scheduler = AsyncIOScheduler(event_loop=self.eventLoop)
         self.scheduler = Scheduler(scheduler, Config.storage.redis_url)
         
-        self.scheduler.start()
+        Scheduler.start()
         self.eventLoop.run_forever()
