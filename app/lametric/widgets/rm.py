@@ -140,7 +140,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
         n = datetime.now(tz=timezone.utc)
         games = sorted(self.values(), key=lambda g: g.startTime)
         past = list(filter(lambda g: n > g.startTime, games))
-
+        print(games)
         try:
             next_game = games[len(past)]
             if is_today(next_game.startTime):
