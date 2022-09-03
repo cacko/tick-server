@@ -43,7 +43,7 @@ class SubscriptionsMeta(type):
         if not data:
             logging.debug("no data")
             return []
-        items = {str(k): pickle.loads(v) for k, v in data.items()}
+        items = {k: pickle.loads(v) for k, v in data.items()}
         return items
 
 
@@ -69,6 +69,10 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         Storage.pipeline().hdel(self.__storage_key, __v).persist(
             self.__storage_key).execute()
         return super().__delitem__(__v)
+
+    def get(self):
+
+        return super()
 
     def __load_scores(self):
         data = ZnaykoClient.livescores()
