@@ -70,10 +70,6 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
             self.__storage_key).execute()
         return super().__delitem__(__v)
 
-    def get(self):
-
-        return super()
-
     def __load_scores(self):
         data = ZnaykoClient.livescores()
         ids = [x.id for x in self.events]
