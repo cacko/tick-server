@@ -27,7 +27,7 @@ dependencies:
     - attrs==22.1.0
     - beautifulsoup4==4.11.1
     - bottle==0.12.23
-    - butilka==0.1.9
+    - butilka==0.1.15
     - cachable==0.3.11
     - certifi==2022.6.15
     - charset-normalizer==2.1.1
@@ -44,7 +44,7 @@ dependencies:
     - numpy==1.23.2
     - packaging==21.3
     - pandas==1.4.3
-    - paste==3.5.2
+    - paste==3.5.2.2
     - pillow==9.2.0
     - pyflakes==2.5.0
     - pyotp==2.6.0
