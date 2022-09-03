@@ -92,9 +92,11 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
         for event in events:
             if event.is_old_event:
                 continue
+            logging.info(self.subscriptions)
             sub: SubscriptionEvent = self.subscriptions.get(event.id)
             logging.debug(f"ON MATCH CALL {event}")
             if not sub:
+                logging.warning(f"NOT FOUND {event.event_name}")
                 continue
             try:
                 act = ACTION(event.action)

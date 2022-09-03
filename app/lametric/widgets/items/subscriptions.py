@@ -91,8 +91,7 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
 
     @property
     def events(self) -> list[SubscriptionEvent]:
-        print(list(super().values()))
-        return list(super().values())
+        return sorted(super().values(), key=lambda x: x.start_time)
 
     @property
     def scores(self) -> Scores:
