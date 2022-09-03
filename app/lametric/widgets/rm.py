@@ -131,8 +131,8 @@ class Schedule(dict, metaclass=ScheduleMeta):
             logging.warning(f"failed pesistance")
 
     def isIn(self, id: str):
-        logging.warning(self.values())
         ids = [x.subscriptionId for x in self.values()]
+        logging.debug(ids)
         return id in ids
 
     def reload(self, data: list[Game], *args, **kwargs):
@@ -194,8 +194,6 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                                ).persist(STORAGE_LAST_SLEEP_START).execute()
 
     def filter_payload(self, payload):
-        logging.warning(payload)
-        logging.warning(self._schedule)
         if isinstance(payload, list):
             return list(
                 filter(
