@@ -43,7 +43,7 @@ class SubscriptionsMeta(type):
         if not data:
             logging.debug("no data")
             return []
-        items = {k: pickle.loads(v) for k, v in data.items()}
+        items = {k.decode(): pickle.loads(v) for k, v in data.items()}
         return items
 
 
