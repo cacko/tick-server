@@ -1,7 +1,7 @@
 from enum import IntEnum, Enum
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config, Undefined
@@ -80,7 +80,7 @@ class MatchEvent:
     action: str
     order: int
     is_old_event: bool
-    event_id: Optional[int] = None
+    event_id: Optional[Union[int,str]] = None
     team: Optional[str] = None
     player: Optional[str] = None
     score: Optional[str] = None
