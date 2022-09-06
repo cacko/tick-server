@@ -1,3 +1,4 @@
+from asyncio.log import logger
 from enum import IntEnum, Enum
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
@@ -377,7 +378,8 @@ class Game:
 
     @property
     def subscriptionId(self) -> str:
-        return md5(f"{self.homeCompetitor.name.lower()}/{self.awayCompetitor.name.lower()}".encode()).hexdigest()
+        logger.warning(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
+        return md5(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()).hexdigest()
 
     @property
     def postponed(self) -> bool:
