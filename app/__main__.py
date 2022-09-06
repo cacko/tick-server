@@ -1,14 +1,6 @@
-import logging
 import sys
 import signal
-
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(filename)s %(message)s",
-    datefmt="%H:%M:%S",
-)
-
+from app.core import logger
 from app.core.app import App
 
 try:
@@ -18,10 +10,10 @@ except KeyboardInterrupt:
     import sys
     sys.exit(0)
 except Exception as e:
-    logging.exception(e, exc_info=True)
+    logger.exception(e, exc_info=True)
 
 def handler_stop_signals(signum, frame):
-    logging.warning("Stopping app")
+    logger.warning("Stopping app")
     App.terminate()
     sys.exit(0)
 

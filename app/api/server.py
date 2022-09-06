@@ -1,4 +1,4 @@
-import logging
+from app.core import logger
 from pathlib import Path
 from queue import Queue
 from app.api.auth import auth_required
@@ -78,7 +78,7 @@ def on_button():
 @auth_required
 def on_subscription():
     data = request.json
-    logging.debug(data)
+    logger.debug(data)
     return Server.subscription(data)
 
 

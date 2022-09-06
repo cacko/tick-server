@@ -1,4 +1,4 @@
-import logging
+from app.core import logger
 from app.config import Config
 from enum import Enum
 from requests import get, post
@@ -31,7 +31,7 @@ class ClientMeta(type):
             if data:
                 return LivescoreEvent.schema().load(data, many=True)
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
         return []
 
     def unsubscribe(cls, sub: SubscriptionEvent):
@@ -56,7 +56,7 @@ class ClientMeta(type):
             if data:
                 return Game.schema().load(data, many=True)
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
         return []
 
 

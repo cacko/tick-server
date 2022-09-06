@@ -1,5 +1,4 @@
-import logging
-from pickletools import StackObject
+from app.core import logger
 from app.lametric.models import (
     Widget,
     NowPlayingFrame,
@@ -46,7 +45,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
         return True
 
     def yankostatus(self, payload):
-        logging.debug(payload)
+        logger.debug(payload)
         try:
             self.status = MUSIC_STATUS(payload.get("status"))
         except ValueError:

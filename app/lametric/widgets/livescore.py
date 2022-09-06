@@ -1,4 +1,4 @@
-import logging
+from app.core import logger
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification, STORAGE_KEY
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
@@ -26,14 +26,14 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
 
     def clear_all(self):
-        logging.debug("TRIGGER CLEAR ALL")
+        logger.debug("TRIGGER CLEAR ALL")
         keys = [id for id in self.subscriptions.keys()]
-        logging.debug(keys)
+        logger.debug(keys)
 
-        logging.debug(keys)
+        logger.debug(keys)
         for id in keys:
             del self.subscriptions[id]   
-        logging.debug(self.subscriptions)
+        logger.debug(self.subscriptions)
 
     def clear_finished(self):
         keys = [id for id,ev in self.subscriptions.items() if ev.status == 'FT']
@@ -67,7 +67,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
-        logging.debug(f"UPDATE FRAMES")
+        logger.debug(f"UPDATE FRAMES")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
@@ -83,7 +83,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 )
                 frames.append(frame)
         except AttributeError as e:
-            logging.error(e)
+            logger.error(e)
         __class__.client.send_model(
             APPNAME.LIVESCORES, Content(frames=frames)
         )
@@ -130,5 +130,5 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
         del self.subscriptions[event.id]
-        logging.warning(f"DELETING {event.event_name}")
+        logger.warning(f"DELETING {event.event_name}")
         self.update_frames()

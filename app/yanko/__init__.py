@@ -1,4 +1,4 @@
-import logging
+from app.core import logger
 from app.config import Config
 from app.core.otp import OTP
 from requests import request
@@ -52,5 +52,5 @@ class Yanko(object, metaclass=YankoMeta):
             )
             return resp.json()
         except Exception as e:
-            logging.debug(e)
+            logger.debug(e)
             return {"status": MUSIC_STATUS.STOPPED}

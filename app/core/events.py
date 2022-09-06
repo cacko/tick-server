@@ -1,5 +1,5 @@
 from enum import Enum
-import logging
+from app.core import logger
 from threading import Event
 
 
@@ -31,7 +31,7 @@ class EventManagerMeta(type):
                     for cb in cls.__listeners[ev]:
                         cb()
             except ValueError:
-                logging.error(f"{event_name} is not registered event")
+                logger.error(f"{event_name} is not registered event")
                 pass
 
     def listen(cls, ev: BUTTON_EVENTS, callback: callable) -> Event:

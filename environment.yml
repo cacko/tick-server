@@ -31,7 +31,6 @@ dependencies:
     - cachable==0.3.11
     - certifi==2022.6.15
     - charset-normalizer==2.1.1
-    - coloredlogs==15.0.1
     - dataclasses-json==0.5.7
     - deprecated==1.2.13
     - flake8==5.0.4
@@ -62,6 +61,7 @@ dependencies:
     - sniffio==1.2.0
     - soupsieve==2.3.2.post1
     - stringcase==1.2.0
+    - structlog==22.1.0
     - tenacity==8.0.1
     - typing-extensions==4.3.0
     - typing-inspect==0.8.0
