@@ -377,7 +377,7 @@ class Game:
 
     @property
     def subscriptionId(self) -> str:
-        return md5(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".encode()).hexdigest()
+        return md5(f"{self.homeCompetitor.name.lower()}/{self.awayCompetitor.name.lower()}".encode()).hexdigest()
 
     @property
     def postponed(self) -> bool:
