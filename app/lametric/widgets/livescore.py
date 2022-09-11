@@ -1,4 +1,3 @@
-from app.core import logger
 from app.lametric.models import APPNAME, Content, ContentFrame, Notification, STORAGE_KEY
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
@@ -10,7 +9,7 @@ from app.znayko.models import (
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from app.core.events import EventManager, BUTTON_EVENTS
-
+import logging
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
@@ -26,14 +25,14 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
 
     def clear_all(self):
-        logger.debug("TRIGGER CLEAR ALL")
+        logging.debug("TRIGGER CLEAR ALL")
         keys = [id for id in self.subscriptions.keys()]
-        logger.debug(keys)
+        logging.debug(keys)
 
-        logger.debug(keys)
+        logging.debug(keys)
         for id in keys:
             del self.subscriptions[id]   
-        logger.debug(self.subscriptions)
+        logging.debug(self.subscriptions)
 
     def clear_finished(self):
         keys = [id for id,ev in self.subscriptions.items() if ev.status == 'FT']
@@ -67,7 +66,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def update_frames(self):
         frames = []
-        logger.debug(f"UPDATE FRAMES")
+        logging.debug(f"UPDATE FRAMES")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
@@ -83,7 +82,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 )
                 frames.append(frame)
         except AttributeError as e:
-            logger.error(e)
+            logging.error(e)
         __class__.client.send_model(
             APPNAME.LIVESCORES, Content(frames=frames)
         )
@@ -130,5 +129,5 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
         del self.subscriptions[event.id]
-        logger.warning(f"DELETING {event.event_name}")
+        logging.warning(f"DELETING {event.event_name}")
         self.update_frames()

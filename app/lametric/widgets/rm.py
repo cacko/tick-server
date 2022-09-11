@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from app.core import logger
 from time import time
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import (
@@ -22,6 +21,7 @@ from cachable.cacheable import TimeCacheable
 from app.scheduler import Scheduler
 import pickle
 from app.core.time import to_local_time, is_today
+import logging
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
@@ -56,7 +56,7 @@ def cron_func():
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
         n = datetime.now(timezone.utc)
         td = timedelta(minutes=30)
         Scheduler.add_job(
@@ -127,12 +127,12 @@ class Schedule(dict, metaclass=ScheduleMeta):
             Storage.pipeline().hset(name=STORAGE_KEY, mapping=d).persist(STORAGE_KEY).set(
                 STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception as e:
-            logger.error(e)
-            logger.warning(f"failed pesistance")
+            logging.error(e)
+            logging.warning(f"failed pesistance")
 
     def isIn(self, id: str):
         ids = [x.subscriptionId for x in self.values()]
-        logger.debug(ids)
+        logging.debug(ids)
         return id in ids
 
     def reload(self, data: list[Game], *args, **kwargs):
@@ -155,7 +155,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
                 return [next_game]
             return [past[-1], next_game]
         except IndexError:
-            logger.warning(f"getting index failed")
+            logging.warning(f"getting index failed")
             return []
 
     @property

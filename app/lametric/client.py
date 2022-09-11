@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from app.core import logger
+import logging
 from app.core import clean_frame
 from app.config import LametricConfig, LametricApp
 import requests
@@ -25,7 +25,7 @@ class Client(object):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
-        logger.debug(args)
+        logging.debug(args)
         try:
             response = requests.request(
                 method=method.value,

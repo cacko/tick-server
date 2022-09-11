@@ -1,9 +1,9 @@
-from app.core import logger
 from app.config import Config
 from app.core.otp import OTP
 from requests import request
 from enum import Enum
 from cachable.request import Method
+import logging
 
 from app.lametric.models import MUSIC_STATUS
 
@@ -52,5 +52,5 @@ class Yanko(object, metaclass=YankoMeta):
             )
             return resp.json()
         except Exception as e:
-            logger.debug(e)
+            logging.debug(e)
             return {"status": MUSIC_STATUS.STOPPED}

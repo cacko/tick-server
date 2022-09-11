@@ -1,4 +1,3 @@
-from app.core import logger
 from app.config import Config
 from enum import Enum
 from requests import get, post
@@ -7,6 +6,7 @@ from app.znayko.models import (
     SubscriptionEvent,
     Game
 )
+import logging
 
 
 class ENDPOINT(Enum):
@@ -31,7 +31,7 @@ class ClientMeta(type):
             if data:
                 return LivescoreEvent.schema().load(data, many=True)
         except Exception as e:
-            logger.error(e)
+            logging.error(e)
         return []
 
     def unsubscribe(cls, sub: SubscriptionEvent):
@@ -56,7 +56,7 @@ class ClientMeta(type):
             if data:
                 return Game.schema().load(data, many=True)
         except Exception as e:
-            logger.error(e)
+            logging.error(e)
         return []
 
 

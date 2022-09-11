@@ -1,4 +1,3 @@
-from app.core import logger
 from pathlib import Path
 from queue import Queue
 from app.api.auth import auth_required
@@ -7,6 +6,7 @@ from app.lametric.models import CONTENT_TYPE
 from app.lametric import LaMetric
 from app.core.events import EventManager
 from butilka.server import request, template, Server as ButilkaServer
+import logging
 
 api_config = Config.api
 views = Path(__file__).parent / "views"
@@ -78,7 +78,7 @@ def on_button():
 @auth_required
 def on_subscription():
     data = request.json
-    logger.debug(data)
+    logging.debug(data)
     return Server.subscription(data)
 
 

@@ -1,9 +1,9 @@
 from app.znayko.models import SubscriptionEvent
 from cachable.storage import Storage
-from app.core import logger
 import pickle
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.models import STORAGE_KEY
+import logging
 
 class Scores(dict):
 
@@ -41,7 +41,7 @@ class SubscriptionsMeta(type):
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         data = Storage.hgetall(storage_key)
         if not data:
-            logger.debug("no data")
+            logging.debug("no data")
             return []
         items = {k.decode(): pickle.loads(v) for k, v in data.items()}
         return items
