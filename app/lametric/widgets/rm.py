@@ -144,7 +144,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
 
     @property
     def current(self) -> list[Game]:
-        logging.warning(self.items)
         if game := self.in_progress:
             return [game]
         n = datetime.now(tz=timezone.utc)
