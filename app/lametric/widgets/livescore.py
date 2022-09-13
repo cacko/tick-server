@@ -77,7 +77,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 frame = ContentFrame(
                     text=' '.join(text),
                     index=idx,
-                    icon=sub.icon,
+                    icon=sub.display_icon,
                     duration=0
                 )
                 frames.append(frame)

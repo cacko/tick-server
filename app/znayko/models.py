@@ -81,7 +81,7 @@ class MatchEvent:
     action: str
     order: int
     is_old_event: bool
-    event_id: Optional[Union[int,str]] = None
+    event_id: Optional[Union[int, str]] = None
     team: Optional[str] = None
     player: Optional[str] = None
     score: Optional[str] = None
@@ -187,12 +187,22 @@ class SubscriptionEvent:
     )
     status: str = ""
     score: Optional[str] = ""
+    home_team_icon: Optional[str] = None
+    away_team_icon: Optional[str] = None
 
     @property
     def jobId(self):
         if ':' in self.job_id:
             return self.job_id.split(':')[0]
         return self.job_id
+
+    @property
+    def display_icon(self) -> str:
+        if self.home_team_icon:
+            return self.home_team_icon
+        if self.away_team_icon:
+            return self.away_team_icon
+        return self.icon
 
     @property
     def isExpired(self):
@@ -378,7 +388,8 @@ class Game:
 
     @property
     def subscriptionId(self) -> str:
-        logger.warning(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
+        logger.warning(
+            f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
         return md5(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()).hexdigest()
 
     @property
