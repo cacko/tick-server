@@ -31,7 +31,7 @@ class Client(object):
                 method=method.value,
                 auth=(user, apikey),
                 url=f"{host}/api/v2/{endpoint}",
-                **args
+                **args,
             )
             return response.json()
         except ConnectionError:
@@ -46,12 +46,12 @@ class Client(object):
             response = requests.request(
                 method=method.value,
                 headers={
-                    'X-Access-Token': token,
-                    'Cache-Control': 'no-cache',
-                    'Accept': 'application/json'
+                    "X-Access-Token": token,
+                    "Cache-Control": "no-cache",
+                    "Accept": "application/json",
                 },
                 url=f"{url}",
-                **args
+                **args,
             )
             return response.status_code
         except ConnectionError:
@@ -60,34 +60,23 @@ class Client(object):
     def send_notification(self, notification: Notification):
         data = notification.to_dict()
         data["model"]["frames"] = list(
-            map(clean_frame, data.get("model").get("frames", [])))
-        data["model"] = clean_frame(data.get("model"))
-        return self.api_call(
-            Method.POST,
-            "device/notifications",
-            json=data
+            map(clean_frame, data.get("model").get("frames", []))
         )
+        data["model"] = clean_frame(data.get("model"))
+        return self.api_call(Method.POST, "device/notifications", json=data)
 
     def get_apps(self) -> dict[str, App]:
-        res = self.api_call(
-            Method.GET,
-            "device/apps"
-        )
+        res = self.api_call(Method.GET, "device/apps")
         return {k: App.from_dict(v) for k, v in res.items()}
 
     def get_display(self) -> DeviceDisplay:
-        res = self.api_call(
-            Method.GET,
-            "device/display"
+        res = self.api_call(Method.GET, "device/display")
+        return DeviceDisplay.from_dict(
+            {"updated_at": datetime.now(tz=timezone.utc), **res}
         )
-        return DeviceDisplay.from_dict({"updated_at": datetime.now(tz=timezone.utc), **res})
 
     def send_model(self, config_name: APPNAME, model: Content):
         data = model.to_dict()
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
-        return self.widget_call(
-            config_name,
-            Method.POST,
-            json=data
-        )
+        return self.widget_call(config_name, Method.POST, json=data)

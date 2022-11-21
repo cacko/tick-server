@@ -15,7 +15,7 @@ import logging
 class WidgetMeta(type):
 
     _instances = {}
-    client: Client = None
+    client: Client
     live_games_in_progress = False
 
     def __call__(cls, widget: Widget, *args, **kwds):
@@ -38,8 +38,8 @@ class WidgetMeta(type):
 
 class BaseWidget(object, metaclass=WidgetMeta):
 
-    widget: Widget = None
-    widget_id: str = None
+    widget: Widget
+    widget_id: str
 
     def __init__(self, widget_id: str, widget: Widget):
         self.widget = widget
@@ -79,7 +79,7 @@ class SubscriptionWidget(BaseWidget):
             if not len(payload):
                 return payload
             self.on_match_events(
-                MatchEvent.schema().load(payload, many=True)
+                MatchEvent.schema().load(payload, many=True)  # type: ignore
             )
             return self.filter_payload(payload)
         try:
@@ -87,13 +87,13 @@ class SubscriptionWidget(BaseWidget):
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent.from_dict(payload))
+                        CancelJobEvent.from_dict(payload))  # type: ignore
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
-                        SubscriptionEvent.from_dict(payload))
+                        SubscriptionEvent.from_dict(payload))  # type: ignore
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
-                        SubscriptionEvent.from_dict(payload))
+                        SubscriptionEvent.from_dict(payload))  # type: ignore
         except ValueError:
             pass
         finally:

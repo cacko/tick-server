@@ -20,6 +20,7 @@ class APPNAME(Enum):
     YANKO = 'yanko'
     RM = 'rm'
     LIVESCORES = 'livescores'
+    WORLDCUP = "wc"
 
 
 class MUSIC_STATUS(Enum):

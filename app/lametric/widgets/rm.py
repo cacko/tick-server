@@ -22,6 +22,7 @@ from app.scheduler import Scheduler
 import pickle
 from app.core.time import to_local_time, is_today
 import logging
+from typing import Optional
 
 TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
@@ -76,7 +77,7 @@ def schedule_cron():
         name=f"{STORAGE_KEY}",
         func=cron_func,
         trigger="cron",
-        hour=0,
+        hour=4,
         minute=30,
         replace_existing=True,
         misfire_grace_time=180
@@ -95,6 +96,7 @@ class ScheduleMeta(type):
     def load(cls) -> 'Schedule':
         if not cls.__instance:
             data = Storage.hgetall(STORAGE_KEY)
+            assert isinstance(data, dict)
             games = [pickle.loads(v) for v in data.values()]
             return cls(games)
         if cls.needsUpdate():
@@ -159,7 +161,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
             return []
 
     @property
-    def in_progress(self) -> Game:
+    def in_progress(self) -> Optional[Game]:
         return next(filter(lambda g: g.in_progress, self.values()), None)
 
     @property
@@ -171,8 +173,8 @@ class Schedule(dict, metaclass=ScheduleMeta):
 
 class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
-    _schedule: Schedule = None
-    _sleep_start: datetime = None
+    _schedule: Schedule
+    _sleep_start: datetime
 
     def __init__(self, widget_id: str, widget):
         super().__init__(widget_id, widget)

@@ -12,7 +12,7 @@ import time
 class LaMetricMeta(type):
 
     _instance = None
-    _queue: Queue = None
+    _queue: Queue
 
     def __call__(self, *args, **kwds):
         if not self._instance:
@@ -30,8 +30,8 @@ class LaMetricMeta(type):
 
 class LaMetric(object, metaclass=LaMetricMeta):
 
-    _client: Client = None
-    _display: Display = None
+    _client: Client
+    _display: Display
     _mainQueue = None
 
     def __init__(self) -> None:

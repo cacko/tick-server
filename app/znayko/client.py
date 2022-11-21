@@ -14,6 +14,7 @@ class ENDPOINT(Enum):
     UNSUBSCRIBE = 'unsubscribe'
     SUBSCRIBE = 'subscribe'
     TEAM_SCHEDULE = 'team_schedule'
+    LEAGUE_SCHEDULE = 'league_schedule'
 
 
 class ClientMeta(type):
@@ -54,7 +55,16 @@ class ClientMeta(type):
         try:
             data = cls().do_get(f"{ENDPOINT.TEAM_SCHEDULE.value}/{team_id}")
             if data:
-                return Game.schema().load(data, many=True)
+                return Game.schema().load(data, many=True)  # type: ignore
+        except Exception as e:
+            logging.error(e)
+        return []
+    
+    def league_schedule(cls, league_id: int) -> list[Game]:
+        try:
+            data = cls().do_get(f"{ENDPOINT.LEAGUE_SCHEDULE.value}/{league_id}")
+            if data:
+                return Game.schema().load(data, many=True)  # type: ignore
         except Exception as e:
             logging.error(e)
         return []

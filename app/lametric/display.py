@@ -4,12 +4,7 @@ import time
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
-from app.lametric.models import (
-    CONTENT_TYPE,
-    App,
-    APPNAME,
-    DeviceDisplay
-)
+from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay
 from app.config import Config
 from dataclasses import dataclass
 from time import time
@@ -46,7 +41,7 @@ class DisplayItem:
 
     @property
     def isAllowed(self):
-        return not(self.hidden or self.widget.isHidden)
+        return not (self.hidden or self.widget.isHidden)
 
 
 class Display(object):
@@ -86,19 +81,20 @@ class Display(object):
                 widget=self.getWidget(APPNAME(name), app.package),
                 duration=app.duration,
                 hidden=False,
-                appname=APPNAME(name)
+                appname=APPNAME(name),
             )
             for name in Config.display
         ]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
-        match(content_type):
+        match (content_type):
             case CONTENT_TYPE.NOWPLAYING:
                 self._widgets.get(APPNAME.YANKO).nowplaying(payload)
             case CONTENT_TYPE.YANKOSTATUS:
                 self._widgets.get(APPNAME.YANKO).yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
                 payload = self._widgets.get(APPNAME.RM).on_event(payload)
+                payload = self._widgets.get(APPNAME.WORLDCUP).on_event(payload)
                 self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
 
     def get_next_idx(self):
@@ -115,7 +111,7 @@ class Display(object):
                 current = self._items[0]
                 current.activate()
             return 0
-        
+
         current = self._items[self._current_idx]
 
         if not current.isAllowed:
@@ -131,19 +127,17 @@ class Display(object):
         first_key = list(app_widgets.keys()).pop(0)
         widget_data = app_widgets.get(first_key)
         if name not in self._widgets:
-            match(name):
+            match (name):
                 case APPNAME.CLOCK:
-                    self._widgets[name] = ClockWidget(
-                        first_key, widget_data)
+                    self._widgets[name] = ClockWidget(first_key, widget_data)
                 case APPNAME.WEATHER:
-                    self._widgets[name] = WeatherWidget(
-                        first_key, widget_data)
+                    self._widgets[name] = WeatherWidget(first_key, widget_data)
                 case APPNAME.YANKO:
-                    self._widgets[name] = YankoWidget(
-                        first_key, widget_data)
+                    self._widgets[name] = YankoWidget(first_key, widget_data)
                 case APPNAME.RM:
                     self._widgets[name] = RMWidget(first_key, widget_data)
                 case APPNAME.LIVESCORES:
-                    self._widgets[name] = LivescoresWidget(
-                        first_key, widget_data)
+                    self._widgets[name] = LivescoresWidget(first_key, widget_data)
+                case APPNAME.WORLDCUP:
+                    self._widgets[name] = WorldCupWidget(first_key, widget_data)
         return self._widgets.get(name)
