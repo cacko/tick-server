@@ -30,7 +30,7 @@ class ClientMeta(type):
         try:
             data = cls().do_get(ENDPOINT.LIVESCORE.value)
             if data:
-                return LivescoreEvent.schema().load(data, many=True)
+                return LivescoreEvent.schema().load(data, many=True)  # type: ignore
         except Exception as e:
             logging.error(e)
         return []

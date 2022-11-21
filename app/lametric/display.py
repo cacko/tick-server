@@ -1,15 +1,13 @@
-from datetime import datetime
-import logging
-import time
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
-from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay
+from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay, Widget
 from app.config import Config
 from dataclasses import dataclass
 from time import time
 from dataclasses_json import dataclass_json, Undefined
 from app.lametric.widgets import *
+from typing import Optional
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -20,7 +18,7 @@ class DisplayItem:
     duration: int
     appname: APPNAME
     hidden: bool = False
-    activated_at: float = None
+    activated_at: Optional[float] = None
 
     def activate(self):
         self.widget.activate()
@@ -33,7 +31,11 @@ class DisplayItem:
 
     @property
     def isExpired(self):
-        return time() - self.activated_at > self.widget.duration(self.duration)
+        try:
+            assert self.activated_at
+            return time() - self.activated_at > self.widget.duration(self.duration)
+        except AssertionError:
+            return False
 
     @property
     def isActive(self):
@@ -47,11 +49,11 @@ class DisplayItem:
 class Display(object):
 
     _apps: dict[str, App] = {}
-    _client: Client = None
+    _client: Client
     _items: list[DisplayItem] = []
     _current_idx: int = 0
     _widgets: dict[str, BaseWidget] = {}
-    _device_display: DeviceDisplay = None
+    _device_display: DeviceDisplay
 
     def __init__(self, client: Client):
         self._client = client
@@ -73,29 +75,52 @@ class Display(object):
     def __init(self):
         lametricaps = Config.lametric.apps
         for name in Config.display:
-            app: LametricApp = lametricaps.get(name)
-            Widget: Widget = self.getWidget(APPNAME(name), app.package)
-        self._items = [
-            DisplayItem(
-                app=lametricaps.get(name),
-                widget=self.getWidget(APPNAME(name), app.package),
-                duration=app.duration,
-                hidden=False,
-                appname=APPNAME(name),
-            )
-            for name in Config.display
-        ]
+            try:
+                app = lametricaps.get(name)
+                assert isinstance(app, LametricApp)
+                Widget = self.getWidget(APPNAME(name), app.package)
+            except AssertionError:
+                pass
+
+        items = []
+        for name in Config.display:
+            try:
+                app = lametricaps.get(name)
+                assert isinstance(app, LametricApp)
+                assert isinstance(app.duration, int)
+                items.append(
+                    DisplayItem(
+                        app=app,
+                        widget=self.getWidget(APPNAME(name), app.package),
+                        duration=app.duration,
+                        hidden=False,
+                        appname=APPNAME(name),
+                    )
+                )
+            except AssertionError:
+                pass
+        self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
         match (content_type):
             case CONTENT_TYPE.NOWPLAYING:
-                self._widgets.get(APPNAME.YANKO).nowplaying(payload)
+                wdg = self._widgets[APPNAME.YANKO.value]
+                assert isinstance(wdg, YankoWidget)
+                wdg.nowplaying(payload)  # type: ignore
             case CONTENT_TYPE.YANKOSTATUS:
-                self._widgets.get(APPNAME.YANKO).yankostatus(payload)
+                wdg = self._widgets[APPNAME.YANKO.value]
+                assert isinstance(wdg, YankoWidget)
+                wdg.yankostatus(payload)
             case CONTENT_TYPE.LIVESCOREEVENT:
-                payload = self._widgets.get(APPNAME.RM).on_event(payload)
-                payload = self._widgets.get(APPNAME.WORLDCUP).on_event(payload)
-                self._widgets.get(APPNAME.LIVESCORES).on_event(payload)
+                wdg = self._widgets[APPNAME.RM.value]
+                assert isinstance(wdg, RMWidget)
+                payload = wdg.on_event(payload)
+                wdg = self._widgets[APPNAME.WORLDCUP.value]
+                assert isinstance(wdg, WorldCupWidget)
+                payload = wdg.on_event(payload)
+                wdg = self._widgets[APPNAME.LIVESCORES.value]
+                assert isinstance(wdg, LivescoresWidget)
+                wdg.on_event(payload)
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
@@ -122,22 +147,30 @@ class Display(object):
             current.deactivate()
             return self.get_next_idx()
 
-    def getWidget(self, name: APPNAME, package_name):
-        app_widgets = self._apps.get(package_name).widgets
+    def getWidget(self, name: APPNAME, package_name: str) -> BaseWidget:
+        app = self._apps.get(package_name)
+        assert isinstance(app, App)
+        app_widgets = app.widgets
+        assert isinstance(app_widgets, dict)
         first_key = list(app_widgets.keys()).pop(0)
+        assert isinstance(first_key, str)
         widget_data = app_widgets.get(first_key)
+        assert isinstance(widget_data, Widget)
+        widget_init = {"widget_id": first_key, "widget": widget_data}
         if name not in self._widgets:
             match (name):
                 case APPNAME.CLOCK:
-                    self._widgets[name] = ClockWidget(first_key, widget_data)
+                    self._widgets[name.value] = ClockWidget(**widget_init)
                 case APPNAME.WEATHER:
-                    self._widgets[name] = WeatherWidget(first_key, widget_data)
+                    self._widgets[name.value] = WeatherWidget(**widget_init)
                 case APPNAME.YANKO:
-                    self._widgets[name] = YankoWidget(first_key, widget_data)
+                    self._widgets[name.value] = YankoWidget(**widget_init)
                 case APPNAME.RM:
-                    self._widgets[name] = RMWidget(first_key, widget_data)
+                    self._widgets[name.value] = RMWidget(**widget_init)
                 case APPNAME.LIVESCORES:
-                    self._widgets[name] = LivescoresWidget(first_key, widget_data)
+                    self._widgets[name.value] = LivescoresWidget(**widget_init)
                 case APPNAME.WORLDCUP:
-                    self._widgets[name] = WorldCupWidget(first_key, widget_data)
-        return self._widgets.get(name)
+                    self._widgets[name.value] = WorldCupWidget(**widget_init)
+        res = self._widgets.get(name.value)
+        assert isinstance(res, BaseWidget)
+        return res

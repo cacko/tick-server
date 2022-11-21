@@ -7,14 +7,9 @@ from app.znayko.models import (
     Game,
     MatchEvent,
     CancelJobEvent,
-    SubscriptionEvent
+    SubscriptionEvent,
 )
-from app.lametric.models import (
-    Content,
-    ContentFrame,
-    APPNAME,
-    Notification
-)
+from app.lametric.models import Content, ContentFrame, APPNAME, Notification, Widget
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
 from cachable.cacheable import TimeCacheable
@@ -65,9 +60,9 @@ def cron_func():
             name=f"{STORAGE_KEY}_retry",
             func=cron_func,
             trigger="date",
-            run_date=n+td,
+            run_date=n + td,
             replace_existing=True,
-            misfire_grace_time=180
+            misfire_grace_time=180,
         )
 
 
@@ -80,7 +75,7 @@ def schedule_cron():
         hour=4,
         minute=30,
         replace_existing=True,
-        misfire_grace_time=180
+        misfire_grace_time=180,
     )
 
 
@@ -93,7 +88,7 @@ class ScheduleMeta(type):
             cls.__instance = type.__call__(cls, data, *args, **kwargs)
         return cls.__instance
 
-    def load(cls) -> 'Schedule':
+    def load(cls) -> "Schedule":
         if not cls.__instance:
             data = Storage.hgetall(STORAGE_KEY)
             assert isinstance(data, dict)
@@ -126,8 +121,9 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hset(name=STORAGE_KEY, mapping=d).persist(STORAGE_KEY).set(
-                STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
+            Storage.pipeline().hset(name=STORAGE_KEY, mapping=d).persist(
+                STORAGE_KEY
+            ).set(STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
         except Exception as e:
             logging.error(e)
             logging.warning(f"failed pesistance")
@@ -142,7 +138,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
         d = {f"{game.id}": game for game in data}
         self.update(d, *args, **kwargs)
         self.persist()
-
 
     @property
     def current(self) -> list[Game]:
@@ -176,7 +171,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _schedule: Schedule
     _sleep_start: datetime
 
-    def __init__(self, widget_id: str, widget):
+    def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
         self.load()
         self.update_frames()
@@ -192,17 +187,13 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @sleep_start.setter
     def sleep_start(self, value):
-        Storage.pipeline().set(STORAGE_LAST_SLEEP_START, pickle.dumps(value)
-                               ).persist(STORAGE_LAST_SLEEP_START).execute()
+        Storage.pipeline().set(STORAGE_LAST_SLEEP_START, pickle.dumps(value)).persist(
+            STORAGE_LAST_SLEEP_START
+        ).execute()
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
-            return list(
-                filter(
-                    lambda x: not self._schedule.isIn(x.get("id")),
-                    payload
-                )
-            )
+            return list(filter(lambda x: not self._schedule.isIn(x.get("id")), payload))
         subid = payload.get("id")
         if subid and self._schedule.isIn(subid):
             return None
@@ -248,20 +239,14 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             else:
                 text.append(game.gameTimeDisplay)
 
-            text.append(
-                f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
+            text.append(f"{game.homeCompetitor.name} / {game.awayCompetitor.name}")
             if not game.not_started:
                 text.append(
-                    f"{game.homeCompetitor.score:.0f}:{game.awayCompetitor.score:.0f}")
-            frame = ContentFrame(
-                text=' '.join(text),
-                index=idx,
-                icon=game.icon
-            )
+                    f"{game.homeCompetitor.score:.0f}:{game.awayCompetitor.score:.0f}"
+                )
+            frame = ContentFrame(text=" ".join(text), index=idx, icon=game.icon)
             frames.append(frame)
-        __class__.client.send_model(
-            APPNAME.RM, Content(frames=frames)
-        )
+        __class__.client.send_model(APPNAME.RM, Content(frames=frames))
 
     def load(self):
         self._schedule = Schedule.load()
@@ -283,19 +268,24 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 if action == ACTION.FULL_TIME:
                     self.load()
                     game = self._schedule.get(f"{event.event_id}")
-                    is_winner = next(filter(lambda x: x.id == TEAM_ID, [
-                                     game.homeCompetitor, game.awayCompetitor]), None).isWinner
+                    is_winner = next(
+                        filter(
+                            lambda x: x.id == TEAM_ID,
+                            [game.homeCompetitor, game.awayCompetitor],
+                        ),
+                        None,
+                    ).isWinner
             except ValueError:
                 pass
             frame = event.getContentFrame(league_icon=game.icon)
-            __class__.client.send_notification(Notification(
-                model=Content(
-                    frames=[frame],
-                    sound=event.getTeamSound(TEAM_ID, is_winner)
-                ),
-                priority='critical'
-            ))
-
+            __class__.client.send_notification(
+                Notification(
+                    model=Content(
+                        frames=[frame], sound=event.getTeamSound(TEAM_ID, is_winner)
+                    ),
+                    priority="critical",
+                )
+            )
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         pass

@@ -112,7 +112,7 @@ class DisplayScreensave:
 class DeviceDisplay:
     brightness: int
     screensaver: DisplayScreensave
-    updated_at: Optional[datetime] = None
+    updated_at: datetime
 
     @property
     def needs_update(self) -> bool:

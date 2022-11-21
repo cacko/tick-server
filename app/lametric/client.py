@@ -16,7 +16,7 @@ from app.lametric.models import (
 
 class Client(object):
 
-    __config: LametricConfig = None
+    __config: LametricConfig
 
     def __init__(self, config: LametricConfig) -> None:
         self.__config = config
@@ -38,10 +38,11 @@ class Client(object):
             pass
 
     def widget_call(self, config_name: APPNAME, method: Method, **args):
-        app: LametricApp = self.__config.apps.get(config_name.value)
+        app = self.__config.apps.get(config_name.value)
+        assert isinstance(app, LametricApp)
         url = app.endpoint
         token = app.token
-        # logger.debug(f"WIDGET CALL {args}")
+        assert token
         try:
             response = requests.request(
                 method=method.value,
@@ -58,7 +59,7 @@ class Client(object):
             pass
 
     def send_notification(self, notification: Notification):
-        data = notification.to_dict()
+        data = notification.to_dict()  # type: ignore
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", []))
         )
@@ -67,16 +68,17 @@ class Client(object):
 
     def get_apps(self) -> dict[str, App]:
         res = self.api_call(Method.GET, "device/apps")
-        return {k: App.from_dict(v) for k, v in res.items()}
+        return {k: App.from_dict(v) for k, v in res.items()}  # type: ignore
 
     def get_display(self) -> DeviceDisplay:
         res = self.api_call(Method.GET, "device/display")
-        return DeviceDisplay.from_dict(
+        assert isinstance(res, dict)
+        return DeviceDisplay.from_dict(  # type: ignore
             {"updated_at": datetime.now(tz=timezone.utc), **res}
         )
 
     def send_model(self, config_name: APPNAME, model: Content):
-        data = model.to_dict()
+        data = model.to_dict()  # type: ignore
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(config_name, Method.POST, json=data)

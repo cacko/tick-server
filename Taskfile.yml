@@ -8,13 +8,13 @@ vars:
 tasks:
   default:
     cmds:
-      - conda run --live-stream -n {{.PROJECT}} python -m app
+      - mamba run --live-stream -n {{.PROJECT}} python -m app
     silent: true
 
   export:
     desc: export env
     cmds:
-      - conda env export --no-builds  -n {{.PROJECT}} > environment.yml
+      - mamba env export --no-builds  -n {{.PROJECT}} > environment.yml
 
   logs:
     desc: monitor logs
@@ -59,7 +59,7 @@ tasks:
   update:
     desc: uypdat env
     cmds:
-      -  ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}}; conda env update -n {{.PROJECT}} -f environment.yml --prune'
+      -  ssh $REMOTE_HOST 'source ~/.zshrc;cd /var/www/{{.PROJECT}}; mamba env update -n {{.PROJECT}} -f environment.yml --prune'
 
   deploy:
     desc: shortcut for stop -> push -> pull -> restart
@@ -67,10 +67,10 @@ tasks:
       - task: stop
       - task: push
       - task: pull
-      - task: update
+      # - task: update
       - task: restart
 
   systemd-exec:
     desc: run the server
     cmds:
-      - direnv exec . conda run --live-stream -n {{.PROJECT}} python -m app
+      - direnv exec . mamba run --live-stream -n {{.PROJECT}} python -m app

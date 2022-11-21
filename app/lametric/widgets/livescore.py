@@ -4,6 +4,7 @@ from app.lametric.models import (
     ContentFrame,
     Notification,
     STORAGE_KEY,
+    Widget
 )
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import SubscriptionEvent, CancelJobEvent, MatchEvent, ACTION
@@ -26,7 +27,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     subscriptions: Subscriptions
 
-    def __init__(self, widget_id: str, widget):
+    def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
         self.subscriptions = Subscriptions.livescores
         if self.subscriptions:
@@ -196,7 +197,7 @@ class LeagueSchedule(TimeCacheable):
 
 class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
     
-    def __init__(self, widget_id: str, widget):
+    def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
         self.subscriptions = Subscriptions.livescores
         if self.subscriptions:

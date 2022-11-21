@@ -38,12 +38,12 @@ class WidgetMeta(type):
 
 class BaseWidget(object, metaclass=WidgetMeta):
 
-    widget: Widget
     widget_id: str
+    widget: Widget
 
     def __init__(self, widget_id: str, widget: Widget):
-        self.widget = widget
         self.widget_id = widget_id
+        self.widget = widget
 
     def activate(self):
         resp = __class__.client.api_call(
