@@ -17,13 +17,13 @@ from app.core.time import is_today
 from cachable.cacheable import TimeCacheable
 from datetime import datetime, timedelta, timezone
 
-class BaseLivescoresWidget(SubscriptionWidget):
 
+class BaseLivescoresWidget(SubscriptionWidget):
     def __init__(self, widget_id: str, widget: Widget, **kwargs):
         super().__init__(widget_id, widget, **kwargs)
         self.post_init()
         self.update_frames()
-            
+
     @property
     def subscriptions(self) -> Subscriptions:
         raise NotImplementedError
@@ -64,7 +64,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
         if expired:
             for id in expired:
                 del self.subscriptions[id]
-        self.update_frames()
+            self.update_frames()
 
     def duration(self, duration: int):
         res = len(self.subscriptions) * duration
@@ -197,25 +197,19 @@ class LeagueSchedule(TimeCacheable):
 
 
 class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
-    
     @property
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.WORLDCUP.value)
-    
+
     @property
     def app_name(self) -> APPNAME:
         return APPNAME.WORLDCUP
-    
+
     def post_init(self):
         schedule_cron(self.item_id)
         cron_func(self.item_id)
-        
-    def update_frames(self):
-        logging.warning(list(enumerate(self.subscriptions.events)))
-        return super().update_frames()
 
     def filter_payload(self, payload):
-        logging.warning(payload)
         if isinstance(payload, list):
             return list(
                 filter(
@@ -230,15 +224,14 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
 
 
 class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
-
     @property
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.LIVESCORES.value)
-    
+
     @property
     def app_name(self) -> APPNAME:
         return APPNAME.LIVESCORES
-    
+
     def post_init(self):
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
