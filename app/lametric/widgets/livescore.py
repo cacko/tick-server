@@ -31,7 +31,7 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def post_init(self):
-        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES)
+        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES.value)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
 
@@ -197,7 +197,7 @@ class LeagueSchedule(TimeCacheable):
 
 class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
     def post_init(self):
-        self.subscriptions = Subscriptions(STORAGE_KEY.WORLDCUP)
+        self.subscriptions = Subscriptions(STORAGE_KEY.WORLDCUP.value)
         schedule_cron()
         cron_func()
 
