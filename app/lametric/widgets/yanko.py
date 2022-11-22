@@ -13,10 +13,10 @@ import logging
 
 class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
-    status: MUSIC_STATUS = None
+    status: MUSIC_STATUS
 
-    def __init__(self, widget_id: str, widget: Widget):
-        super().__init__(widget_id, widget)
+    def __init__(self, widget_id: str, widget: Widget, **kwargs):
+        super().__init__(widget_id, widget, **kwargs)
         EventManager.listen(BUTTON_EVENTS.YANKO_PLAY_PAUSE, Yanko.toggle)
         EventManager.listen(BUTTON_EVENTS.YANKO_NEXT, Yanko.next)
         self.yankostatus(Yanko.state())
