@@ -8,7 +8,7 @@ from time import time
 from dataclasses_json import dataclass_json, Undefined
 from app.lametric.widgets import *
 from typing import Optional
-
+import logging
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -99,6 +99,7 @@ class Display(object):
                 )
             except AssertionError:
                 pass
+        logging.info(items)
         self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):

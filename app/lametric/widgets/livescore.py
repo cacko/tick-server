@@ -200,9 +200,6 @@ class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
     
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
-        self.subscriptions = Subscriptions.livescores
-        if self.subscriptions:
-            self.update_frames()
         schedule_cron()
         cron_func()
     
