@@ -8,6 +8,7 @@ from time import time
 from dataclasses_json import dataclass_json, Undefined
 from app.lametric.widgets import *
 from typing import Optional
+from typing import Any
 import logging
 
 
@@ -104,24 +105,34 @@ class Display(object):
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
         match (content_type):
-            case CONTENT_TYPE.NOWPLAYING:
-                wdg = self._widgets[APPNAME.YANKO.value]
-                assert isinstance(wdg, YankoWidget)
-                wdg.nowplaying(payload)  # type: ignore
+            case CONTENT_TYPE.NOWPLAYING:  # type: ignore
+                self.invoke_widget(
+                    name=APPNAME.YANKO, method="nowplaying", payload=payload
+                )
             case CONTENT_TYPE.YANKOSTATUS:
-                wdg = self._widgets[APPNAME.YANKO.value]
-                assert isinstance(wdg, YankoWidget)
-                wdg.yankostatus(payload)
+                self.invoke_widget(
+                    name=APPNAME.YANKO, method="yankostatus", payload=payload
+                )
             case CONTENT_TYPE.LIVESCOREEVENT:
-                wdg = self._widgets[APPNAME.RM.value]
-                assert isinstance(wdg, RMWidget)
-                payload = wdg.on_event(payload)
-                wdg = self._widgets[APPNAME.WORLDCUP.value]
-                assert isinstance(wdg, WorldCupWidget)
-                payload = wdg.on_event(payload)
-                wdg = self._widgets[APPNAME.LIVESCORES.value]
-                assert isinstance(wdg, LivescoresWidget)
-                wdg.on_event(payload)
+                payload = self.invoke_widget(
+                    name=APPNAME.RM, method="on_event", payload=payload
+                )
+                payload = self.invoke_widget(
+                    name=APPNAME.WORLDCUP, method="on_event", payload=payload
+                )
+                self.invoke_widget(
+                    name=APPNAME.LIVESCORES, method="on_event", payload=payload
+                )
+
+    def invoke_widget(self, name: APPNAME, method: str, payload: Any):
+        try:
+            wdg = self._widgets[name.value]
+            assert isinstance(wdg, BaseWidget)
+            assert hasattr(wdg, method)
+            assert callable(getattr(wdg, method))
+            return getattr(wdg, method)(payload)
+        except AssertionError:
+            pass
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1

@@ -131,13 +131,14 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def on_subscribed_event(self, event: SubscriptionEvent):
         logging.warning(f"{self.__class__.__name__} on_subscribed_event")
+        logging.debug(event)
         self.subscriptions[event.id] = event
+        logging.debug(self.subscriptions)
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
-        logging.warning(f"{self.__class__.__name__} on_unsubscribed_event")
         del self.subscriptions[event.id]
-        logging.warning(f"DELETING {event.event_name}")
+        logging.debug(f"DELETING {event.event_name}")
         self.update_frames()
 
 
