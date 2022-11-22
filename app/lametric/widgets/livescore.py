@@ -60,7 +60,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
         if expired:
             for id in expired:
                 del self.subscriptions[id]
-            self.update_frames()
+        self.update_frames()
 
     def duration(self, duration: int):
         res = len(self.subscriptions) * duration
@@ -73,7 +73,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
     def update_frames(self):
         frames = []
         logging.debug(f"UPDATE FRAMES")
-        logging.warning(self.subscriptions.events)
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
