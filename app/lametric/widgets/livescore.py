@@ -20,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 WORLD_CUP_LEAGUE_ID = 5930
 
 
-class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
+class BaseLivescoresWidget(SubscriptionWidget):
 
     subscriptions: Subscriptions
 
@@ -31,16 +31,13 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
             self.update_frames()
 
     def post_init(self):
-        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES.value)
-        EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
-        EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
+        raise NotImplementedError
 
     def clear_all(self):
         logging.debug("TRIGGER CLEAR ALL")
         keys = [id for id in self.subscriptions.keys()]
         logging.debug(keys)
 
-        logging.debug(keys)
         for id in keys:
             del self.subscriptions[id]
         logging.debug(self.subscriptions)
@@ -195,7 +192,7 @@ class LeagueSchedule(TimeCacheable):
         return self.__id
 
 
-class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
+class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def post_init(self):
         self.subscriptions = Subscriptions(STORAGE_KEY.WORLDCUP.value)
         schedule_cron()
@@ -213,3 +210,10 @@ class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
         if league_id == str(WORLD_CUP_LEAGUE_ID):
             return None
         return payload
+
+
+class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
+    def post_init(self):
+        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES.value)
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
