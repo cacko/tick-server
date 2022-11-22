@@ -2,7 +2,6 @@ from app.znayko.models import SubscriptionEvent
 from cachable.storage import Storage
 import pickle
 from app.znayko.client import Client as ZnaykoClient
-from app.lametric.models import STORAGE_KEY
 import logging
 
 
@@ -40,7 +39,7 @@ class SubscriptionsMeta(type):
         data = Storage.hgetall(storage_key)
         if not data:
             logging.debug("no data")
-            return []
+            return {}
         items = {k.decode(): pickle.loads(v) for k, v in data.items()}
         return items
 
@@ -78,13 +77,16 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
             return
         store = Storage.pipeline()
         for event in events:
-            text = event.displayScore
-            sub = next(filter(lambda x: x.id == event.id, self.subscriptions), None)
-            if not sub:
-                return
-            sub.status = event.displayStatus
-            store.hset(self.__storage_key, sub.id, pickle.dumps(sub))
-            self.__scores[event.id] = text
+            try:
+                text = event.displayScore
+                sub = next(filter(lambda x: x.id == event.id, self.events), None)
+                assert isinstance(sub, SubscriptionEvent)
+                assert isinstance(event.displayStatus, str)
+                sub.status = event.displayStatus
+                store.hset(self.__storage_key, sub.id, pickle.dumps(sub))
+                self.__scores[event.id] = text
+            except AssertionError:
+                pass
         store.persist(self.__storage_key).execute()
 
     @property
