@@ -80,7 +80,7 @@ class Display(object):
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
-                Widget = self.getWidget(APPNAME(name), app.package)
+                Widget = self.getWidget(APPNAME(name), app.package, **app)
             except AssertionError:
                 pass
 
@@ -159,7 +159,7 @@ class Display(object):
             current.deactivate()
             return self.get_next_idx()
 
-    def getWidget(self, name: APPNAME, package_name: str) -> BaseWidget:
+    def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         app = self._apps.get(package_name)
         assert isinstance(app, App)
         app_widgets = app.widgets
@@ -172,27 +172,27 @@ class Display(object):
             match (name):
                 case APPNAME.CLOCK:
                     self._widgets[name.value] = ClockWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.WEATHER:
                     self._widgets[name.value] = WeatherWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.YANKO:
                     self._widgets[name.value] = YankoWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.RM:
                     self._widgets[name.value] = RMWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.LIVESCORES:
                     self._widgets[name.value] = LivescoresWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.WORLDCUP:
                     self._widgets[name.value] = WorldCupWidget(
-                        widget_id=first_key, widget=widget_data
+                        widget_id=first_key, widget=widget_data, **kwargs
                     )
         res = self._widgets.get(name.value)
         assert isinstance(res, BaseWidget)
