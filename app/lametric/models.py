@@ -13,6 +13,7 @@ class CONTENT_TYPE(Enum):
 
 class STORAGE_KEY(Enum):
     LIVESCORES = "subscriptions"
+    WORLDCUP = "worldcup_subscriptions"
 
 class APPNAME(Enum):
     CLOCK = 'clock'

@@ -13,15 +13,11 @@ from app.lametric.widgets.items.subscriptions import Subscriptions
 from app.core.events import EventManager, BUTTON_EVENTS
 import logging
 from app.scheduler import Scheduler
-from app.core.time import to_local_time, is_today
-
+from app.core.time import is_today
 from cachable.cacheable import TimeCacheable
 from datetime import datetime, timedelta, timezone
 
 WORLD_CUP_LEAGUE_ID = 5930
-STORAGE_KEY = "world_cup_schedule"
-STORAGE_LAST_UPDATE = "world_cup_last_update"
-STORAGE_LAST_SLEEP_START = "world_cup_sleep_start"
 
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
@@ -30,9 +26,12 @@ class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
-        self.subscriptions = Subscriptions.livescores
+        self.post_init()
         if self.subscriptions:
             self.update_frames()
+
+    def post_init(self):
+        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
 
@@ -153,8 +152,8 @@ def cron_func():
         n = datetime.now(timezone.utc)
         td = timedelta(minutes=30)
         Scheduler.add_job(
-            id=f"{STORAGE_KEY}_retry",
-            name=f"{STORAGE_KEY}_retry",
+            id=f"{STORAGE_KEY.WORLDCUP}_retry",
+            name=f"{STORAGE_KEY.WORLDCUP}_retry",
             func=cron_func,
             trigger="date",
             run_date=n + td,
@@ -165,8 +164,8 @@ def cron_func():
 
 def schedule_cron():
     Scheduler.add_job(
-        id=STORAGE_KEY,
-        name=f"{STORAGE_KEY}",
+        id=STORAGE_KEY.WORLDCUP,
+        name=f"{STORAGE_KEY.WORLDCUP}",
         func=cron_func,
         trigger="cron",
         hour=4,
@@ -197,8 +196,8 @@ class LeagueSchedule(TimeCacheable):
 
 
 class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
-    def __init__(self, widget_id: str, widget: Widget):
-        super().__init__(widget_id, widget)
+    def post_init(self):
+        self.subscriptions = Subscriptions(STORAGE_KEY.WORLDCUP)
         schedule_cron()
         cron_func()
 

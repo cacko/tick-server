@@ -5,6 +5,7 @@ from app.znayko.client import Client as ZnaykoClient
 from app.lametric.models import STORAGE_KEY
 import logging
 
+
 class Scores(dict):
 
     __has_changes = False
@@ -31,12 +32,9 @@ class SubscriptionsMeta(type):
     def __call__(cls, storage_key, *args, **kwds):
         if storage_key not in cls.__instances:
             cls.__instances[storage_key] = type.__call__(
-                cls, storage_key, *args, **kwds)
+                cls, storage_key, *args, **kwds
+            )
         return cls.__instances[storage_key]
-
-    @property
-    def livescores(cls) -> 'Subscriptions':
-        return cls(STORAGE_KEY.LIVESCORES.value)
 
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         data = Storage.hgetall(storage_key)
@@ -49,8 +47,8 @@ class SubscriptionsMeta(type):
 
 class Subscriptions(dict, metaclass=SubscriptionsMeta):
 
-    __storage_key = None
-    __scores: Scores = None
+    __storage_key: str
+    __scores: Scores
 
     def __init__(self, storage_key, *args, **kwds):
         self.__storage_key = storage_key
@@ -59,15 +57,17 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
-        Storage.pipeline().hset(self.__storage_key, __k, pickle.dumps(
-            __v)).persist(self.__storage_key).execute()
+        Storage.pipeline().hset(self.__storage_key, __k, pickle.dumps(__v)).persist(
+            self.__storage_key
+        ).execute()
         if __v.score:
             self.__scores[__k] = __v.score
         return super().__setitem__(__k, __v)
 
     def __delitem__(self, __v) -> None:
         Storage.pipeline().hdel(self.__storage_key, __v).persist(
-            self.__storage_key).execute()
+            self.__storage_key
+        ).execute()
         return super().__delitem__(__v)
 
     def __load_scores(self):
@@ -79,13 +79,11 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         store = Storage.pipeline()
         for event in events:
             text = event.displayScore
-            sub = next(filter(lambda x: x.id ==
-                       event.id, self.subscriptions), None)
+            sub = next(filter(lambda x: x.id == event.id, self.subscriptions), None)
             if not sub:
                 return
             sub.status = event.displayStatus
-            store.hset(self.__storage_key,
-                       sub.id, pickle.dumps(sub))
+            store.hset(self.__storage_key, sub.id, pickle.dumps(sub))
             self.__scores[event.id] = text
         store.persist(self.__storage_key).execute()
 
