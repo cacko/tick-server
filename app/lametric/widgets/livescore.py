@@ -176,17 +176,18 @@ def schedule_cron():
 
 
 class LeagueSchedule(TimeCacheable):
-    cachetime: timedelta = timedelta(hours=10)
-    __id = None
+    cachetime: timedelta = timedelta(minutes=1)
+    __id: int
 
-    def __init__(self, id) -> None:
+    def __init__(self, id: int):
         self.__id = id
         super().__init__()
 
     @property
     def content(self):
         if not self.load():
-            schedule = ZnaykoClient.league_schedule(WORLD_CUP_LEAGUE_ID)
+            schedule = ZnaykoClient.league_schedule(self.__id)
+            logging.info(schedule)
             self._struct = self.tocache(schedule)
         return self._struct.struct
 
