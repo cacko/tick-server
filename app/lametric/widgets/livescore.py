@@ -22,13 +22,14 @@ WORLD_CUP_LEAGUE_ID = 5930
 
 class BaseLivescoresWidget(SubscriptionWidget):
 
-    subscriptions: Subscriptions
-
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
         self.post_init()
-        if self.subscriptions:
-            self.update_frames()
+        self.update_frames()
+            
+    @property
+    def subscriptions(self) -> Subscriptions:
+        raise NotImplementedError
 
     def post_init(self):
         raise NotImplementedError
@@ -143,7 +144,7 @@ def cron_func():
         games = LeagueSchedule(WORLD_CUP_LEAGUE_ID).content
         for game in games:
             if is_today(game.startTime):
-                res = ZnaykoClient.subscribe(game.id)
+                ZnaykoClient.subscribe(game.id)
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
@@ -193,8 +194,12 @@ class LeagueSchedule(TimeCacheable):
 
 
 class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
+    
+    @property
+    def subscriptions(self) -> Subscriptions:
+        return Subscriptions(STORAGE_KEY.WORLDCUP.value)
+    
     def post_init(self):
-        self.subscriptions = Subscriptions(STORAGE_KEY.WORLDCUP.value)
         schedule_cron()
         cron_func()
 
@@ -202,19 +207,23 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: x.get("league_id", "") != str(WORLD_CUP_LEAGUE_ID),
+                    lambda x: x.get("league_id", 0) != WORLD_CUP_LEAGUE_ID,
                     payload,
                 )
             )
-        league_id = payload.get("league_id", "")
-        if league_id == str(WORLD_CUP_LEAGUE_ID):
+        league_id = payload.get("league_id", 0)
+        if league_id == WORLD_CUP_LEAGUE_ID:
             return None
         return payload
 
 
 class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
+
+    @property
+    def subscriptions(self) -> Subscriptions:
+        return Subscriptions(STORAGE_KEY.LIVESCORES.value)
+    
     def post_init(self):
-        self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES.value)
         self.clear_all()
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
