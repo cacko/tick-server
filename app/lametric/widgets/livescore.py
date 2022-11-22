@@ -73,6 +73,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
     def update_frames(self):
         frames = []
         logging.debug(f"UPDATE FRAMES")
+        logging.warning(self.subscriptions.events)
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
@@ -213,7 +214,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     payload,
                 )
             )
-        league_id = payload.get("competitionId", 0)
+        league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
             return None
         return payload
