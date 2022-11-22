@@ -28,6 +28,10 @@ class BaseLivescoresWidget(SubscriptionWidget):
     def subscriptions(self) -> Subscriptions:
         raise NotImplementedError
 
+    @property
+    def app_name(self) -> APPNAME:
+        raise NotImplementedError
+
     def post_init(self):
         raise NotImplementedError
 
@@ -86,7 +90,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 frames.append(frame)
         except AttributeError as e:
             logging.error(e)
-        __class__.client.send_model(APPNAME.LIVESCORES, Content(frames=frames))
+        __class__.client.send_model(self.app_name, Content(frames=frames))
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
@@ -200,6 +204,10 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.WORLDCUP.value)
     
+    @property
+    def app_name(self) -> APPNAME:
+        return APPNAME.WORLDCUP
+    
     def post_init(self):
         schedule_cron(self.item_id)
         cron_func(self.item_id)
@@ -224,6 +232,10 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.LIVESCORES.value)
+    
+    @property
+    def app_name(self) -> APPNAME:
+        return APPNAME.LIVESCORES
     
     def post_init(self):
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
