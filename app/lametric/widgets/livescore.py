@@ -206,6 +206,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.WORLDCUP
 
     def post_init(self):
+        self.clear_all()
         schedule_cron(self.item_id)
         cron_func(self.item_id)
 
@@ -233,5 +234,6 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.LIVESCORES
 
     def post_init(self):
+        self.clear_all()
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
