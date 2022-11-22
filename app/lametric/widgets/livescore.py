@@ -211,6 +211,10 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def post_init(self):
         schedule_cron(self.item_id)
         cron_func(self.item_id)
+        
+    def update_frames(self):
+        logging.warning(enumerate(self.subscriptions.events))
+        return super().update_frames()
 
     def filter_payload(self, payload):
         logging.warning(payload)
