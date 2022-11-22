@@ -4,7 +4,7 @@ from app.lametric.models import (
     ContentFrame,
     Notification,
     STORAGE_KEY,
-    Widget
+    Widget,
 )
 from .base import SubscriptionWidget, WidgetMeta
 from app.znayko.models import SubscriptionEvent, CancelJobEvent, MatchEvent, ACTION
@@ -22,6 +22,7 @@ WORLD_CUP_LEAGUE_ID = 5930
 STORAGE_KEY = "world_cup_schedule"
 STORAGE_LAST_UPDATE = "world_cup_last_update"
 STORAGE_LAST_SLEEP_START = "world_cup_sleep_start"
+
 
 class LivescoresWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
@@ -187,7 +188,6 @@ class LeagueSchedule(TimeCacheable):
     def content(self):
         if not self.load():
             schedule = ZnaykoClient.league_schedule(self.__id)
-            logging.info(schedule)
             self._struct = self.tocache(schedule)
         return self._struct.struct
 
@@ -197,12 +197,11 @@ class LeagueSchedule(TimeCacheable):
 
 
 class WorldCupWidget(LivescoresWidget, metaclass=WidgetMeta):
-    
     def __init__(self, widget_id: str, widget: Widget):
         super().__init__(widget_id, widget)
         schedule_cron()
         cron_func()
-    
+
     def filter_payload(self, payload):
         if isinstance(payload, list):
             return list(
