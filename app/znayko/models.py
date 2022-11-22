@@ -71,6 +71,7 @@ class GameStatus(Enum):
     NS = "NS"
     FN = "Final"
     PPD = "Post."
+    UNKNOWN = ""
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -89,7 +90,7 @@ class MatchEvent:
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
 
-    def getContentFrame(self, league_icon: str = None) -> ContentFrame:
+    def getContentFrame(self, league_icon: Optional[str] = None) -> ContentFrame:
         parts = []
         if self.time:
             parts.append(f"{self.time}'")
@@ -97,7 +98,7 @@ class MatchEvent:
             parts.append(f"{self.action}")
         if self.player:
             if self.extraPlayers is not None:
-                extra = ','.join(self.extraPlayers)
+                extra = ",".join(self.extraPlayers)
                 parts.append(f"{extra} -> {self.player}")
             else:
                 parts.append(f"{self.player}")
@@ -106,7 +107,7 @@ class MatchEvent:
         if self.score:
             parts.append(f"{self.score}")
 
-        res = ContentFrame(text=' '.join(parts), duration=0)
+        res = ContentFrame(text=" ".join(parts), duration=0)
 
         if league_icon:
             res.icon = league_icon
@@ -122,15 +123,11 @@ class MatchEvent:
     def getSound(self):
         try:
             action = ACTION(self.action)
-            match(action):
+            match (action):
                 case ACTION.GOAL:
-                    return ContentSound(
-                        id=SOUNDS.POSITIVE5.value
-                    )
+                    return ContentSound(id=SOUNDS.POSITIVE5.value)
                 case ACTION.FULL_TIME:
-                    return ContentSound(
-                        id=SOUNDS.BICYCLE.value
-                    )
+                    return ContentSound(id=SOUNDS.BICYCLE.value)
         except ValueError:
             pass
         return None
@@ -140,27 +137,25 @@ class MatchEvent:
             action = ACTION(self.action)
             if action in [ACTION.GOAL]:
                 return ContentSound(
-                    id=SOUNDS.POSITIVE1.value if self.team_id == team_id else SOUNDS.NEGATIVE1.value
+                    id=SOUNDS.POSITIVE1.value
+                    if self.team_id == team_id
+                    else SOUNDS.NEGATIVE1.value
                 )
             elif action in [ACTION.YELLOW_CARD, ACTION.RED_CARD]:
                 return ContentSound(
-                    id=SOUNDS.NEGATIVE2.value if self.team_id == team_id else SOUNDS.POSITIVE2.value
+                    id=SOUNDS.NEGATIVE2.value
+                    if self.team_id == team_id
+                    else SOUNDS.POSITIVE2.value
                 )
             elif action == ACTION.FULL_TIME:
-                match(is_winner):
+                match (is_winner):
                     case True:
-                        return ContentSound(
-                            id=SOUNDS.WIN.value
-                        )
+                        return ContentSound(id=SOUNDS.WIN.value)
                     case False:
-                        return ContentSound(
-                            id=SOUNDS.LOSE1.value
-                        )
+                        return ContentSound(id=SOUNDS.LOSE1.value)
         except:
             pass
-        return ContentSound(
-            id=SOUNDS.BICYCLE.value
-        )
+        return ContentSound(id=SOUNDS.BICYCLE.value)
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -192,8 +187,8 @@ class SubscriptionEvent:
 
     @property
     def jobId(self):
-        if ':' in self.job_id:
-            return self.job_id.split(':')[0]
+        if ":" in self.job_id:
+            return self.job_id.split(":")[0]
         return self.job_id
 
     @property
@@ -271,12 +266,12 @@ class LivescoreEvent:
         if self.strStatus in STATUS_MAP:
             self.strStatus = STATUS_MAP[self.strStatus]
 
-        delta = (datetime.now(timezone.utc) -
-                 self.startTime).total_seconds() / 60
+        delta = (datetime.now(timezone.utc) - self.startTime).total_seconds() / 60
         try:
-            self.displayStatus = GameStatus(self.strStatus)
-            if delta < 0 and self.displayStatus in [
-                    GameStatus.UNKNOWN, GameStatus.NS]:
+            status = self.strStatus
+            assert status
+            self.displayStatus = GameStatus(status).value
+            if delta < 0 and self.displayStatus in [GameStatus.UNKNOWN, GameStatus.NS]:
                 self.displayStatus = to_local_time(self.startTime)
             else:
                 self.displayStatus = self.displayStatus.name
@@ -285,24 +280,23 @@ class LivescoreEvent:
         try:
             if re.match(r"^\d+$", self.strStatus):
                 self.sort = OrderWeight.INPLAY.value * int(self.strStatus)
-                self.displayStatus = f"{self.strStatus}\""
+                self.displayStatus = f'{self.strStatus}"'
             else:
                 self.sort = OrderWeight[
                     self.strStatus.translate(punctuation).upper()
                 ].value * abs(delta)
         except KeyError:
-            self.sort = OrderWeight.JUNK.value * abs(delta)
+            self.sort = int(OrderWeight.JUNK.value * abs(delta))
         if any([self.intAwayScore == -1, self.intHomeScore == -1]):
             self.displayScore = ""
         else:
-            self.displayScore = ":".join([
-                f"{self.intHomeScore:.0f}",
-                f"{self.intAwayScore:.0f}"
-            ])
+            self.displayScore = ":".join(
+                [f"{self.intHomeScore:.0f}", f"{self.intAwayScore:.0f}"]
+            )
 
     @property
     def inProgress(self) -> bool:
-        return re.match(r"^\d+$", self.strStatus)
+        return re.match(r"^\d+$", self.strStatus) is not None
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -313,8 +307,8 @@ class CancelJobEvent:
 
     @property
     def jobId(self):
-        if ':' in self.job_id:
-            return self.job_id.split(':')[0]
+        if ":" in self.job_id:
+            return self.job_id.split(":")[0]
         return self.job_id
 
 
@@ -338,13 +332,14 @@ class GameCompetitor:
 
     @property
     def flag(self) -> str:
-        pass
+        return ""
 
     @property
     def shortName(self) -> str:
         if self.symbolicName:
             return self.symbolicName
-        parts = self.name.split(' ')
+        assert self.name
+        parts = self.name.split(" ")
         if len(parts) == 1:
             return self.name[:3].upper()
         return f"{parts[0][:1]}{parts[1][:2]}".upper()
@@ -387,9 +382,10 @@ class Game:
 
     @property
     def subscriptionId(self) -> str:
-        logger.warning(
-            f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
-        return md5(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()).hexdigest()
+        logger.warning(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
+        return md5(
+            f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()
+        ).hexdigest()
 
     @property
     def postponed(self) -> bool:

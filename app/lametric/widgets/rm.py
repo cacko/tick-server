@@ -257,7 +257,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 continue
             if event.is_old_event:
                 continue
-            game: Game = self._schedule.get(f"{event.event_id}")
+            game = self._schedule.get(f"{event.event_id}")
+            assert isinstance(game, Game)
             is_winner = None
             if not game:
                 return
@@ -267,16 +268,21 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                     continue
                 if action == ACTION.FULL_TIME:
                     self.load()
-                    game = self._schedule.get(f"{event.event_id}")
-                    is_winner = next(
+                    schedule_game = self._schedule.get(f"{event.event_id}")
+                    assert isinstance(schedule_game, Game)
+                    game = schedule_game
+                    competitor = next(
                         filter(
                             lambda x: x.id == self.item_id,
                             [game.homeCompetitor, game.awayCompetitor],
                         ),
                         None,
-                    ).isWinner
+                    )
+                    assert competitor
+                    is_winner = competitor.isWinner
             except ValueError:
                 pass
+            assert game.icon
             frame = event.getContentFrame(league_icon=game.icon)
             __class__.client.send_notification(
                 Notification(

@@ -7,19 +7,20 @@ from app.lametric import LaMetric
 from app.core.events import EventManager
 from butilka.server import request, template, Server as ButilkaServer
 import logging
+from typing import Optional, MutableMapping
 
 api_config = Config.api
 views = Path(__file__).parent / "views"
 srv = ButilkaServer(
-    host=api_config.host, 
-    port=api_config.port,
-    template_path=views.as_posix()
+    host=api_config.host, port=api_config.port, template_path=views.as_posix()
 )
 app = srv.app
+
+
 class ServerMeta(type):
 
-    _instance: 'Server' = None
-    _mainQueue: Queue = None
+    _instance: Optional["Server"] = None
+    _mainQueue: Optional[Queue] = None
 
     def __call__(self, *args, **kwds):
         if not self._instance:
@@ -41,7 +42,6 @@ class ServerMeta(type):
 
 
 class Server(object, metaclass=ServerMeta):
-
     def start_server(self):
         srv.start()
 
@@ -56,20 +56,21 @@ class Server(object, metaclass=ServerMeta):
         return "OK"
 
 
-@app.route('/api/nowplaying', method='POST')
+@app.route("/api/nowplaying", method="POST")
 @auth_required
 def nowplaying():
     return Server.nowplaying(request.json)
 
 
-@app.route('/api/status', method='POST')
+@app.route("/api/status", method="POST")
 @auth_required
 def status():
     return Server.status(request.json)
 
 
-@app.route('/api/button')
+@app.route("/api/button")
 def on_button():
+    assert isinstance(request.query, MutableMapping)
     events = [f"{k}={v}".lower() for k, v in request.query.items()]
     EventManager.on_trigger(events)
 
@@ -82,6 +83,6 @@ def on_subscription():
     return Server.subscription(data)
 
 
-@app.route('/privacy')
+@app.route("/privacy")
 def privacy():
-    return template('privacy')
+    return template("privacy")
