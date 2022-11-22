@@ -164,7 +164,7 @@ def cron_func():
 
 def schedule_cron():
     Scheduler.add_job(
-        id=STORAGE_KEY.WORLDCUP,
+        id=f"{STORAGE_KEY.WORLDCUP}",
         name=f"{STORAGE_KEY.WORLDCUP}",
         func=cron_func,
         trigger="cron",
