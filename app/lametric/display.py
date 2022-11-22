@@ -80,7 +80,7 @@ class Display(object):
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
-                Widget = self.getWidget(APPNAME(name), app.package, **app)
+                Widget = self.getWidget(APPNAME(name), app.package, **app.to_dict())  # type: ignore
             except AssertionError:
                 pass
 
