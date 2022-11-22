@@ -177,7 +177,7 @@ def schedule_cron(competition_id: int):
 
 
 class LeagueSchedule(TimeCacheable):
-    cachetime: timedelta = timedelta(hours=10)
+    cachetime: timedelta = timedelta(hours=5)
     __id: int
 
     def __init__(self, id: int):

@@ -9,9 +9,9 @@ from app.lametric.models import MUSIC_STATUS
 
 
 class Endpoints(Enum):
-    STATE = 'state'
-    NEXT = 'command/next'
-    TOGGLE = 'command/toggle'
+    STATE = "state"
+    NEXT = "command/next"
+    TOGGLE = "command/toggle"
 
 
 class YankoMeta(type):
@@ -35,8 +35,8 @@ class YankoMeta(type):
 
 class Yanko(object, metaclass=YankoMeta):
 
-    __otp: OTP = None
-    __host = None
+    __otp: OTP
+    __host: str
 
     def __init__(self) -> None:
         self.__otp = OTP.yanko
@@ -48,7 +48,7 @@ class Yanko(object, metaclass=YankoMeta):
                 method=method.value,
                 url=f"{self.__host}/{endpoint.value}",
                 headers=self.__otp.headers,
-                **kwags
+                **kwags,
             )
             return resp.json()
         except Exception as e:

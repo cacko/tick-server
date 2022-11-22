@@ -1,4 +1,3 @@
-
 from os import environ
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,7 +45,7 @@ class ApiConfig:
     port: int
     secret: str
     daemon_threads: bool
-    nworkers: int  
+    nworkers: int
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -105,9 +104,9 @@ class ConfigMeta(type):
 
 class Config(object, metaclass=ConfigMeta):
 
-    truct: ConfigStruct = None
+    struct: ConfigStruct
 
     def __init__(self):
         settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
         data = load(settings.read_text(), Loader=Loader)
-        self.struct = ConfigStruct.from_dict(data)
+        self.struct = ConfigStruct.from_dict(data)  # type: ignore
