@@ -171,8 +171,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     _schedule: Schedule
     _sleep_start: datetime
 
-    def __init__(self, widget_id: str, widget: Widget):
-        super().__init__(widget_id, widget)
+    def __init__(self, widget_id: str, widget: Widget, **kwargs):
+        super().__init__(widget_id, widget, **kwargs)
         self.load()
         self.update_frames()
         schedule_cron(self.item_id)

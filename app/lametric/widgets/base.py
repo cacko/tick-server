@@ -43,7 +43,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
     widget: Widget
     options: dict[str, Any]
 
-    def __init__(self, widget_id: str, widget: Widget, *args, **kwargs):
+    def __init__(self, widget_id: str, widget: Widget, **kwargs):
         self.widget_id = widget_id
         self.widget = widget
         self.options = kwargs

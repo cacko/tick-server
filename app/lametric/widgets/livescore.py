@@ -19,8 +19,8 @@ from datetime import datetime, timedelta, timezone
 
 class BaseLivescoresWidget(SubscriptionWidget):
 
-    def __init__(self, widget_id: str, widget: Widget):
-        super().__init__(widget_id, widget)
+    def __init__(self, widget_id: str, widget: Widget, **kwargs):
+        super().__init__(widget_id, widget, **kwargs)
         self.post_init()
         self.update_frames()
             
