@@ -130,10 +130,12 @@ class BaseLivescoresWidget(SubscriptionWidget):
             del self.subscriptions[sub.id]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
+        logging.warning(f"{self.__class__.__name__} on_subscribed_event")
         self.subscriptions[event.id] = event
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
+        logging.warning(f"{self.__class__.__name__} on_unsubscribed_event")
         del self.subscriptions[event.id]
         logging.warning(f"DELETING {event.event_name}")
         self.update_frames()
@@ -204,6 +206,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         cron_func()
 
     def filter_payload(self, payload):
+        logging.warning(payload)
         if isinstance(payload, list):
             return list(
                 filter(
@@ -224,6 +227,5 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return Subscriptions(STORAGE_KEY.LIVESCORES.value)
     
     def post_init(self):
-        self.clear_all()
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
