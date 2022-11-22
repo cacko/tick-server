@@ -215,5 +215,6 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
 class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def post_init(self):
         self.subscriptions = Subscriptions(STORAGE_KEY.LIVESCORES.value)
+        self.clear_all()
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
