@@ -156,21 +156,20 @@ class Display(object):
         assert isinstance(first_key, str)
         widget_data = app_widgets.get(first_key)
         assert isinstance(widget_data, Widget)
-        widget_init = {"widget_id": first_key, "widget": widget_data}
         if name not in self._widgets:
             match (name):
                 case APPNAME.CLOCK:
-                    self._widgets[name.value] = ClockWidget(**widget_init)
+                    self._widgets[name.value] = ClockWidget(widget_id=first_key, widget=widget_data)
                 case APPNAME.WEATHER:
-                    self._widgets[name.value] = WeatherWidget(**widget_init)
+                    self._widgets[name.value] = WeatherWidget(widget_id=first_key, widget=widget_data)
                 case APPNAME.YANKO:
-                    self._widgets[name.value] = YankoWidget(**widget_init)
+                    self._widgets[name.value] = YankoWidget(widget_id=first_key, widget=widget_data)
                 case APPNAME.RM:
-                    self._widgets[name.value] = RMWidget(**widget_init)
+                    self._widgets[name.value] = RMWidget(widget_id=first_key, widget=widget_data)
                 case APPNAME.LIVESCORES:
-                    self._widgets[name.value] = LivescoresWidget(**widget_init)
+                    self._widgets[name.value] = LivescoresWidget(widget_id=first_key, widget=widget_data)
                 case APPNAME.WORLDCUP:
-                    self._widgets[name.value] = WorldCupWidget(**widget_init)
+                    self._widgets[name.value] = WorldCupWidget(widget_id=first_key, widget=widget_data)
         res = self._widgets.get(name.value)
         assert isinstance(res, BaseWidget)
         return res

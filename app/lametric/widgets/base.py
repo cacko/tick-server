@@ -18,10 +18,10 @@ class WidgetMeta(type):
     client: Client
     live_games_in_progress = False
 
-    def __call__(cls, widget: Widget, *args, **kwds):
+    def __call__(cls, widget_id: str, widget: Widget, *args, **kwds):
         if cls.__name__ not in cls._instances:
             cls._instances[cls.__name__] = type.__call__(
-                cls, widget, *args, **kwds)
+                cls, widget_id, widget, *args, **kwds)
         return cls._instances[cls.__name__]
 
     def register(cls, client: Client):
