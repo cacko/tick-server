@@ -22,6 +22,4 @@ handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 root_logger = logging.getLogger()
 root_logger.addHandler(handler)
-root_logger.setLevel(
-    getattr(logging, os.environ.get("TICK_LOG_LEVEL", "INFO")))
-
+root_logger.setLevel(getattr(logging, os.environ.get("TICK_LOG_LEVEL", "INFO")))
