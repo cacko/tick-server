@@ -17,9 +17,6 @@ from app.core.time import is_today
 from cachable.cacheable import TimeCacheable
 from datetime import datetime, timedelta, timezone
 
-WORLD_CUP_LEAGUE_ID = 5930
-
-
 class BaseLivescoresWidget(SubscriptionWidget):
 
     def __init__(self, widget_id: str, widget: Widget):
@@ -142,9 +139,9 @@ class BaseLivescoresWidget(SubscriptionWidget):
         self.update_frames()
 
 
-def cron_func():
+def cron_func(competition_id: int):
     try:
-        games = LeagueSchedule(WORLD_CUP_LEAGUE_ID).content
+        games = LeagueSchedule(competition_id).content
         for game in games:
             if is_today(game.startTime):
                 ZnaykoClient.subscribe(game.id)
@@ -163,7 +160,7 @@ def cron_func():
         )
 
 
-def schedule_cron():
+def schedule_cron(competition_id: int):
     Scheduler.add_job(
         id=f"{STORAGE_KEY.WORLDCUP}",
         name=f"{STORAGE_KEY.WORLDCUP}",
@@ -171,6 +168,7 @@ def schedule_cron():
         trigger="cron",
         hour=4,
         minute=40,
+        kwargs={"competition_id": competition_id},
         replace_existing=True,
         misfire_grace_time=180,
     )
@@ -203,20 +201,20 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return Subscriptions(STORAGE_KEY.WORLDCUP.value)
     
     def post_init(self):
-        schedule_cron()
-        cron_func()
+        schedule_cron(self.item_id)
+        cron_func(self.item_id)
 
     def filter_payload(self, payload):
         logging.warning(payload)
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: x.get("league_id", 0) != WORLD_CUP_LEAGUE_ID,
+                    lambda x: x.get("competitionId", 0) != self.item_id,
                     payload,
                 )
             )
-        league_id = payload.get("league_id", 0)
-        if league_id == WORLD_CUP_LEAGUE_ID:
+        league_id = payload.get("competitionId", 0)
+        if league_id == self.item_id:
             return None
         return payload
 

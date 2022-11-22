@@ -23,6 +23,7 @@ class LametricApp:
     endpoint: Optional[str] = None
     token: Optional[str] = None
     sleep_minutes: Optional[int] = None
+    item_id: Optional[int] = None
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)

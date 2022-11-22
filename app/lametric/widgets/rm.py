@@ -19,7 +19,6 @@ from app.core.time import to_local_time, is_today
 import logging
 from typing import Optional
 
-TEAM_ID = 131
 STORAGE_KEY = "real_madrid_schedule"
 STORAGE_LAST_UPDATE = "real_madrid_last_update"
 STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
@@ -27,7 +26,7 @@ STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
-    __id = None
+    __id: int
 
     def __init__(self, id) -> None:
         self.__id = id
@@ -36,7 +35,7 @@ class TeamSchedule(TimeCacheable):
     @property
     def content(self):
         if not self.load():
-            schedule = ZnaykoClient.team_schedule(TEAM_ID)
+            schedule = ZnaykoClient.team_schedule(self.__id)
             self._struct = self.tocache(schedule)
         return self._struct.struct
 
@@ -45,9 +44,9 @@ class TeamSchedule(TimeCacheable):
         return self.__id
 
 
-def cron_func():
+def cron_func(team_id: int):
     try:
-        games = TeamSchedule(TEAM_ID).content
+        games = TeamSchedule(team_id).content
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
@@ -66,7 +65,7 @@ def cron_func():
         )
 
 
-def schedule_cron():
+def schedule_cron(team_id: int):
     Scheduler.add_job(
         id=STORAGE_KEY,
         name=f"{STORAGE_KEY}",
@@ -75,6 +74,7 @@ def schedule_cron():
         hour=4,
         minute=30,
         replace_existing=True,
+        kwargs={"team_id": team_id},
         misfire_grace_time=180,
     )
 
@@ -88,14 +88,14 @@ class ScheduleMeta(type):
             cls.__instance = type.__call__(cls, data, *args, **kwargs)
         return cls.__instance
 
-    def load(cls) -> "Schedule":
+    def load(cls, team_id: int) -> "Schedule":
         if not cls.__instance:
             data = Storage.hgetall(STORAGE_KEY)
             assert isinstance(data, dict)
             games = [pickle.loads(v) for v in data.values()]
             return cls(games)
         if cls.needsUpdate():
-            schedule = TeamSchedule(TEAM_ID).content
+            schedule = TeamSchedule(team_id).content
             cls.__instance.reload(schedule)
             return cls.__instance
         return cls.__instance
@@ -175,8 +175,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         super().__init__(widget_id, widget)
         self.load()
         self.update_frames()
-        schedule_cron()
-        cron_func()
+        schedule_cron(self.item_id)
+        cron_func(self.item_id)
 
     @property
     def sleep_start(self):
@@ -249,7 +249,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         __class__.client.send_model(APPNAME.RM, Content(frames=frames))
 
     def load(self):
-        self._schedule = Schedule.load()
+        self._schedule = Schedule.load(self.item_id)
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
@@ -270,7 +270,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                     game = self._schedule.get(f"{event.event_id}")
                     is_winner = next(
                         filter(
-                            lambda x: x.id == TEAM_ID,
+                            lambda x: x.id == self.item_id,
                             [game.homeCompetitor, game.awayCompetitor],
                         ),
                         None,
@@ -281,7 +281,8 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
             __class__.client.send_notification(
                 Notification(
                     model=Content(
-                        frames=[frame], sound=event.getTeamSound(TEAM_ID, is_winner)
+                        frames=[frame],
+                        sound=event.getTeamSound(self.item_id, is_winner),
                     ),
                     priority="critical",
                 )

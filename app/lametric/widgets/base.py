@@ -2,6 +2,7 @@ from app.lametric.client import Client
 from app.lametric.models import (
     Widget,
 )
+from typing import Any
 from cachable.request import Method
 from app.znayko.models import (
     MatchEvent,
@@ -40,10 +41,12 @@ class BaseWidget(object, metaclass=WidgetMeta):
 
     widget_id: str
     widget: Widget
+    options: dict[str, Any]
 
-    def __init__(self, widget_id: str, widget: Widget):
+    def __init__(self, widget_id: str, widget: Widget, *args, **kwargs):
         self.widget_id = widget_id
         self.widget = widget
+        self.options = kwargs
 
     def activate(self):
         resp = __class__.client.api_call(
@@ -51,6 +54,15 @@ class BaseWidget(object, metaclass=WidgetMeta):
             endpoint=f"device/apps/{self.widget.package}/widgets/{self.widget_id}/activate"
         )
         return resp
+    
+    @property
+    def item_id(self) -> int:
+        try:
+            res = self.options.get("item_id")
+            assert isinstance(res, int)
+            return res
+        except AssertionError:
+            return 0
 
     def onShow(self):
         raise NotImplementedError

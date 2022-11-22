@@ -126,13 +126,13 @@ class Display(object):
 
     def invoke_widget(self, name: APPNAME, method: str, payload: Any):
         try:
-            wdg = self._widgets[name.value]
+            wdg = self._widgets.get(name.value)
             assert isinstance(wdg, BaseWidget)
             assert hasattr(wdg, method)
             assert callable(getattr(wdg, method))
             return getattr(wdg, method)(payload)
         except AssertionError:
-            pass
+            return payload
 
     def get_next_idx(self):
         next_idx = self._current_idx + 1
