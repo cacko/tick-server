@@ -37,20 +37,16 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def clear_all(self):
         logging.debug("TRIGGER CLEAR ALL")
-        keys = [id for id in self.subscriptions.keys()]
-        logging.debug(keys)
-
-        for id in keys:
-            del self.subscriptions[id]
-        logging.debug(self.subscriptions)
+        for sub in self.subscriptions.values():
+            self.cancel_sub(sub)
 
     def clear_finished(self):
-        keys = [id for id, ev in self.subscriptions.items() if ev.status == "FT"]
-        for id in keys:
-            del self.subscriptions[id]
+        for sub in self.subscriptions.values():
+            self.cancel_sub(sub)
 
     def cancel_sub(self, sub: SubscriptionEvent):
         ZnaykoClient.unsubscribe(sub)
+        del self.subscriptions[sub.id]
 
     def onHide(self):
         pass
@@ -99,6 +95,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
             try:
                 sub = self.subscriptions.get(event.id)
                 assert isinstance(sub, SubscriptionEvent)
+                if sub.displayStatus == "FT":
+                    continue
                 act = ACTION(event.action)
                 if act == ACTION.HALF_TIME:
                     sub.status = "HT"
