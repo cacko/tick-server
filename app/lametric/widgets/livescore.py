@@ -99,7 +99,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             try:
                 sub = self.subscriptions.get(event.id)
                 assert isinstance(sub, SubscriptionEvent)
-                if sub.status == "FT":
+                if sub.displayStatus == "FT":
                     continue
                 act = ACTION(event.action)
                 if act == ACTION.HALF_TIME:
@@ -208,6 +208,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.WORLDCUP
 
     def post_init(self):
+        self.clear_all()
         schedule_cron(self.item_id)
         cron_func(self.item_id)
 
@@ -235,5 +236,6 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.LIVESCORES
 
     def post_init(self):
+        self.clear_all()
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
         EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
