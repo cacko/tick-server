@@ -99,6 +99,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
             try:
                 sub = self.subscriptions.get(event.id)
                 assert isinstance(sub, SubscriptionEvent)
+                if sub.status == "FT":
+                    continue
                 act = ACTION(event.action)
                 if act == ACTION.HALF_TIME:
                     sub.status = "HT"

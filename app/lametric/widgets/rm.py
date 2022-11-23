@@ -259,9 +259,11 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 continue
             game = self._schedule.get(f"{event.event_id}")
             assert isinstance(game, Game)
+            if game.shortStatusText == "FT":
+                continue
             is_winner = None
             if not game:
-                return
+                continue
             try:
                 action = ACTION(event.action)
                 if action == ACTION.PROGRESS:
