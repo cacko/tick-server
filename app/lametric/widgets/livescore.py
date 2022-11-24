@@ -39,6 +39,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
         logging.debug("TRIGGER CLEAR ALL")
         for sub in self.subscriptions.values():
             self.cancel_sub(sub)
+            del self.subscriptions[sub.id]
 
     def clear_finished(self):
         for sub in self.subscriptions.values():
@@ -46,7 +47,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def cancel_sub(self, sub: SubscriptionEvent):
         ZnaykoClient.unsubscribe(sub)
-        del self.subscriptions[sub.id]
 
     def onHide(self):
         pass
@@ -95,23 +95,27 @@ class BaseLivescoresWidget(SubscriptionWidget):
             try:
                 sub = self.subscriptions.get(event.id)
                 assert isinstance(sub, SubscriptionEvent)
-                if sub.displayStatus == "FT":
+                if sub.status == "FT":
                     continue
                 act = ACTION(event.action)
-                if act == ACTION.HALF_TIME:
-                    sub.status = "HT"
-                elif act == ACTION.PROGRESS:
-                    sub.status = f"{event.time}'"
-                else:
-                    icon = sub.icon
-                    assert isinstance(icon, str)
-                    frame = event.getContentFrame(league_icon=icon)
-                    __class__.client.send_notification(
-                        Notification(
-                            model=Content(frames=[frame], sound=event.getSound()),
-                            priority="critical",
+                match act:
+                    case ACTION.FULL_TIME:
+                        sub.status = "FT"
+                        self.cancel_sub(sub)
+                    case ACTION.HALF_TIME:
+                        sub.status = "HT"
+                    case ACTION.PROGRESS:
+                        sub.status = f"{event.time}'"
+                    case _:
+                        icon = sub.icon
+                        assert isinstance(icon, str)
+                        frame = event.getContentFrame(league_icon=icon)
+                        __class__.client.send_notification(
+                            Notification(
+                                model=Content(frames=[frame], sound=event.getSound()),
+                                priority="critical",
+                            )
                         )
-                    )
                 if event.score:
                     sub.score = event.score
                 self.subscriptions[event.id] = sub
