@@ -71,8 +71,16 @@ class GameStatus(Enum):
     NS = "NS"
     FN = "Final"
     PPD = "Post."
+    FIRST_HALF = "1st"
+    SECOND_HALF = "2nd"
     UNKNOWN = ""
 
+class Status(Enum):
+    FIRST_HALF = "1st"
+    SECOND_HALF = "2nd"
+    FINAL = "Final"
+    HALF_TIME = "HT"
+    
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -89,11 +97,25 @@ class MatchEvent:
     team_id: Optional[int] = None
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
+    status: Optional[str] = None
 
     def getContentFrame(self, league_icon: Optional[str] = None) -> ContentFrame:
         parts = []
         if self.time:
-            parts.append(f"{self.time}'")
+            try:
+                st = Status(self.status)
+                if self.time > 45 and st == Status.FIRST_HALF:
+                    parts.append(f"45+{self.time - 45}'")
+                elif self.time > 90 and st == Status.SECOND_HALF:
+                    parts.append(f"90+{self.time - 90}'")
+                elif st == Status.FINAL:
+                    parts.append("FT")
+                elif st == Status.HALF_TIME:
+                    parts.append("HT")
+                else:
+                    parts.append(f"{self.time}'")
+            except ValueError:
+                parts.append(f"{self.time}'")
         if self.action:
             parts.append(f"{self.action}")
         if self.player:
