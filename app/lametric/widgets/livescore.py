@@ -37,7 +37,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def clear_all(self):
         logging.debug("TRIGGER CLEAR ALL")
-        for sub in self.subscriptions.values():
+        for sub in list(self.subscriptions.values()):
             self.cancel_sub(sub)
             del self.subscriptions[sub.id]
 
