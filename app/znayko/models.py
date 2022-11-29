@@ -240,7 +240,7 @@ class SubscriptionEvent:
                 return to_local_time(self.start_time)
         except ValueError:
             pass
-        return f"{self.status}\""
+        return self.status
 
 
 class OrderWeight(Enum):
