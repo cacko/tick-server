@@ -106,7 +106,13 @@ class BaseLivescoresWidget(SubscriptionWidget):
                     case ACTION.HALF_TIME:
                         sub.status = "HT"
                     case ACTION.PROGRESS:
-                        sub.status = f"{event.time}'"
+                        match event.status:
+                            case "HT":
+                                sub.status = "HT"
+                            case "FT":
+                                sub.status = "FT"
+                            case _:
+                                sub.status = f"{event.time}'"
                     case _:
                         icon = sub.icon
                         assert isinstance(icon, str)
