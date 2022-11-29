@@ -53,6 +53,7 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         self.__storage_key = storage_key
         self.__scores = Scores({})
         items = __class__._load(storage_key)
+        logging.debug(f"LOADING SUBS {self.__storage_key} {items}")
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
