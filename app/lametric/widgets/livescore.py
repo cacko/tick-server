@@ -218,7 +218,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: x.get("competitionId", 0) != self.item_id,
+                    lambda x: x.get("league_id", 0) != self.item_id,
                     payload,
                 )
             )
