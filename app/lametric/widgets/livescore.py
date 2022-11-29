@@ -119,10 +119,10 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 if event.score:
                     sub.score = event.score
                 self.subscriptions[event.id] = sub
-            except ValueError:
-                pass
-            except AssertionError:
-                pass
+            except ValueError as e:
+                logging.exception(e)
+            except AssertionError as e:
+                logging.exception(e)
         self.update_frames()
 
     def on_cancel_job_event(self, event: CancelJobEvent):
