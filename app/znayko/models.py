@@ -98,6 +98,12 @@ class MatchEvent:
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
     status: Optional[str] = None
+    
+    def event_status(self) -> Optional[Status]:
+        try:
+            return Status(self.status)
+        except ValueError:
+            return None
 
     def getContentFrame(self, league_icon: Optional[str] = None) -> ContentFrame:
         parts = []

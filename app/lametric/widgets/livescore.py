@@ -7,7 +7,7 @@ from app.lametric.models import (
     Widget,
 )
 from .base import SubscriptionWidget, WidgetMeta
-from app.znayko.models import SubscriptionEvent, CancelJobEvent, MatchEvent, ACTION
+from app.znayko.models import SubscriptionEvent, CancelJobEvent, MatchEvent, ACTION, Status as MatchEventStatus
 from app.znayko.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from app.core.events import EventManager, BUTTON_EVENTS
@@ -106,11 +106,11 @@ class BaseLivescoresWidget(SubscriptionWidget):
                     case ACTION.HALF_TIME:
                         sub.status = "HT"
                     case ACTION.PROGRESS:
-                        match event.status:
-                            case "HT":
-                                sub.status = "HT"
-                            case "FT":
-                                sub.status = "FT"
+                        match event.event_status:
+                            case MatchEventStatus.HALF_TIME:
+                                sub.status = MatchEventStatus.HALF_TIME.value
+                            case MatchEventStatus.FINAL:
+                                sub.status = MatchEventStatus.FINAL.value
                             case _:
                                 sub.status = f"{event.time}'"
                     case _:
