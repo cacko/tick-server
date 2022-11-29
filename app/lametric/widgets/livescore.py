@@ -94,7 +94,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 continue
             try:
                 logging.debug(event)
-                sub = self.subscriptions.get(event.id)
+                sub = self.subscriptions[event.id]
                 logging.debug(sub)
                 assert isinstance(sub, SubscriptionEvent)
                 if sub.status == "FT":
