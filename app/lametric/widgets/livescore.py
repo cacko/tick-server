@@ -123,7 +123,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             except ValueError as e:
                 logging.exception(e)
             except KeyError as e:
-                logging.debug(f">>>MISSING {event.id}")
+                logging.debug(f">>>MISSING {event.id} {self.__class__}")
             except AssertionError as e:
                 logging.exception(e)
         self.update_frames()
@@ -211,7 +211,6 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.WORLDCUP
 
     def post_init(self):
-        self.clear_all()
         schedule_cron(self.item_id)
         cron_func(self.item_id)
 
