@@ -95,7 +95,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
             try:
                 logging.debug(event)
                 sub = self.subscriptions[event.id]
-                logging.debug(sub)
                 assert isinstance(sub, SubscriptionEvent)
                 if sub.status == "FT":
                     continue
@@ -123,6 +122,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 self.subscriptions[event.id] = sub
             except ValueError as e:
                 logging.exception(e)
+            except KeyError as e:
+                logging.debug(f">>>MISSING {event.id}")
             except AssertionError as e:
                 logging.exception(e)
         self.update_frames()
