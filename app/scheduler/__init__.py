@@ -16,32 +16,39 @@ class SchedulerMeta(type):
         return cls._instance
 
     def start(cls):
+        assert cls._instance
         cls._instance._scheduler.start()
 
     def stop(cls):
         try:
+            assert cls._instance
             cls._instance._scheduler.shutdown()
         except:
             pass
 
     def add_job(cls, *args, **kwargs):
+        assert cls._instance
         return cls._instance._scheduler.add_job(*args, **kwargs)
 
     def get_job(cls, id, jobstore=None):
+        assert cls._instance
         return cls._instance._scheduler.get_job(id, jobstore)
 
     def cancel_jobs(cls, id, jobstore=None):
+        assert cls._instance
         return cls._instance._scheduler.remove_job(id, jobstore)
 
     def remove_all_jobs(cls, jobstore=None):
+        assert cls._instance
         return cls._instance._scheduler.remove_all_jobs(jobstore)
 
     def get_jobs(cls, jobstore=None, pending=None):
+        assert cls._instance
         return cls._instance._scheduler.get_jobs(jobstore, pending)
 
 class Scheduler(object, metaclass=SchedulerMeta):
 
-    _scheduler: AsyncIOScheduler = None
+    _scheduler: AsyncIOScheduler
     _instance = None
 
     def __init__(self, scheduler: AsyncIOScheduler, url: str) -> None:
@@ -61,7 +68,7 @@ class Scheduler(object, metaclass=SchedulerMeta):
             jobstores = {
                 "default": RedisJobStore(
                     unix_socket_path=redis_url.path,
-                    db=int(redis_url_options.get("db")[0]),
+                    db=int(redis_url_options.get("db", [])[0]),
                 )
             }
         else:

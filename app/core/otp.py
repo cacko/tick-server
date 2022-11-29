@@ -13,18 +13,15 @@ class OTPMeta(type):
         return self._instances[secret]
 
     @property
-    def api(cls) -> 'OTP':
+    def api(cls) -> "OTP":
         return cls(Config.api.secret)
 
     @property
-    def yanko(cls) -> 'OTP':
+    def yanko(cls) -> "OTP":
         return cls(Config.yanko.secret)
 
 
 class OTP(object, metaclass=OTPMeta):
-
-    __totp = None
-
     def __init__(self, secret) -> None:
         self.__totp = pyotp.TOTP(secret)
 
@@ -37,7 +34,4 @@ class OTP(object, metaclass=OTPMeta):
 
     @property
     def headers(self) -> Dict[str, str]:
-        return {
-            "Cache-Control": "no-cache",
-            'X-TOTP': self.now
-        }
+        return {"Cache-Control": "no-cache", "X-TOTP": self.now}

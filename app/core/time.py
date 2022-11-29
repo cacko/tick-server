@@ -1,6 +1,6 @@
 from app.config import Config
 from zoneinfo import ZoneInfo
-from datetime import datetime, timezone
+from datetime import datetime
 
 LOCAL_TIMEZONE = ZoneInfo(Config.lametric.timezone)
 

@@ -1,6 +1,7 @@
 from enum import Enum
 import logging
 from threading import Event
+from typing import Callable
 
 
 class BUTTON_EVENTS(Enum):
@@ -15,7 +16,7 @@ class BUTTON_EVENTS(Enum):
 class EventManagerMeta(type):
 
     __instance = None
-    __listeners:dict[BUTTON_EVENTS, list[callable]] = {}
+    __listeners: dict[BUTTON_EVENTS, list[Callable]] = {}
 
     def __call__(cls, *args, **kwds):
         if not cls.__instance:
@@ -34,17 +35,15 @@ class EventManagerMeta(type):
                 logging.error(f"{event_name} is not registered event")
                 pass
 
-    def listen(cls, ev: BUTTON_EVENTS, callback: callable) -> Event:
-        ev = cls().get(ev)
+    def listen(cls, bev: BUTTON_EVENTS, callback: Callable) -> Event:
+        ev = cls().get(bev)
         if ev not in cls.__listeners:
-            cls.__listeners[ev] = []
-        cls.__listeners[ev].append(callback)
+            cls.__listeners[bev] = []
+        cls.__listeners[bev].append(callback)
         return ev
 
 
-
 class EventManager(dict[BUTTON_EVENTS, Event], metaclass=EventManagerMeta):
-
     def __getitem__(self, __k) -> Event:
         if __k not in self.keys():
             super().__setitem__(__k, Event())

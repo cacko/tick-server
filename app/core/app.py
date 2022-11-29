@@ -33,7 +33,6 @@ class AppMeta(type):
 
 class App(object, metaclass=AppMeta):
 
-    scheduler: AsyncIOScheduler = None
     event_loop = None
 
     def __init__(self) -> None:
