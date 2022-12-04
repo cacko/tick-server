@@ -78,7 +78,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 text = []
                 logging.debug(sub)
                 text.append(sub.displayStatus)
-                text.append(sub.display_event_name)
+                text.append(sub.displayEventName)
                 if sub.score:
                     text.append(sub.score)
                 frame = ContentFrame(
