@@ -242,8 +242,13 @@ class SubscriptionEvent:
     def displayStatus(self) -> str:
         try:
             status = EventStatus(self.status)
-            if status == EventStatus.NS:
-                return to_local_time(self.start_time)
+            match status:
+                case EventStatus.HT:
+                    return status.value
+                case EventStatus.FT:
+                    return status.value
+                case EventStatus.NS:
+                    return to_local_time(self.start_time)
         except ValueError:
             pass
         return self.status
