@@ -75,8 +75,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
         logging.debug(f"UPDATE FRAMES")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
-                text = []
                 logging.debug(sub)
+                text = []
                 text.append(sub.displayStatus)
                 text.append(sub.displayEventName)
                 if sub.score:
