@@ -76,6 +76,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
+                logging.debug(sub)
                 text.append(sub.displayStatus)
                 text.append(sub.event_name)
                 if sub.score:
