@@ -60,6 +60,7 @@ class EventStatus(Enum):
     CNL = "CNL"
     AET = "AET"
     NS = "NS"
+    FINAL = "Final"
 
 
 class GameStatus(Enum):
@@ -75,12 +76,13 @@ class GameStatus(Enum):
     SECOND_HALF = "2nd"
     UNKNOWN = ""
 
+
 class Status(Enum):
     FIRST_HALF = "1st"
     SECOND_HALF = "2nd"
     FINAL = "Final"
     HALF_TIME = "HT"
-    
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
@@ -98,7 +100,7 @@ class MatchEvent:
     event_name: Optional[str] = None
     extraPlayers: Optional[list[str]] = None
     status: Optional[str] = None
-    
+
     def event_status(self) -> Optional[Status]:
         try:
             return Status(self.status)
@@ -248,18 +250,20 @@ class SubscriptionEvent:
                     return status.value
                 case EventStatus.FT:
                     return status.value
+                case EventStatus.FINAL:
+                    return EventStatus.FT.value
                 case EventStatus.NS:
                     return to_local_time(self.start_time)
         except ValueError:
             pass
         return self.status
-    
+
     @property
     def displayEventName(self) -> str:
         if not self.display_event_name:
             return self.event_name
         return self.display_event_name
-    
+
 
 class OrderWeight(Enum):
     INPLAY = 1
