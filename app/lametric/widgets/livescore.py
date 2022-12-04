@@ -78,7 +78,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 text = []
                 logging.debug(sub)
                 text.append(sub.displayStatus)
-                text.append(sub.event_name)
+                text.append(sub.display_event_name)
                 if sub.score:
                     text.append(sub.score)
                 frame = ContentFrame(
@@ -103,10 +103,12 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 match act:
                     case ACTION.FULL_TIME:
                         sub.status = "FT"
+                        sub.display_event_name = None
                         self.cancel_sub(sub)
                     case ACTION.HALF_TIME:
                         sub.status = "HT"
                     case ACTION.PROGRESS:
+                        sub.display_event_name = event.event_name
                         match event.event_status:
                             case MatchEventStatus.HALF_TIME:
                                 sub.status = MatchEventStatus.HALF_TIME.value

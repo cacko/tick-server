@@ -212,6 +212,7 @@ class SubscriptionEvent:
     score: Optional[str] = ""
     home_team_icon: Optional[str] = None
     away_team_icon: Optional[str] = None
+    display_event_name: Optional[str] = None
 
     @property
     def jobId(self):
@@ -252,7 +253,13 @@ class SubscriptionEvent:
         except ValueError:
             pass
         return self.status
-
+    
+    @property
+    def displayEventName(self) -> str:
+        if not self.display_event_name:
+            return self.event_name
+        return self.display_event_name
+    
 
 class OrderWeight(Enum):
     INPLAY = 1
