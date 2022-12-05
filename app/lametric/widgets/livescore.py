@@ -121,8 +121,10 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         match event.event_status:
                             case MatchEventStatus.HALF_TIME:
                                 sub.status = MatchEventStatus.HALF_TIME.value
+                                self.subscriptions[event.id] = sub
                             case MatchEventStatus.FINAL:
                                 sub.status = MatchEventStatus.FINAL.value
+                                self.subscriptions[event.id] = sub
                             case _:
                                 sub.status = f"{event.time}'"
                     case _:

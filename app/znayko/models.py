@@ -13,7 +13,7 @@ import re
 from stringcase import constcase
 from app.core.time import to_local_time
 from hashlib import md5
-
+import logging
 
 class EventIcon(IntEnum):
     GOAL = 8627
@@ -262,7 +262,7 @@ class SubscriptionEvent:
                 case EventStatus.NS:
                     return to_local_time(self.start_time)
         except ValueError:
-            pass
+            logging.debug(f"Value error on display status {self.status}")
         return self.status
 
     @property
