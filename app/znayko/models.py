@@ -85,10 +85,11 @@ class Status(Enum):
     SECOND_HALF = "2nd"
     FINAL = "Final"
     HALF_TIME = "HT"
-    EXTRA_TIME = "Extra Time"
-    BEFORE_PENALTIES = "Before Penalties"
-    PENALTIES = "Penalties"
-
+    BEFORE_PENALTIES = "Before Pen"
+    PENALTIES = "Pen."
+    EXTRA_TIME = "ET"
+    SCHEDULED = "Sched."
+    AFTER_PENALTIES = "After Pen"
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
