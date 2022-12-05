@@ -75,6 +75,7 @@ class GameStatus(Enum):
     FIRST_HALF = "1st"
     SECOND_HALF = "2nd"
     UNKNOWN = ""
+    ET = "Extra Time"
 
 
 class Status(Enum):
@@ -82,6 +83,7 @@ class Status(Enum):
     SECOND_HALF = "2nd"
     FINAL = "Final"
     HALF_TIME = "HT"
+    EXTRA_TIME = "Extra Time"
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
