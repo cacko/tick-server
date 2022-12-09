@@ -90,6 +90,8 @@ class Status(Enum):
     EXTRA_TIME = "ET"
     SCHEDULED = "Sched."
     AFTER_PENALTIES = "After Pen"
+    INTO_ET = "Into ET."
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
