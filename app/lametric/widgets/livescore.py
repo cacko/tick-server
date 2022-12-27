@@ -166,7 +166,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
         self.update_frames()
 
 
-def cron_func(competition_id: int):
+def cron_func(competition_id: int, storage_key: str):
     try:
         games = LeagueSchedule(competition_id).content
         for game in games:
@@ -177,8 +177,8 @@ def cron_func(competition_id: int):
         n = datetime.now(timezone.utc)
         td = timedelta(minutes=30)
         Scheduler.add_job(
-            id=f"{STORAGE_KEY.WORLDCUP}_retry",
-            name=f"{STORAGE_KEY.WORLDCUP}_retry",
+            id=f"{storage_key}_retry",
+            name=f"{storage_key}_retry",
             func=cron_func,
             trigger="date",
             run_date=n + td,
@@ -187,15 +187,15 @@ def cron_func(competition_id: int):
         )
 
 
-def schedule_cron(competition_id: int):
+def schedule_cron(competition_id: int, storage_key: str):
     Scheduler.add_job(
-        id=f"{STORAGE_KEY.WORLDCUP}",
-        name=f"{STORAGE_KEY.WORLDCUP}",
+        id=f"{storage_key}",
+        name=f"{storage_key}",
         func=cron_func,
         trigger="cron",
         hour=4,
         minute=40,
-        kwargs={"competition_id": competition_id},
+        kwargs={"competition_id": competition_id, "storage_key": storage_key},
         replace_existing=True,
         misfire_grace_time=180,
     )
@@ -231,8 +231,62 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.WORLDCUP
 
     def post_init(self):
-        schedule_cron(self.item_id)
-        cron_func(self.item_id)
+        schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
+        cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
+
+    def filter_payload(self, payload):
+        if isinstance(payload, list):
+            return list(
+                filter(
+                    lambda x: x.get("league_id", 0) != self.item_id,
+                    payload,
+                )
+            )
+        league_id = payload.get("league_id", 0)
+        if league_id == self.item_id:
+            return None
+        return payload
+
+
+class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
+    @property
+    def subscriptions(self) -> Subscriptions:
+        return Subscriptions(STORAGE_KEY.PREMIER_LEAGUE.value)
+
+    @property
+    def app_name(self) -> APPNAME:
+        return APPNAME.PREMIER_LEAGUE
+
+    def post_init(self):
+        schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+        cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+
+    def filter_payload(self, payload):
+        if isinstance(payload, list):
+            return list(
+                filter(
+                    lambda x: x.get("league_id", 0) != self.item_id,
+                    payload,
+                )
+            )
+        league_id = payload.get("league_id", 0)
+        if league_id == self.item_id:
+            return None
+        return payload
+
+
+class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
+    @property
+    def subscriptions(self) -> Subscriptions:
+        return Subscriptions(STORAGE_KEY.LA_LIGA.value)
+
+    @property
+    def app_name(self) -> APPNAME:
+        return APPNAME.LA_LIGA
+
+    def post_init(self):
+        schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
+        cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):

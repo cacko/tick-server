@@ -14,6 +14,8 @@ class CONTENT_TYPE(Enum):
 class STORAGE_KEY(Enum):
     LIVESCORES = "subscriptions"
     WORLDCUP = "worldcup_subscriptions"
+    PREMIER_LEAGUE = "premierleague_subscriptions"
+    LA_LIGA = "laliga_subscriptions"
 
 class APPNAME(Enum):
     CLOCK = 'clock'
@@ -22,7 +24,8 @@ class APPNAME(Enum):
     RM = 'rm'
     LIVESCORES = 'livescores'
     WORLDCUP = "worldcup"
-
+    PREMIER_LEAGUE = "premierleague"
+    LA_LIGA = "laliga"
 
 class MUSIC_STATUS(Enum):
     PLAYING = 'playing'
