@@ -2,29 +2,29 @@ name: tick-server
 channels:
   - conda-forge
 dependencies:
-  - autopep8=1.7.0
+  - autopep8=2.0.1
   - black=22.10.0
   - bzip2=1.0.8
-  - ca-certificates=2022.9.24
+  - ca-certificates=2022.12.7
   - click=8.1.3
   - libffi=3.4.2
-  - libsqlite=3.39.2
-  - libzlib=1.2.12
+  - libsqlite=3.40.0
+  - libzlib=1.2.13
   - mypy_extensions=0.4.3
   - ncurses=6.3
   - openssl=3.0.7
-  - pathspec=0.10.2
-  - pip=22.2.2
-  - platformdirs=2.5.2
-  - pycodestyle=2.9.1
-  - python=3.10.6
+  - pathspec=0.10.3
+  - pip=22.3.1
+  - platformdirs=2.6.0
+  - pycodestyle=2.10.0
+  - python=3.10.8
   - python_abi=3.10
   - readline=8.1.2
-  - setuptools=65.3.0
+  - setuptools=65.6.3
   - tk=8.6.12
   - toml=0.10.2
   - tomli=2.0.1
-  - wheel=0.37.1
+  - wheel=0.38.4
   - xz=5.2.6
   - pip:
     - anyio==3.6.1
@@ -32,12 +32,15 @@ dependencies:
     - async-timeout==4.0.2
     - attrs==22.1.0
     - beautifulsoup4==4.11.1
+    - better-exceptions==0.3.3
     - bottle==0.12.23
     - butilka==0.1.15
     - cachable==0.3.11
     - certifi==2022.6.15
     - charset-normalizer==2.1.1
     - colorama==0.4.6
+    - commonmark==0.9.1
+    - corelog==0.0.6
     - dataclasses-json==0.5.7
     - deprecated==1.2.13
     - flake8==5.0.4
@@ -52,6 +55,7 @@ dependencies:
     - paste==3.5.2.2
     - pillow==9.2.0
     - pyflakes==2.5.0
+    - pygments==2.13.0
     - pyotp==2.6.0
     - pyparsing==3.0.9
     - python-dateutil==2.8.2
@@ -62,12 +66,13 @@ dependencies:
     - redis==4.3.4
     - requests==2.28.1
     - requests-toolbelt==0.9.1
+    - rich==12.6.0
     - semver==2.13.0
     - six==1.16.0
     - sniffio==1.2.0
     - soupsieve==2.3.2.post1
     - stringcase==1.2.0
-    - structlog==22.1.0
+    - structlog==22.3.0
     - tenacity==8.0.1
     - typing-extensions==4.3.0
     - typing-inspect==0.8.0
@@ -79,4 +84,4 @@ dependencies:
     - yapf==0.32.0
 variables:
   PIP_EXTRA_INDEX_URL: https://pypi.cacko.net/simple/
-prefix: /Users/jago/miniforge3/envs/global/envs/tick-server
+prefix: /Volumes/Devo/miniforge3/envs/tick-server
