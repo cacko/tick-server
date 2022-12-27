@@ -2,24 +2,24 @@ import structlog
 import logging
 import os
 
+
 structlog.configure(
     processors=[
+        # Prepare event dict for `ProcessorFormatter`.
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
 )
 
 formatter = structlog.stdlib.ProcessorFormatter(
-    processors=[
-        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-        structlog.processors.StackInfoRenderer(),
-        structlog.dev.set_exc_info,
-        structlog.dev.ConsoleRenderer(),
-    ],
+    processors=[structlog.dev.ConsoleRenderer()],
 )
 
 handler = logging.StreamHandler()
+# Use OUR `ProcessorFormatter` to format all `logging` entries.
 handler.setFormatter(formatter)
 root_logger = logging.getLogger()
 root_logger.addHandler(handler)
-root_logger.setLevel(getattr(logging, os.environ.get("TICK_LOG_LEVEL", "INFO")))
+root_logger.setLevel(
+    getattr(logging, os.environ.get("TICK_LOG_LEVEL", "INFO"))
+)
