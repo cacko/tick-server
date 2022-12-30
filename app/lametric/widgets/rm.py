@@ -267,22 +267,26 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 continue
             try:
                 action = ACTION(event.action)
-                if action == ACTION.PROGRESS:
-                    continue
-                if action == ACTION.FULL_TIME:
-                    self.load()
-                    schedule_game = self._schedule.get(f"{event.event_id}")
-                    assert isinstance(schedule_game, Game)
-                    game = schedule_game
-                    competitor = next(
-                        filter(
-                            lambda x: x.id == self.item_id,
-                            [game.homeCompetitor, game.awayCompetitor],
-                        ),
-                        None,
-                    )
-                    assert competitor
-                    is_winner = competitor.isWinner
+                match action:
+                    case ACTION.HALF_TIME:
+                        self._schedule[f"{event.event_id}"].shortStatusText = EventStatus.HT.value
+                        self._schedule.persist()
+                    case ACTION.FULL_TIME:
+                        self.load()
+                        schedule_game = self._schedule.get(f"{event.event_id}")
+                        assert isinstance(schedule_game, Game)
+                        game = schedule_game
+                        competitor = next(
+                            filter(
+                                lambda x: x.id == self.item_id,
+                                [game.homeCompetitor, game.awayCompetitor],
+                            ),
+                            None,
+                        )
+                        assert competitor
+                        is_winner = competitor.isWinner
+                    case _:
+                        break
             except ValueError:
                 pass
             assert game.icon
