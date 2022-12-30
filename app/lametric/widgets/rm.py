@@ -226,6 +226,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         return max(res, duration)
 
     def update_frames(self):
+        logging.debug(f">>> UPDATE FRAMES {__class__}")
         frames = []
         for idx, game in enumerate(self._schedule.current):
             text = []

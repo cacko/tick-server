@@ -79,7 +79,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def update_frames(self):
         frames = []
-        logging.debug(f"UPDATE FRAMES")
+        logging.debug(f">>> UPDATE FRAMES {__class__}")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 logging.debug(sub)
