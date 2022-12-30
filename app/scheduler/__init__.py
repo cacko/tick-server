@@ -1,5 +1,5 @@
 from apscheduler.jobstores.redis import RedisJobStore
-from apscheduler.schedulers.background import AsyncIOScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from urllib.parse import urlparse, parse_qs
 
 
