@@ -1,5 +1,5 @@
 from apscheduler.jobstores.redis import RedisJobStore
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import AsyncIOScheduler
 from urllib.parse import urlparse, parse_qs
 
 
@@ -48,10 +48,10 @@ class SchedulerMeta(type):
 
 class Scheduler(object, metaclass=SchedulerMeta):
 
-    _scheduler: BackgroundScheduler
+    _scheduler: AsyncIOScheduler
     _instance = None
 
-    def __init__(self, scheduler: BackgroundScheduler, url: str) -> None:
+    def __init__(self, scheduler: AsyncIOScheduler, url: str) -> None:
         self._scheduler = scheduler
         redis_url = urlparse(url)
         redis_url_options = parse_qs(redis_url.query)
