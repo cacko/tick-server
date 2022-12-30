@@ -22,6 +22,7 @@ from app.scheduler import Scheduler
 from app.core.time import is_today
 from cachable.cacheable import TimeCacheable
 from datetime import datetime, timedelta, timezone
+from random import randint
 
 
 class BaseLivescoresWidget(SubscriptionWidget):
@@ -172,6 +173,7 @@ def cron_func(competition_id: int, storage_key: str):
         for game in games:
             if is_today(game.startTime):
                 ZnaykoClient.subscribe(game.id)
+        schedule_cron(competition_id=competition_id, storage_key=storage_key)
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
@@ -193,8 +195,8 @@ def schedule_cron(competition_id: int, storage_key: str):
         name=f"{storage_key}",
         func=cron_func,
         trigger="cron",
-        hour=4,
-        minute=40,
+        hour=7,
+        minute=0 + randint(0, 55),
         kwargs={"competition_id": competition_id, "storage_key": storage_key},
         replace_existing=True,
         misfire_grace_time=180,

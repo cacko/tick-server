@@ -50,6 +50,7 @@ def cron_func(team_id: int):
         for game in games:
             if is_today(game.startTime):
                 res = ZnaykoClient.subscribe(game.id)
+        schedule_cron(team_id=team_id)
     except Exception as e:
         logging.error(e)
         n = datetime.now(timezone.utc)
@@ -71,7 +72,7 @@ def schedule_cron(team_id: int):
         name=f"{STORAGE_KEY}",
         func=cron_func,
         trigger="cron",
-        hour=4,
+        hour=6,
         minute=30,
         replace_existing=True,
         kwargs={"team_id": team_id},

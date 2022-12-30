@@ -40,7 +40,7 @@ dependencies:
     - charset-normalizer==2.1.1
     - colorama==0.4.6
     - commonmark==0.9.1
-    - corelog==0.0.6
+    - corelog==0.0.7
     - dataclasses-json==0.5.7
     - deprecated==1.2.13
     - flake8==5.0.4
