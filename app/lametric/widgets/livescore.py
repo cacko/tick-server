@@ -121,6 +121,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                             sub.display_event_name = event.event_name.replace(
                                 "/", " / "
                             )
+                        logging.warning(f"STATUS {event.event_status}")
                         match event.event_status:
                             case MatchEventStatus.HALF_TIME:
                                 sub.status = MatchEventStatus.HALF_TIME.value
