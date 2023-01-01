@@ -110,6 +110,7 @@ class MatchEvent:
     extraPlayers: Optional[list[str]] = None
     status: Optional[str] = None
 
+    @property
     def event_status(self) -> Optional[Status]:
         try:
             return Status(self.status)
