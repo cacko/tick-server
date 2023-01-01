@@ -111,9 +111,11 @@ class BaseLivescoresWidget(SubscriptionWidget):
                     case ACTION.FULL_TIME:
                         sub.status = "FT"
                         sub.display_event_name = None
+                        logging.debug(f">> settings sub status to FT")
                         self.cancel_sub(sub)
                     case ACTION.HALF_TIME:
                         sub.status = "HT"
+                        logging.debug(f">> settings sub status to HT")
                     case ACTION.PROGRESS:
                         if event.event_name:
                             sub.display_event_name = event.event_name.replace(
@@ -141,6 +143,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 if event.score:
                     sub.score = event.score
                 self.subscriptions[event.id] = sub
+                logging.debug(f">> saving sub {sub}")
             except ValueError as e:
                 logging.exception(e)
             except KeyError as e:
