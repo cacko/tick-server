@@ -111,11 +111,9 @@ class BaseLivescoresWidget(SubscriptionWidget):
                     case ACTION.FULL_TIME:
                         sub.status = "FT"
                         sub.display_event_name = None
-                        logging.debug(f">> settings sub status to FT")
                         self.cancel_sub(sub)
                     case ACTION.HALF_TIME:
                         sub.status = "HT"
-                        logging.debug(f">> settings sub status to HT")
                     case ACTION.PROGRESS:
                         if event.event_name:
                             sub.display_event_name = event.event_name.replace(
@@ -125,7 +123,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         match event.event_status:
                             case MatchEventStatus.HALF_TIME:
                                 sub.status = MatchEventStatus.HALF_TIME.value
-                                logging.warning(f" match event status is HT {sub}")
                                 self.subscriptions[event.id] = sub
                             case MatchEventStatus.FINAL:
                                 sub.status = MatchEventStatus.FINAL.value
@@ -138,14 +135,13 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         frame = event.getContentFrame(league_icon=icon)
                         __class__.client.send_notification(
                             Notification(
-                                model=Content(frames=[frame], sound=event.getSound()),
+                                model=Content(frames=[frame], sound=event.sound),
                                 priority="critical",
                             )
                         )
                 if event.score:
                     sub.score = event.score
                 self.subscriptions[event.id] = sub
-                logging.debug(f">> saving sub {sub}")
             except ValueError as e:
                 logging.exception(e)
             except KeyError as e:

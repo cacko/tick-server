@@ -160,7 +160,8 @@ class MatchEvent:
 
         return res
 
-    def getSound(self):
+    @property
+    def sound(self) -> Optional[ContentSound]:
         try:
             action = ACTION(self.action)
             match (action):
