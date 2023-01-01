@@ -117,15 +117,15 @@ class Display(object):
                 payload = self.invoke_widget(
                     name=APPNAME.RM, method="on_event", payload=payload
                 )
-                payload = self.invoke_widget(
-                    name=APPNAME.LA_LIGA, method="on_event", payload=payload
-                )
-                payload = self.invoke_widget(
-                    name=APPNAME.PREMIER_LEAGUE, method="on_event", payload=payload
-                )
-                payload = self.invoke_widget(
-                    name=APPNAME.WORLDCUP, method="on_event", payload=payload
-                )
+                # payload = self.invoke_widget(
+                #     name=APPNAME.LA_LIGA, method="on_event", payload=payload
+                # )
+                # payload = self.invoke_widget(
+                #     name=APPNAME.PREMIER_LEAGUE, method="on_event", payload=payload
+                # )
+                # payload = self.invoke_widget(
+                #     name=APPNAME.WORLDCUP, method="on_event", payload=payload
+                # )
                 self.invoke_widget(
                     name=APPNAME.LIVESCORES, method="on_event", payload=payload
                 )
