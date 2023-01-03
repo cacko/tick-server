@@ -118,7 +118,6 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
-        logging.warning(d)
 
     def persist(self):
         try:
@@ -214,6 +213,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         self.load()
+        logging.warning(self._schedule)
         if self._schedule.in_progress:
             ZnaykoClient.livescores()
         self.update_frames()
