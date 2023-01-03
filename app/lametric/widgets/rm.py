@@ -196,7 +196,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(filter(lambda x: not self._schedule.isIn(x.get("id")), payload))
         subid = payload.get("id")
-        if subid and self._schedule.isIn(subid):
+        if self.item_id in [payload.home_team_id, payload.away_team_id]:
             return None
         return payload
 
