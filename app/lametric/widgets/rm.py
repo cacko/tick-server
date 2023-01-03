@@ -93,6 +93,10 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.REAL_MADRID.value)
 
+    @property
+    def app_name(self) -> APPNAME:
+        return APPNAME.RM
+
     def post_init(self):
         schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
         cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
