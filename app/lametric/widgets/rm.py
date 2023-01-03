@@ -118,6 +118,7 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def __init__(self, data: list[Game]):
         d = {f"{game.id}": game for game in data}
         super().__init__(d)
+        logging.warning(d)
 
     def persist(self):
         try:
