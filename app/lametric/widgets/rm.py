@@ -18,10 +18,13 @@ import pickle
 from app.core.time import to_local_time, is_today
 import logging
 from typing import Optional
+from enum import Enum
 
-STORAGE_KEY = "real_madrid_schedule"
-STORAGE_LAST_UPDATE = "real_madrid_last_update"
-STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
+
+class RMStorage(Enum):
+    STORAGE_KEY = "real_madrid_schedule"
+    STORAGE_LAST_UPDATE = "real_madrid_last_update"
+    STORAGE_LAST_SLEEP_START = "real_madrid_sleep_start"
 
 
 class TeamSchedule(TimeCacheable):
@@ -57,8 +60,8 @@ def cron_func(team_id: int):
         n = datetime.now(timezone.utc)
         td = timedelta(minutes=30)
         Scheduler.add_job(
-            id=f"{STORAGE_KEY}_retry",
-            name=f"{STORAGE_KEY}_retry",
+            id=f"{RMStorage.STORAGE_KEY.value}_retry",
+            name=f"{RMStorage.STORAGE_KEY.value}_retry",
             func=cron_func,
             trigger="date",
             run_date=n + td,
@@ -69,8 +72,8 @@ def cron_func(team_id: int):
 
 def schedule_cron(team_id: int):
     Scheduler.add_job(
-        id=STORAGE_KEY,
-        name=f"{STORAGE_KEY}",
+        id=RMStorage.STORAGE_KEY.value,
+        name=f"{RMStorage.STORAGE_KEY.value}",
         func=cron_func,
         trigger="cron",
         hour=6,
@@ -92,7 +95,7 @@ class ScheduleMeta(type):
 
     def load(cls, team_id: int) -> "Schedule":
         if not cls.__instance:
-            data = Storage.hgetall(STORAGE_KEY)
+            data = Storage.hgetall(RMStorage.STORAGE_KEY.value)
             assert isinstance(data, dict)
             games = [pickle.loads(v) for v in data.values()]
             return cls(games)
@@ -123,9 +126,13 @@ class Schedule(dict, metaclass=ScheduleMeta):
     def persist(self):
         try:
             d = {k: pickle.dumps(v) for k, v in self.items()}
-            Storage.pipeline().hset(name=STORAGE_KEY, mapping=d).persist(
-                STORAGE_KEY
-            ).set(STORAGE_LAST_UPDATE, time()).persist(STORAGE_LAST_UPDATE).execute()
+            Storage.pipeline().hset(
+                name=RMStorage.STORAGE_KEY.value, mapping=d
+            ).persist(RMStorage.STORAGE_KEY.value).set(
+                RMStorage.STORAGE_LAST_UPDATE.value, time()
+            ).persist(
+                RMStorage.STORAGE_LAST_UPDATE.value
+            ).execute()
         except Exception as e:
             logging.error(e)
             logging.warning(f"failed pesistance")
@@ -182,16 +189,16 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     @property
     def sleep_start(self):
-        data = Storage.get(STORAGE_LAST_SLEEP_START)
+        data = Storage.get(RMStorage.STORAGE_LAST_SLEEP_START.value)
         if data:
             return pickle.loads(data)
         return None
 
     @sleep_start.setter
     def sleep_start(self, value):
-        Storage.pipeline().set(STORAGE_LAST_SLEEP_START, pickle.dumps(value)).persist(
-            STORAGE_LAST_SLEEP_START
-        ).execute()
+        Storage.pipeline().set(
+            RMStorage.STORAGE_LAST_SLEEP_START.value, pickle.dumps(value)
+        ).persist(RMStorage.STORAGE_LAST_SLEEP_START.value).execute()
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
@@ -272,7 +279,9 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
                 action = ACTION(event.action)
                 match action:
                     case ACTION.HALF_TIME:
-                        self._schedule[f"{event.event_id}"].shortStatusText = EventStatus.HT.value
+                        self._schedule[
+                            f"{event.event_id}"
+                        ].shortStatusText = EventStatus.HT.value
                         self._schedule.persist()
                     case ACTION.FULL_TIME:
                         self.load()
