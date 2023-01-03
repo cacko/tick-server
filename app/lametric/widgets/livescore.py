@@ -233,9 +233,9 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def app_name(self) -> APPNAME:
         return APPNAME.WORLDCUP
 
-    def post_init(self):
-        schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
-        cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
+    # def post_init(self):
+    #     schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
+    #     cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
 
     def filter_payload(self, payload):
         
@@ -261,9 +261,9 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def app_name(self) -> APPNAME:
         return APPNAME.PREMIER_LEAGUE
 
-    def post_init(self):
-        schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
-        cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+    # def post_init(self):
+    #     schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+    #     cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
@@ -288,9 +288,9 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def app_name(self) -> APPNAME:
         return APPNAME.LA_LIGA
 
-    def post_init(self):
-        schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
-        cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
+    # def post_init(self):
+    #     schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
+    #     cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
