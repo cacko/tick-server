@@ -173,6 +173,20 @@ class MatchEvent:
             pass
         return None
 
+
+    @property
+    def winner(self) -> int:
+        try:
+            hg, ag = map(int, self.score.split(":"))
+            if hg > ag:
+                return self.home_team_id
+            elif ag > hg:
+                return self.away_team_id
+            return 0
+        except Exception:
+            return 0
+
+
     def getTeamSound(self, team_id, is_winner=None):
         try:
             action = ACTION(self.action)

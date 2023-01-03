@@ -8,14 +8,15 @@ from app.znayko.models import (
     MatchEvent,
     CancelJobEvent,
     SubscriptionEvent,
+    Status as MatchEventStatus,
 )
 from app.lametric.models import (
-    Content, 
-    ContentFrame, 
-    APPNAME, 
-    Notification, 
+    Content,
+    ContentFrame,
+    APPNAME,
+    Notification,
     Widget,
-    STORAGE_KEY
+    STORAGE_KEY,
 )
 from app.znayko.client import Client as ZnaykoClient
 from cachable.storage import Storage
@@ -29,6 +30,7 @@ from typing import Optional
 from enum import Enum
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from random import randint
+
 
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
@@ -49,6 +51,7 @@ class TeamSchedule(TimeCacheable):
     @property
     def id(self):
         return self.__id
+
 
 def cron_func(team_id: int, storage_key: str):
     try:
@@ -87,8 +90,6 @@ def schedule_cron(team_id: int, storage_key: str):
 
 
 class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
-
-
     @property
     def subscriptions(self) -> Subscriptions:
         return Subscriptions(STORAGE_KEY.REAL_MADRID.value)
@@ -188,54 +189,125 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
-            if not self._schedule.isIn(event.id):
-                continue
             if event.is_old_event:
                 continue
-            game = self._schedule.get(f"{event.event_id}")
-            assert isinstance(game, Game)
-            if game.shortStatusText == "FT":
-                continue
-            is_winner = None
-            if not game:
-                continue
             try:
-                action = ACTION(event.action)
-                match action:
-                    case ACTION.HALF_TIME:
-                        self._schedule[
-                            f"{event.event_id}"
-                        ].shortStatusText = EventStatus.HT.value
-                        self._schedule.persist()
+                logging.debug(event)
+                sub = self.subscriptions[event.id]
+                assert isinstance(sub, SubscriptionEvent)
+                if sub.status == "FT":
+                    continue
+                act = ACTION(event.action)
+                match act:
                     case ACTION.FULL_TIME:
-                        self.load()
-                        schedule_game = self._schedule.get(f"{event.event_id}")
-                        assert isinstance(schedule_game, Game)
-                        game = schedule_game
-                        competitor = next(
-                            filter(
-                                lambda x: x.id == self.item_id,
-                                [game.homeCompetitor, game.awayCompetitor],
-                            ),
-                            None,
+                        sub.status = "FT"
+                        sub.display_event_name = None
+                        frame = event.getContentFrame(league_icon=icon)
+                        __class__.client.send_notification(
+                            Notification(
+                                model=Content(
+                                    frames=[frame],
+                                    sound=event.getTeamSound(
+                                        self.item_id, self.item_id == event.winner
+                                    ),
+                                ),
+                                priority="critical",
+                            )
                         )
-                        assert competitor
-                        is_winner = competitor.isWinner
+                        self.cancel_sub(sub)
+                    case ACTION.HALF_TIME:
+                        sub.status = "HT"
+                    case ACTION.PROGRESS:
+                        if event.event_name:
+                            sub.display_event_name = event.event_name.replace(
+                                "/", " / "
+                            )
+                        logging.warning(f"STATUS {event.event_status}")
+                        match event.event_status:
+                            case MatchEventStatus.HALF_TIME:
+                                sub.status = MatchEventStatus.HALF_TIME.value
+                                self.subscriptions[event.id] = sub
+                            case MatchEventStatus.FINAL:
+                                sub.status = MatchEventStatus.FINAL.value
+                                self.subscriptions[event.id] = sub
+                            case _:
+                                sub.status = f"{event.time}'"
                     case _:
-                        break
-            except ValueError:
-                pass
-            assert game.icon
-            frame = event.getContentFrame(league_icon=game.icon)
-            __class__.client.send_notification(
-                Notification(
-                    model=Content(
-                        frames=[frame],
-                        sound=event.getTeamSound(self.item_id, is_winner),
-                    ),
-                    priority="critical",
-                )
-            )
+                        icon = sub.icon
+                        assert isinstance(icon, str)
+                        frame = event.getContentFrame(league_icon=icon)
+                        __class__.client.send_notification(
+                            Notification(
+                                model=Content(
+                                    frames=[frame],
+                                    sound=event.getTeamSound(
+                                        self.item_id, self.item_id == event.winner
+                                    ),
+                                ),
+                                priority="critical",
+                            )
+                        )
+                if event.score:
+                    sub.score = event.score
+                self.subscriptions[event.id] = sub
+            except ValueError as e:
+                logging.exception(e)
+            except KeyError as e:
+                logging.debug(f">>>MISSING {event.id} {self.__class__}")
+            except AssertionError as e:
+                logging.exception(e)
+        self.update_frames()
+
+    # def on_match_events(self, events: list[MatchEvent]):
+    #     for event in events:
+    #         # if not self._schedule.isIn(event.id):
+    #         #     continue
+    #         if event.is_old_event:
+    #             continue
+    #         game = self._schedule.get(f"{event.event_id}")
+    #         assert isinstance(game, Game)
+    #         if game.shortStatusText == "FT":
+    #             continue
+    #         is_winner = None
+    #         if not game:
+    #             continue
+    #         try:
+    #             action = ACTION(event.action)
+    #             match action:
+    #                 case ACTION.HALF_TIME:
+    #                     self._schedule[
+    #                         f"{event.event_id}"
+    #                     ].shortStatusText = EventStatus.HT.value
+    #                     self._schedule.persist()
+    #                 case ACTION.FULL_TIME:
+    #                     self.load()
+    #                     schedule_game = self._schedule.get(f"{event.event_id}")
+    #                     assert isinstance(schedule_game, Game)
+    #                     game = schedule_game
+    #                     competitor = next(
+    #                         filter(
+    #                             lambda x: x.id == self.item_id,
+    #                             [game.homeCompetitor, game.awayCompetitor],
+    #                         ),
+    #                         None,
+    #                     )
+    #                     assert competitor
+    #                     is_winner = competitor.isWinner
+    #                 case _:
+    #                     break
+    #         except ValueError:
+    #             pass
+    #         assert game.icon
+    #         frame = event.getContentFrame(league_icon=game.icon)
+    #         __class__.client.send_notification(
+    #             Notification(
+    #                 model=Content(
+    #                     frames=[frame],
+    #                     sound=event.getTeamSound(self.item_id, is_winner),
+    #                 ),
+    #                 priority="critical",
+    #             )
+    #         )
 
     # def on_cancel_job_event(self, event: CancelJobEvent):
     #     pass
