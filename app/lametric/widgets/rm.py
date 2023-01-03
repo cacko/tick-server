@@ -202,6 +202,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
     @property
     def isHidden(self):
         Schedule.load(self.item_id)
+        logging.warning(f"on hidden schedule {self._schedule}")
         if not len(self._schedule.current):
             return True
         if self._schedule.in_progress:
@@ -212,7 +213,7 @@ class RMWidget(SubscriptionWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         self.load()
-        logging.warning(self._schedule)
+        logging.warning(f"on show schedule {self._schedule}")
         if self._schedule.in_progress:
             ZnaykoClient.livescores()
         self.update_frames()
