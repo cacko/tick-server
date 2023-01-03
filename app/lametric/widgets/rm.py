@@ -127,7 +127,13 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
-            return list(filter(lambda x: not self._schedule.isIn(x.get("id")), payload))
+            return list(
+                filter(
+                    lambda x: self.item_id
+                    not in [x.get("home_team_id"), x.get("away_team_id")],
+                    payload,
+                )
+            )
         if self.item_id in [payload.get("home_team_id"), payload.get("away_team_id")]:
             return None
         return payload
