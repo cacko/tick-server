@@ -16,6 +16,7 @@ class STORAGE_KEY(Enum):
     WORLDCUP = "worldcup_subscriptions"
     PREMIER_LEAGUE = "premierleague_subscriptions"
     LA_LIGA = "laliga_subscriptions"
+    REAL_MADRID = "real_madrid"
 
 class APPNAME(Enum):
     CLOCK = 'clock'
