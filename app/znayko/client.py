@@ -10,11 +10,11 @@ import logging
 
 
 class ENDPOINT(Enum):
-    LIVESCORE = 'api/livescore'
-    UNSUBSCRIBE = 'api/unsubscribe'
-    SUBSCRIBE = 'api/subscribe'
-    TEAM_SCHEDULE = 'api/team_schedule'
-    LEAGUE_SCHEDULE = 'api/league_schedule'
+    LIVESCORE = 'livescore'
+    UNSUBSCRIBE = 'unsubscribe'
+    SUBSCRIBE = 'subscribe'
+    TEAM_SCHEDULE = 'team_schedule'
+    LEAGUE_SCHEDULE = 'league_schedule'
 
 
 class ClientMeta(type):
