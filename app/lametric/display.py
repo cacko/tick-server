@@ -196,18 +196,18 @@ class Display(object):
                     self._widgets[name.value] = LivescoresWidget(
                         widget_id=first_key, widget=widget_data, **kwargs
                     )
-                case APPNAME.WORLDCUP:
-                    self._widgets[name.value] = WorldCupWidget(
-                        widget_id=first_key, widget=widget_data, **kwargs
-                    )
-                case APPNAME.LA_LIGA:
-                    self._widgets[name.value] = LaLigaWidget(
-                        widget_id=first_key, widget=widget_data, **kwargs
-                    )
-                case APPNAME.PREMIER_LEAGUE:
-                    self._widgets[name.value] = PremierLeagueWidget(
-                        widget_id=first_key, widget=widget_data, **kwargs
-                    )
+                # case APPNAME.WORLDCUP:
+                #     self._widgets[name.value] = WorldCupWidget(
+                #         widget_id=first_key, widget=widget_data, **kwargs
+                #     )
+                # case APPNAME.LA_LIGA:
+                #     self._widgets[name.value] = LaLigaWidget(
+                #         widget_id=first_key, widget=widget_data, **kwargs
+                #     )
+                # case APPNAME.PREMIER_LEAGUE:
+                #     self._widgets[name.value] = PremierLeagueWidget(
+                #         widget_id=first_key, widget=widget_data, **kwargs
+                #     )
         res = self._widgets.get(name.value)
         assert isinstance(res, BaseWidget)
         return res
