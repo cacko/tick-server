@@ -8,7 +8,7 @@ from app.lametric.widgets import *
 from typing import Optional
 from typing import Any
 import logging
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Extra, Field, validator
 
 
 class DisplayItem(BaseModel, extra=Extra.ignore):
@@ -18,6 +18,10 @@ class DisplayItem(BaseModel, extra=Extra.ignore):
     appname: APPNAME
     hidden: bool = Field(default=False)
     activated_at: Optional[float] = None
+
+    @validator('widget')
+    def widget_validator(cls, v):
+        return v
 
     def activate(self):
         self.widget.activate()

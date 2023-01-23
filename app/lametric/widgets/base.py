@@ -48,6 +48,10 @@ class BaseWidget(object, metaclass=WidgetMeta):
         self.widget = widget
         self.options = kwargs
 
+    # @classmethod
+    # def validate(cls, v):
+    #     return v
+
     def activate(self):
         resp = __class__.client.api_call(
             method=Method.PUT,
