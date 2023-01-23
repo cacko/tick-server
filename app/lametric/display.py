@@ -20,7 +20,7 @@ class DisplayItem(BaseModel, extra=Extra.ignore):
     activated_at: Optional[float] = None
 
     @validator('widget')
-    def widget_validator(cls, v):
+    def widget_val(cls, v):
         return v
 
     def activate(self):
