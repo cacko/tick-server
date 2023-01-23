@@ -19,6 +19,9 @@ class DisplayItem(BaseModel, extra=Extra.ignore):
     hidden: bool = Field(default=False)
     activated_at: Optional[float] = None
 
+    class Config:
+        arbitrary_types_allowed = True
+
     @validator('widget')
     def widget_val(cls, v):
         return v
