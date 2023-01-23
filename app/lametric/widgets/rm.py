@@ -96,8 +96,10 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.RM
 
     def post_init(self):
-        schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
-        cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+        logging.warning(self.item_id)
+        logging.warning(STORAGE_KEY.REAL_MADRID.value)
+        schedule_cron(self.item_id, STORAGE_KEY.REAL_MADRID.value)
+        cron_func(self.item_id, STORAGE_KEY.REAL_MADRID.value)
 
     # _schedule: Schedule
     # _sleep_start: datetime
