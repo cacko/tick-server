@@ -16,7 +16,7 @@ class DisplayItem(BaseModel, extra=Extra.ignore):
     widget: BaseWidget
     duration: int
     appname: APPNAME
-    hidden: bool = False
+    hidden: bool = Field(default=False)
     activated_at: Optional[float] = None
 
     def activate(self):
