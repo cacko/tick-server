@@ -7,14 +7,14 @@ from app.lametric.models import (
     Widget,
 )
 from .base import SubscriptionWidget, WidgetMeta
-from app.znayko.models import (
+from app.botyo.models import (
     SubscriptionEvent,
     CancelJobEvent,
     MatchEvent,
     ACTION,
     Status as MatchEventStatus,
 )
-from app.znayko.client import Client as ZnaykoClient
+from app.botyo.client import Client as ZnaykoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from app.core.events import EventManager, BUTTON_EVENTS
 import logging

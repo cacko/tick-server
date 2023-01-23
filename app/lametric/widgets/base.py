@@ -4,7 +4,7 @@ from app.lametric.models import (
 )
 from typing import Any
 from cachable.request import Method
-from app.znayko.models import (
+from app.botyo.models import (
     MatchEvent,
     SubscriptionEvent,
     CancelJobEvent,

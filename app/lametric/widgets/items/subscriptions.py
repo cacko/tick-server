@@ -1,7 +1,7 @@
-from app.znayko.models import SubscriptionEvent
+from app.botyo.models import SubscriptionEvent
 from cachable.storage import Storage
 import pickle
-from app.znayko.client import Client as ZnaykoClient
+from app.botyo.client import Client as ZnaykoClient
 import logging
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from time import time
 from .base import SubscriptionWidget, WidgetMeta
-from app.znayko.models import (
+from app.botyo.models import (
     ACTION,
     EventStatus,
     Game,
@@ -18,7 +18,7 @@ from app.lametric.models import (
     Widget,
     STORAGE_KEY,
 )
-from app.znayko.client import Client as ZnaykoClient
+from app.botyo.client import Client as ZnaykoClient
 from cachable.storage import Storage
 from cachable.cacheable import TimeCacheable
 from app.scheduler import Scheduler

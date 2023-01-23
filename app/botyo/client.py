@@ -1,7 +1,7 @@
 from app.config import Config
 from enum import Enum
 from requests import get, post
-from app.znayko.models import (
+from app.botyo.models import (
     LivescoreEvent,
     SubscriptionEvent,
     Game
@@ -79,7 +79,7 @@ class Client(object, metaclass=ClientMeta):
     __host = None
 
     def __init__(self) -> None:
-        self.__host = Config.znayko.host
+        self.__host = Config.botyo.host
 
     def do_get(self, endpoint: str, **kwargs):
         resp = get(

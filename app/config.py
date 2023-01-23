@@ -1,22 +1,17 @@
 from os import environ
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-from dataclasses_json import dataclass_json, Undefined
 from yaml import load, Loader
+from pydantic import BaseModel, Extra
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class StorageConfig:
+class StorageConfig(BaseModel, extra=Extra.ignore):
     storage: str
     redis_url: str
     attachments: str
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class LametricApp:
+class LametricApp(BaseModel, extra=Extra.ignore):
     package: str
     duration: Optional[int] = None
     endpoint: Optional[str] = None
@@ -25,22 +20,16 @@ class LametricApp:
     item_id: Optional[int] = None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class YankoConfig:
+class YankoConfig(BaseModel, extra=Extra.ignore):
     host: str
     secret: str
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ZnaykoConfig:
+class BotyoConfig(BaseModel, extra=Extra.ignore):
     host: str
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ApiConfig:
+class ApiConfig(BaseModel, extra=Extra.ignore):
     host: str
     port: int
     secret: str
@@ -48,9 +37,7 @@ class ApiConfig:
     nworkers: int
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class LametricConfig:
+class LametricConfig(BaseModel, extra=Extra.ignore):
     host: str
     user: str
     apikey: str
@@ -58,14 +45,12 @@ class LametricConfig:
     timezone: str
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ConfigStruct:
+class ConfigStruct(BaseModel, extra=Extra.ignore):
     storage: StorageConfig
     yanko: YankoConfig
     lametric: LametricConfig
     api: ApiConfig
-    znayko: ZnaykoConfig
+    botyo: BotyoConfig
     display: list[str]
 
 
@@ -86,8 +71,8 @@ class ConfigMeta(type):
         return cls().struct.yanko
 
     @property
-    def znayko(cls) -> ZnaykoConfig:
-        return cls().struct.znayko
+    def botyo(cls) -> BotyoConfig:
+        return cls().struct.botyo
 
     @property
     def lametric(cls) -> LametricConfig:
@@ -109,4 +94,4 @@ class Config(object, metaclass=ConfigMeta):
     def __init__(self):
         settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
         data = load(settings.read_text(), Loader=Loader)
-        self.struct = ConfigStruct.from_dict(data)  # type: ignore
+        self.struct = ConfigStruct(**data)
