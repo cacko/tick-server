@@ -30,7 +30,7 @@ class ClientMeta(type):
         try:
             data = cls().do_get(ENDPOINT.LIVESCORE.value)
             if data:
-                return LivescoreEvent.schema().load(data, many=True)  # type: ignore
+                return [LivescoreEvent(**x) for x in data]
         except Exception as e:
             logging.error(e)
         return []
@@ -58,7 +58,7 @@ class ClientMeta(type):
             data = cls().do_get(url)
             logging.debug(f"{data}")
             if data:
-                return Game.schema().load(data, many=True)  # type: ignore
+                return [Game(**x) for x in data]
         except Exception as e:
             logging.error(e)
         return []
@@ -68,7 +68,7 @@ class ClientMeta(type):
             data = cls().do_get(f"{ENDPOINT.LEAGUE_SCHEDULE.value}/{league_id}")
             logging.info(data)
             if data:
-                return Game.schema().load(data, many=True)  # type: ignore
+                return [Game(**x) for x in data]
         except Exception as e:
             logging.error(e)
         return []
