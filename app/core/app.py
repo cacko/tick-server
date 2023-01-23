@@ -5,7 +5,7 @@ from app.core.thread import StoppableThread
 from app.lametric import LaMetric
 from app.scheduler import Scheduler
 from cachable.storage import Storage
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import asyncio
 
 
@@ -49,7 +49,7 @@ class App(object, metaclass=AppMeta):
         ts.start()
         __class__.threads.append(ts)
 
-        scheduler = AsyncIOScheduler(event_loop=self.eventLoop)
+        scheduler = BackgroundScheduler()
         self.scheduler = Scheduler(scheduler, Config.storage.redis_url)
         
         Scheduler.start()
