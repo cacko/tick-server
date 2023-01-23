@@ -11,7 +11,7 @@ import logging
 from pydantic import BaseModel, Extra, Field, validator
 
 
-class DisplayItem(BaseModel, extra=Extra.ignore):
+class DisplayItem(BaseModel):
     app: LametricApp
     widget: BaseWidget
     duration: int
@@ -21,6 +21,7 @@ class DisplayItem(BaseModel, extra=Extra.ignore):
 
     class Config:
         arbitrary_types_allowed = True
+        extra = Extra.ignore
 
     @validator('widget')
     def widget_val(cls, v):
