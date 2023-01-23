@@ -18,16 +18,13 @@ from app.lametric.models import (
     Widget,
     STORAGE_KEY,
 )
-from app.botyo.client import Client as ZnaykoClient
+from app.botyo.client import Client as BotyoClient
 from cachable.storage import Storage
 from cachable.cacheable import TimeCacheable
 from app.scheduler import Scheduler
 from .livescore import BaseLivescoresWidget
-import pickle
 from app.core.time import to_local_time, is_today
 import logging
-from typing import Optional
-from enum import Enum
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from random import randint
 
@@ -44,7 +41,7 @@ class TeamSchedule(TimeCacheable):
     def content(self):
         logging.debug(f"TeamSchedule content {self.cachetime}")
         if not self.load():
-            schedule = ZnaykoClient.team_schedule(self.__id)
+            schedule = BotyoClient.team_schedule(self.__id)
             self._struct = self.tocache(schedule)
         return self._struct.struct
 
@@ -58,7 +55,7 @@ def cron_func(team_id: int, storage_key: str):
         games = TeamSchedule(team_id).content
         for game in games:
             if is_today(game.startTime):
-                ZnaykoClient.subscribe(game.id)
+                BotyoClient.subscribe(game.id)
         schedule_cron(team_id=team_id, storage_key=storage_key)
     except Exception as e:
         logging.error(e)

@@ -14,7 +14,7 @@ from app.botyo.models import (
     ACTION,
     Status as MatchEventStatus,
 )
-from app.botyo.client import Client as ZnaykoClient
+from app.botyo.client import Client as BotyoClient
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from app.core.events import EventManager, BUTTON_EVENTS
 import logging
@@ -53,7 +53,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             self.cancel_sub(sub)
 
     def cancel_sub(self, sub: SubscriptionEvent):
-        ZnaykoClient.unsubscribe(sub)
+        BotyoClient.unsubscribe(sub)
 
     def onHide(self):
         pass
@@ -173,7 +173,7 @@ def cron_func(competition_id: int, storage_key: str):
         games = LeagueSchedule(competition_id).content
         for game in games:
             if is_today(game.startTime):
-                ZnaykoClient.subscribe(game.id)
+                BotyoClient.subscribe(game.id)
         schedule_cron(competition_id=competition_id, storage_key=storage_key)
     except Exception as e:
         logging.error(e)
@@ -215,7 +215,7 @@ class LeagueSchedule(TimeCacheable):
     @property
     def content(self):
         if not self.load():
-            schedule = ZnaykoClient.league_schedule(self.__id)
+            schedule = BotyoClient.league_schedule(self.__id)
             self._struct = self.tocache(schedule)
         return self._struct.struct
 

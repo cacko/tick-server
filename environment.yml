@@ -16,9 +16,8 @@ dependencies:
   - pathspec=0.10.3
   - pip=22.3.1
   - platformdirs=2.6.0
-  - pycodestyle=2.10.0
-  - python=3.10.8
-  - python_abi=3.10
+  - python=3.11.0
+  - python_abi=3.11
   - readline=8.1.2
   - setuptools=65.6.3
   - tk=8.6.12
@@ -41,7 +40,7 @@ dependencies:
       - colorama==0.4.6
       - commonmark==0.9.1
       - corelog==0.0.7
-      - dataclasses-json==0.5.7
+      - corestring==0.1.14
       - deprecated==1.2.13
       - flake8==5.0.4
       - humanfriendly==10.0
@@ -54,6 +53,7 @@ dependencies:
       - pandas==1.4.3
       - paste==3.5.2.2
       - pillow==9.2.0
+      - pycodestyle==2.9.1
       - pydantic==1.10.4
       - pyflakes==2.5.0
       - pygments==2.13.0

@@ -59,7 +59,7 @@ class Client(object):
             pass
 
     def send_notification(self, notification: Notification):
-        data = notification.to_dict()  # type: ignore
+        data = notification.dict()  # type: ignore
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model").get("frames", []))
         )
@@ -68,17 +68,17 @@ class Client(object):
 
     def get_apps(self) -> dict[str, App]:
         res = self.api_call(Method.GET, "device/apps")
-        return {k: App.from_dict(v) for k, v in res.items()}  # type: ignore
+        return {k: App(**v) for k, v in res.items()}  # type: ignore
 
     def get_display(self) -> DeviceDisplay:
         res = self.api_call(Method.GET, "device/display")
         assert isinstance(res, dict)
-        return DeviceDisplay.from_dict(  # type: ignore
+        return DeviceDisplay(  # type: ignore
             {"updated_at": datetime.now(tz=timezone.utc), **res}
         )
 
     def send_model(self, config_name: APPNAME, model: Content):
-        data = model.to_dict()  # type: ignore
+        data = model.dict()  # type: ignore
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(config_name, Method.POST, json=data)

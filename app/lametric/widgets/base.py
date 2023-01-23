@@ -91,7 +91,7 @@ class SubscriptionWidget(BaseWidget):
             if not len(payload):
                 return payload
             self.on_match_events(
-                MatchEvent.schema().load(payload, many=True)  # type: ignore
+                [MatchEvent(**x) for x in payload]
             )
             return self.filter_payload(payload)
         try:
@@ -99,13 +99,13 @@ class SubscriptionWidget(BaseWidget):
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent.from_dict(payload))  # type: ignore
+                        CancelJobEvent(**payload)) 
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
-                        SubscriptionEvent.from_dict(payload))  # type: ignore
+                        SubscriptionEvent(**payload))
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
-                        SubscriptionEvent.from_dict(payload))  # type: ignore
+                        SubscriptionEvent(**payload))
         except ValueError:
             pass
         finally:

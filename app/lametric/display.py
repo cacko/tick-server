@@ -3,18 +3,15 @@ from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay, Widget
 from app.config import Config
-from dataclasses import dataclass
 from time import time
-from dataclasses_json import dataclass_json, Undefined
 from app.lametric.widgets import *
 from typing import Optional
 from typing import Any
 import logging
+from pydantic import BaseModel, Extra, Field
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class DisplayItem:
+class DisplayItem(BaseModel, extra=Extra.ignore):
     app: LametricApp
     widget: BaseWidget
     duration: int
@@ -80,7 +77,7 @@ class Display(object):
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
-                Widget = self.getWidget(APPNAME(name), app.package, **app.to_dict())  # type: ignore
+                Widget = self.getWidget(APPNAME(name), app.package, **app.dict())  # type: ignore
             except AssertionError:
                 pass
 

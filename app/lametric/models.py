@@ -1,45 +1,47 @@
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json, Undefined
+from pydantic import BaseModel, Extra, Field
 from datetime import time, datetime, timezone, timedelta
 from typing import Optional
-from enum import Enum
+from enum import StrEnum
 from app.core.time import LOCAL_TIMEZONE
 
 
-class CONTENT_TYPE(Enum):
-    NOWPLAYING = 'nowplaying'
-    YANKOSTATUS = 'yanko_status'
-    LIVESCOREEVENT = 'livescore_event'
+class CONTENT_TYPE(StrEnum):
+    NOWPLAYING = "nowplaying"
+    YANKOSTATUS = "yanko_status"
+    LIVESCOREEVENT = "livescore_event"
 
-class STORAGE_KEY(Enum):
+
+class STORAGE_KEY(StrEnum):
     LIVESCORES = "subscriptions"
     WORLDCUP = "worldcup_subscriptions"
     PREMIER_LEAGUE = "premierleague_subscriptions"
     LA_LIGA = "laliga_subscriptions"
     REAL_MADRID = "real_madrid"
 
-class APPNAME(Enum):
-    CLOCK = 'clock'
-    WEATHER = 'weather'
-    YANKO = 'yanko'
-    RM = 'rm'
-    LIVESCORES = 'livescores'
+
+class APPNAME(StrEnum):
+    CLOCK = "clock"
+    WEATHER = "weather"
+    YANKO = "yanko"
+    RM = "rm"
+    LIVESCORES = "livescores"
     WORLDCUP = "worldcup"
     PREMIER_LEAGUE = "premierleague"
     LA_LIGA = "laliga"
 
-class MUSIC_STATUS(Enum):
-    PLAYING = 'playing'
-    PAUSED = 'paused'
-    STOPPED = 'stopped'
-    LOADING = 'loadng'
-    EXIT = 'exit'
-    RESUMED = 'resumed'
-    NEXT = 'next'
-    PREVIOUS = 'previous'
+
+class MUSIC_STATUS(StrEnum):
+    PLAYING = "playing"
+    PAUSED = "paused"
+    STOPPED = "stopped"
+    LOADING = "loadng"
+    EXIT = "exit"
+    RESUMED = "resumed"
+    NEXT = "next"
+    PREVIOUS = "previous"
 
 
-class SOUNDS(Enum):
+class SOUNDS(StrEnum):
     BICYCLE = "bicycle"
     CAR = "car"
     CASH = "cash"
@@ -77,9 +79,7 @@ class SOUNDS(Enum):
     WIND_SHORT = "wind_short"
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ModeTimeBased:
+class ModeTimeBased(BaseModel, extra=Extra.ignore):
     enabled: bool
     end_time: str
     start_time: str
@@ -91,30 +91,26 @@ class ModeTimeBased:
         if not self.enabled:
             return False
         n = datetime.now(tz=LOCAL_TIMEZONE).time()
-        return all([
-            time.fromisoformat(self.local_start_time).replace(
-                tzinfo=LOCAL_TIMEZONE) < n,
-            time.fromisoformat(self.local_end_time).replace(
-                tzinfo=LOCAL_TIMEZONE) > n
-        ])
+        return all(
+            [
+                time.fromisoformat(self.local_start_time).replace(tzinfo=LOCAL_TIMEZONE)
+                < n,
+                time.fromisoformat(self.local_end_time).replace(tzinfo=LOCAL_TIMEZONE)
+                > n,
+            ]
+        )
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ScreensaveModes:
+class ScreensaveModes(BaseModel, extra=Extra.ignore):
     time_based: ModeTimeBased
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class DisplayScreensave:
+class DisplayScreensave(BaseModel, extra=Extra.ignore):
     enabled: bool
     modes: ScreensaveModes
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class DeviceDisplay:
+class DeviceDisplay(BaseModel, extra=Extra.ignore):
     brightness: int
     screensaver: DisplayScreensave
     updated_at: datetime
@@ -124,17 +120,13 @@ class DeviceDisplay:
         return (datetime.now(tz=timezone.utc) - self.updated_at) > timedelta(minutes=5)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Widget:
+class Widget(BaseModel, extra=Extra.ignore):
     index: int
     package: str
     settings: Optional[dict] = None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class App:
+class App(BaseModel, extra=Extra.ignore):
     package: str
     title: str
     vendor: str
@@ -144,67 +136,48 @@ class App:
     triggers: Optional[dict] = None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class GoalData:
+class GoalData(BaseModel, extra=Extra.ignore):
     start: int
     current: int
     end: int
     units: Optional[str] = ""
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ContentFrame:
+class ContentFrame(BaseModel, extra=Extra.ignore):
     text: Optional[str] = None
     icon: Optional[str | int] = None
-    index: Optional[int] = 0
+    index: Optional[int] = Field(default=0)
     duration: Optional[int] = None
     goalData: Optional[GoalData] = None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
 class TimeFrame(ContentFrame):
-    index: Optional[int] = 0
+    index: Optional[int] = Field(default=0)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
 class DateFrame(ContentFrame):
-    index: Optional[int] = 1
+    index: Optional[int] = Field(default=1)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
 class WeatherFrame(ContentFrame):
-    index: Optional[int] = 2
+    index: Optional[int] = Field(default=2)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
 class NowPlayingFrame(ContentFrame):
-    index: Optional[int] = 3
+    index: Optional[int] = Field(default=3)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class ContentSound:
+class ContentSound(BaseModel, extra=Extra.ignore):
     id: str
-    category: str = "notifications"
+    category: str = Field(default="notifications")
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Content:
+class Content(BaseModel, extra=Extra.ignore):
     frames: list[ContentFrame]
     sound: Optional[ContentSound] = None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Notification:
+class Notification(BaseModel, extra=Extra.ignore):
     model: Content
-    priority: str = "info"
-    icon_type: str = "none"
-
+    priority: str = Field(default="info")
+    icon_type: str = Field(default="none")

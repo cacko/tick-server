@@ -1,19 +1,15 @@
-from asyncio.log import logger
-from enum import IntEnum, Enum
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional, Union
 from datetime import datetime, timedelta, timezone
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config, Undefined
-from marshmallow import fields
-from enum import IntEnum, Enum
-from string import punctuation
+from enum import IntEnum, StrEnum
 import re
+from pydantic import BaseModel, Extra, Field
 from stringcase import constcase
 from app.core.time import to_local_time
 from hashlib import md5
 import logging
+from corestring import clean_punctuation
 
 class EventIcon(IntEnum):
     GOAL = 8627
@@ -25,7 +21,7 @@ class EventIcon(IntEnum):
     GAME__START = 2541
 
 
-class ACTION(Enum):
+class ACTION(StrEnum):
     SUBSTITUTION = "Substitution"
     GOAL = "Goal"
     YELLOW_CARD = "Yellow Card"
@@ -53,7 +49,7 @@ STATUS_MAP = {
 }
 
 
-class EventStatus(Enum):
+class EventStatus(StrEnum):
     HT = "HT"
     FT = "FT"
     PPD = "PPD"
@@ -63,7 +59,7 @@ class EventStatus(Enum):
     FINAL = "Final"
 
 
-class GameStatus(Enum):
+class GameStatus(StrEnum):
     FT = "Ended"
     JE = "Just Ended"
     SUS = "Susp"
@@ -80,7 +76,7 @@ class GameStatus(Enum):
     PEN = "Penalties"
 
 
-class Status(Enum):
+class Status(StrEnum):
     FIRST_HALF = "1st"
     SECOND_HALF = "2nd"
     FINAL = "Final"
@@ -93,9 +89,7 @@ class Status(Enum):
     INTO_ET = "Into ET."
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class MatchEvent:
+class MatchEvent(BaseModel, extra=Extra.ignore):
     id: str
     time: int
     action: str
@@ -213,9 +207,8 @@ class MatchEvent:
         return ContentSound(id=SOUNDS.BICYCLE.value)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class SubscriptionEvent:
+
+class SubscriptionEvent(BaseModel, extra=Extra.ignore):
     id: str
     action: str
     league: str
@@ -228,13 +221,7 @@ class SubscriptionEvent:
     event_name: str
     job_id: str
     icon: str
-    start_time: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso"),
-        )
-    )
+    start_time: datetime
     status: str = ""
     score: Optional[str] = ""
     home_team_icon: Optional[str] = None
@@ -290,7 +277,7 @@ class SubscriptionEvent:
         return self.display_event_name
 
 
-class OrderWeight(Enum):
+class OrderWeight(IntEnum):
     INPLAY = 1
     HT = pow(2, 1)
     LIVE = pow(2, 1)
@@ -302,9 +289,7 @@ class OrderWeight(Enum):
     JUNK = pow(2, 5)
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class LivescoreEvent:
+class LivescoreEvent(BaseModel, extra=Extra.ignore):
     id: str
     idEvent: int
     strSport: str
@@ -315,13 +300,7 @@ class LivescoreEvent:
     strHomeTeam: str
     strAwayTeam: str
     strStatus: str
-    startTime: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso", tzinfo=timezone.utc),
-        )
-    )
+    startTime: datetime
     intHomeScore: Optional[int] = -1
     intAwayScore: Optional[int] = -1
     sort: int = 0
@@ -352,7 +331,7 @@ class LivescoreEvent:
                 self.displayStatus = f'{self.strStatus}"'
             else:
                 self.sort = OrderWeight[
-                    self.strStatus.translate(punctuation).upper()
+                    clean_punctuation(self.strStatus).upper()
                 ].value * abs(delta)
         except KeyError:
             self.sort = int(OrderWeight.JUNK.value * abs(delta))
@@ -368,9 +347,7 @@ class LivescoreEvent:
         return re.match(r"^\d+$", self.strStatus) is not None
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class CancelJobEvent:
+class CancelJobEvent(BaseModel, extra=Extra.ignore):
     job_id: str
     action: str
 
@@ -381,9 +358,7 @@ class CancelJobEvent:
         return self.job_id
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class GameCompetitor:
+class GameCompetitor(BaseModel, extra=Extra.ignore):
     id: Optional[int] = None
     countryId: Optional[int] = None
     sportId: Optional[int] = None
@@ -414,20 +389,13 @@ class GameCompetitor:
         return f"{parts[0][:1]}{parts[1][:2]}".upper()
 
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass
-class Game:
+
+class Game(BaseModel, extra=Extra.ignore):
     id: int
     sportId: int
     competitionId: int
     competitionDisplayName: str
-    startTime: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso"),
-        )
-    )
+    startTime: datetime
     statusGroup: int
     statusText: str
     shortStatusText: str
@@ -451,7 +419,7 @@ class Game:
 
     @property
     def subscriptionId(self) -> str:
-        logger.warning(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
+        logging.info(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
         return md5(
             f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()
         ).hexdigest()

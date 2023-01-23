@@ -1,7 +1,7 @@
 from app.botyo.models import SubscriptionEvent
 from cachable.storage import Storage
 import pickle
-from app.botyo.client import Client as ZnaykoClient
+from app.botyo.client import Client as BotyoClient
 import logging
 
 
@@ -71,7 +71,7 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         return super().__delitem__(__v)
 
     def __load_scores(self):
-        data = ZnaykoClient.livescores()
+        data = BotyoClient.livescores()
         ids = [x.id for x in self.events]
         events = list(filter(lambda x: x.id in ids, data))
         if not len(events):
