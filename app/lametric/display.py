@@ -1,13 +1,20 @@
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
-from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay, Widget
+from app.lametric.models import (
+    CONTENT_TYPE, App, APPNAME, DeviceDisplay, Widget
+)
 from app.config import Config
 from time import time
-from app.lametric.widgets import *
+from app.lametric.widgets import (
+    RMWidget,
+    YankoWidget,
+    ClockWidget,
+    LivescoresWidget,
+    WeatherWidget
+)
 from typing import Optional
 from typing import Any
-import logging
 from pydantic import BaseModel, Extra, Field, validator
 
 
@@ -23,7 +30,7 @@ class DisplayItem(BaseModel):
         arbitrary_types_allowed = True
         extra = Extra.ignore
 
-    @validator('widget')
+    @validator("widget")
     def widget_val(cls, v):
         return v
 
@@ -40,7 +47,8 @@ class DisplayItem(BaseModel):
     def isExpired(self):
         try:
             assert self.activated_at
-            return time() - self.activated_at > self.widget.duration(self.duration)
+            duration = self.widget.duration(self.duration)
+            return (time() - self.activated_at) > duration
         except AssertionError:
             return False
 
@@ -85,7 +93,7 @@ class Display(object):
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
-                Widget = self.getWidget(APPNAME(name), app.package, **app.dict())  # type: ignore
+                _ = self.getWidget(APPNAME(name), app.package, **app.dict())
             except AssertionError:
                 pass
 
@@ -126,7 +134,9 @@ class Display(object):
                 #     name=APPNAME.LA_LIGA, method="on_event", payload=payload
                 # )
                 # payload = self.invoke_widget(
-                #     name=APPNAME.PREMIER_LEAGUE, method="on_event", payload=payload
+                #     name=APPNAME.PREMIER_LEAGUE,
+                # method="on_event",
+                # payload=payload
                 # )
                 # payload = self.invoke_widget(
                 #     name=APPNAME.WORLDCUP, method="on_event", payload=payload
@@ -170,7 +180,12 @@ class Display(object):
             current.deactivate()
             return self.get_next_idx()
 
-    def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
+    def getWidget(
+        self,
+        name: APPNAME,
+        package_name: str,
+        **kwargs
+    ) -> BaseWidget:
         app = self._apps.get(package_name)
         assert isinstance(app, App)
         app_widgets = app.widgets
