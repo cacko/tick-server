@@ -135,7 +135,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         frame = event.getContentFrame(league_icon=icon)
                         __class__.client.send_notification(
                             Notification(
-                                model=Content(frames=[frame], sound=event.sound),
+                                model=Content(
+                                    frames=[frame], sound=event.sound),
                                 priority="critical",
                             )
                         )
@@ -144,7 +145,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 self.subscriptions[event.id] = sub
             except ValueError as e:
                 logging.exception(e)
-            except KeyError as e:
+            except KeyError:
                 logging.debug(f">>>MISSING {event.id} {self.__class__}")
             except AssertionError as e:
                 logging.exception(e)
@@ -152,7 +153,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         sub = next(
-            filter(lambda x: x.jobId == event.jobId, self.subscriptions.events), None
+            filter(lambda x: x.jobId == event.jobId,
+                   self.subscriptions.events), None
         )
         if sub:
             del self.subscriptions[sub.id]
@@ -242,7 +244,7 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     #     cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
 
     def filter_payload(self, payload):
-        
+
         if isinstance(payload, list):
             return list(
                 filter(
@@ -327,5 +329,11 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.LIVESCORES
 
     def post_init(self):
-        EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
-        EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
+        EventManager.listen(
+            BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE,
+            self.clear_all
+        )
+        EventManager.listen(
+            BUTTON_EVENTS.LIVESCORES_CLEAN,
+            self.clear_finished
+        )

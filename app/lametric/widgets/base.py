@@ -10,7 +10,6 @@ from app.botyo.models import (
     CancelJobEvent,
     ACTION
 )
-import logging
 
 
 class WidgetMeta(type):
@@ -58,7 +57,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
             endpoint=f"device/apps/{self.widget.package}/widgets/{self.widget_id}/activate"
         )
         return resp
-    
+
     @property
     def item_id(self) -> int:
         try:
@@ -103,7 +102,7 @@ class SubscriptionWidget(BaseWidget):
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent(**payload)) 
+                        CancelJobEvent(**payload))
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
                         SubscriptionEvent(**payload))
