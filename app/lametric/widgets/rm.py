@@ -60,6 +60,7 @@ def cron_func(team_id: int, storage_key: str):
             func=cron_func,
             trigger="date",
             run_date=n + td,
+            kwargs={"team_id": team_id, "storage_key": storage_key},
             replace_existing=True,
             misfire_grace_time=180,
         )
