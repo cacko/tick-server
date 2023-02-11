@@ -96,6 +96,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         cron_func(self.item_id, STORAGE_KEY.REAL_MADRID.value)
 
     def filter_payload(self, payload):
+        logging.warning(payload)
         if isinstance(payload, list):
             return list(
                 filter(
