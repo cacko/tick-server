@@ -30,7 +30,7 @@ class ClientMeta(type):
         try:
             data = cls().do_get(ENDPOINT.LIVESCORE.value)
             if data:
-                return [LivescoreEvent(**x) for x in data.get("message", [])]
+                return [LivescoreEvent(**x) for x in data]
         except Exception as e:
             logging.error(e)
         return []
