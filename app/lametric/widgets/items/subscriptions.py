@@ -24,17 +24,19 @@ class Scores(dict):
         return res
 
 
-class SubscriptionsMeta(type):
+class Subscriptions(dict):
 
-    __instances = {}
+    __storage_key: str
+    __scores: Scores
+    instances: dict[str, 'Subscriptions'] = {}
 
-    def __call__(cls, storage_key, *args, **kwds):
-        if storage_key not in cls.__instances:
-            cls.__instances[storage_key] = type.__call__(
-                cls, storage_key, *args, **kwds
-            )
-        return cls.__instances[storage_key]
+    def __new__(cls, storage_key, *args, **kwds):
+        if storage_key not in cls.instances:
+            cls.instances[storage_key] = super(Subscriptions, cls).__new__(
+                cls, storage_key, *args, **kwds)
+        return cls.instances[storage_key]
 
+    @classmethod
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         data = Storage.hgetall(storage_key)
         if not data:
@@ -42,12 +44,6 @@ class SubscriptionsMeta(type):
             return {}
         items = {k.decode(): pickle.loads(v) for k, v in data.items()}
         return items
-
-
-class Subscriptions(dict, metaclass=SubscriptionsMeta):
-
-    __storage_key: str
-    __scores: Scores
 
     def __init__(self, storage_key, *args, **kwds):
         self.__storage_key = storage_key
@@ -57,7 +53,9 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
-        Storage.pipeline().hset(self.__storage_key, __k, pickle.dumps(__v)).persist(
+        Storage.pipeline().hset(
+            self.__storage_key, __k, pickle.dumps(__v)
+        ).persist(
             self.__storage_key
         ).execute()
         if __v.score:
