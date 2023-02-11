@@ -49,9 +49,10 @@ def cron_func(team_id: int, storage_key: str):
         for game in games:
             if is_today(game.startTime):
                 BotyoClient.subscribe(game.id)
+                logging.warning(f"SUBSCRIBING FOR {game}")
         schedule_cron(team_id=team_id, storage_key=storage_key)
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
         n = datetime.now(timezone.utc)
         td = timedelta(minutes=30)
         Scheduler.add_job(
