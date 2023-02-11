@@ -88,6 +88,10 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def app_name(self) -> APPNAME:
         return APPNAME.RM
+    
+    @property
+    def isHidden(self):
+        return False
 
     def post_init(self):
         logging.warning(self.item_id)
