@@ -17,6 +17,8 @@ from typing import Optional
 from typing import Any
 from pydantic import BaseModel, Extra, Field, validator
 import logging
+import json
+
 
 class DisplayItem(BaseModel):
     app: LametricApp
@@ -117,20 +119,26 @@ class Display(object):
         self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
+        payload_struct = json.loads(payload) if isinstance(
+            payload, str) else payload
         match (content_type):
             case CONTENT_TYPE.NOWPLAYING:  # type: ignore
                 self.invoke_widget(
-                    name=APPNAME.YANKO, method="nowplaying", payload=payload
+                    name=APPNAME.YANKO,
+                    method="nowplaying",
+                    payload=payload_struct
                 )
             case CONTENT_TYPE.YANKOSTATUS:
                 self.invoke_widget(
-                    name=APPNAME.YANKO, method="yankostatus", payload=payload
+                    name=APPNAME.YANKO,
+                    method="yankostatus",
+                    payload=payload_struct
                 )
             case CONTENT_TYPE.LIVESCOREEVENT:
-                payload = self.invoke_widget(
+                payload_struct = self.invoke_widget(
                     name=APPNAME.RM,
                     method="on_event",
-                    payload=payload
+                    payload=payload_struct
                 )
                 # payload = self.invoke_widget(
                 #     name=APPNAME.LA_LIGA, method="on_event", payload=payload
@@ -144,7 +152,9 @@ class Display(object):
                 #     name=APPNAME.WORLDCUP, method="on_event", payload=payload
                 # )
                 self.invoke_widget(
-                    name=APPNAME.LIVESCORES, method="on_event", payload=payload
+                    name=APPNAME.LIVESCORES,
+                    method="on_event",
+                    payload=payload_struct
                 )
 
     def invoke_widget(self, name: APPNAME, method: str, payload: Any):
