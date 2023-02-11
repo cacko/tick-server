@@ -52,6 +52,7 @@ class Server(object, metaclass=ServerMeta):
         LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
 
     def handle_subscription(self, payload):
+        logging.warning(payload)
         LaMetric.queue.put_nowait((CONTENT_TYPE.LIVESCOREEVENT, payload))
         return "OK"
 
