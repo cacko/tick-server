@@ -34,13 +34,13 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
         self.status = MUSIC_STATUS.PLAYING
-        __class__.client.send_notification(Notification(
+        YankoWidget.client.send_notification(Notification(
             model=Content(
                 frames=[frame],
             ),
             priority='critical'
         ))
-        __class__.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
+        YankoWidget.client.send_model(APPNAME.YANKO, Content(frames=[frame]))
         return True
 
     def yankostatus(self, payload):

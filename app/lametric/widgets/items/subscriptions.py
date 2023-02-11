@@ -52,7 +52,7 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
     def __init__(self, storage_key, *args, **kwds):
         self.__storage_key = storage_key
         self.__scores = Scores({})
-        items = __class__._load(storage_key)
+        items = self.__class__._load(storage_key)
         logging.debug(f"LOADING SUBS {self.__storage_key} {items}")
         super().__init__(items, *args, **kwds)
 
@@ -80,7 +80,8 @@ class Subscriptions(dict, metaclass=SubscriptionsMeta):
         for event in events:
             try:
                 text = event.displayScore
-                sub = next(filter(lambda x: x.id == event.id, self.events), None)
+                sub = next(filter(lambda x: x.id ==
+                           event.id, self.events), None)
                 assert isinstance(sub, SubscriptionEvent)
                 assert isinstance(event.displayStatus, str)
                 sub.status = event.displayStatus

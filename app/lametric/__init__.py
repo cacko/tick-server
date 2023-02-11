@@ -40,7 +40,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
 
     def run(self, mainQueue):
         self._mainQueue = mainQueue
-        queue = __class__.queue
+        queue = LaMetric.queue
         while True:
             if queue.empty():
                 time.sleep(0.2)

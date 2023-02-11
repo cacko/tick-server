@@ -61,7 +61,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
     def onShow(self):
         expired = []
         for k, sub in self.subscriptions.items():
-            __class__.hasLivescoreGamesInProgress = sub.inProgress
+            self.__class__.hasLivescoreGamesInProgress = sub.inProgress
             if sub.isExpired:
                 expired.append(k)
         if expired:
@@ -79,7 +79,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def update_frames(self):
         frames = []
-        logging.debug(f">>> UPDATE FRAMES {__class__}")
+        logging.debug(f">>> UPDATE FRAMES {self.__class__}")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 logging.debug(sub)
@@ -89,12 +89,15 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 if sub.score:
                     text.append(sub.score)
                 frame = ContentFrame(
-                    text=" ".join(text), index=idx, icon=sub.display_icon, duration=0
+                    text=" ".join(text),
+                    index=idx,
+                    icon=sub.display_icon,
+                    duration=0
                 )
                 frames.append(frame)
         except AttributeError as e:
             logging.error(e)
-        __class__.client.send_model(self.app_name, Content(frames=frames))
+        self.__class__.client.send_model(self.app_name, Content(frames=frames))
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
@@ -133,7 +136,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         icon = sub.icon
                         assert isinstance(icon, str)
                         frame = event.getContentFrame(league_icon=icon)
-                        __class__.client.send_notification(
+                        self.__class__.client.send_notification(
                             Notification(
                                 model=Content(
                                     frames=[frame], sound=event.sound),

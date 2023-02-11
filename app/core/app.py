@@ -43,11 +43,11 @@ class App(object, metaclass=AppMeta):
 
         lm = StoppableThread(target=LaMetric.start, args=[self.queue])
         lm.start()
-        __class__.threads.append(lm)
+        App.threads.append(lm)
 
         ts = StoppableThread(target=Server.start, args=[self.queue])
         ts.start()
-        __class__.threads.append(ts)
+        App.threads.append(ts)
 
         scheduler = BackgroundScheduler()
         self.scheduler = Scheduler(scheduler, Config.storage.redis_url)

@@ -132,7 +132,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                         sub.status = "FT"
                         sub.display_event_name = None
                         frame = event.getContentFrame(league_icon=sub.icon)
-                        __class__.client.send_notification(
+                        RMWidget.client.send_notification(
                             Notification(
                                 model=Content(
                                     frames=[frame],
@@ -166,7 +166,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                         icon = sub.icon
                         assert isinstance(icon, str)
                         frame = event.getContentFrame(league_icon=icon)
-                        __class__.client.send_notification(
+                        RMWidget.client.send_notification(
                             Notification(
                                 model=Content(
                                     frames=[frame],

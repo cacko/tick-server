@@ -52,7 +52,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
         return v
 
     def activate(self):
-        resp = __class__.client.api_call(
+        resp = self.__class__.client.api_call(
             method=Method.PUT,
             endpoint=f"device/apps/{self.widget.package}/widgets/{self.widget_id}/activate"
         )
