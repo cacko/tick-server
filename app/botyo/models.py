@@ -310,7 +310,8 @@ class LivescoreEvent(BaseModel, extra=Extra.ignore):
     source: Optional[str] = ""
     strWinDescription: Optional[str] = ""
 
-    def __post_init__(self):
+    def __init__(self, **data):
+        super().__init__(**data)
         if self.strStatus in STATUS_MAP:
             self.strStatus = STATUS_MAP[self.strStatus]
 
