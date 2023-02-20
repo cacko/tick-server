@@ -11,6 +11,7 @@ from .base import BaseWidget, WidgetMeta
 from app.core.events import EventManager, BUTTON_EVENTS
 import logging
 
+
 class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     status: MUSIC_STATUS

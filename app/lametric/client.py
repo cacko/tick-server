@@ -61,13 +61,14 @@ class Client(object):
     def send_notification(self, notification: Notification):
         data = notification.dict()
         data["model"]["frames"] = list(
-            map(clean_frame, data.get("model").get("frames", []))
+            map(clean_frame, data.get("model", {}).get("frames", []))
         )
-        data["model"] = clean_frame(data.get("model"))
+        data["model"] = clean_frame(data.get("model", {}))
         return self.api_call(Method.POST, "device/notifications", json=data)
 
     def get_apps(self) -> dict[str, App]:
         res = self.api_call(Method.GET, "device/apps")
+        assert res
         return {k: App(**v) for k, v in res.items()}
 
     def get_display(self) -> DeviceDisplay:

@@ -122,7 +122,7 @@ class Display(object):
         payload_struct = json.loads(payload) if isinstance(
             payload, str) else payload
         match (content_type):
-            case CONTENT_TYPE.NOWPLAYING:  # type: ignore
+            case CONTENT_TYPE.NOWPLAYING:
                 self.invoke_widget(
                     name=APPNAME.YANKO,
                     method="nowplaying",

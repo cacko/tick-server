@@ -14,7 +14,7 @@ from app.botyo.models import (
 
 class WidgetMeta(type):
 
-    _instances = {}
+    _instances: dict[str, 'BaseWidget'] = {}
     client: Client
     live_games_in_progress = False
 
@@ -33,7 +33,7 @@ class WidgetMeta(type):
 
     @hasLivescoreGamesInProgress.setter
     def hasLivescoreGamesInProgress(cls, value: bool):
-        cls.live_games_in_progress ^= int(value)
+        cls.live_games_in_progress ^= value
 
 
 class BaseWidget(object, metaclass=WidgetMeta):
@@ -52,9 +52,10 @@ class BaseWidget(object, metaclass=WidgetMeta):
         return v
 
     def activate(self):
+        ep = f"device/apps/{self.widget.package}/widgets"
         resp = self.__class__.client.api_call(
             method=Method.PUT,
-            endpoint=f"device/apps/{self.widget.package}/widgets/{self.widget_id}/activate"
+            endpoint=f"{ep}/{self.widget_id}/activate"
         )
         return resp
 

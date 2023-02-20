@@ -93,9 +93,11 @@ class ModeTimeBased(BaseModel, extra=Extra.ignore):
         n = datetime.now(tz=LOCAL_TIMEZONE).time()
         return all(
             [
-                time.fromisoformat(self.local_start_time).replace(tzinfo=LOCAL_TIMEZONE)
+                time.fromisoformat(self.local_start_time).replace(
+                    tzinfo=LOCAL_TIMEZONE)
                 < n,
-                time.fromisoformat(self.local_end_time).replace(tzinfo=LOCAL_TIMEZONE)
+                time.fromisoformat(self.local_end_time).replace(
+                    tzinfo=LOCAL_TIMEZONE)
                 > n,
             ]
         )
@@ -117,7 +119,8 @@ class DeviceDisplay(BaseModel, extra=Extra.ignore):
 
     @property
     def needs_update(self) -> bool:
-        return (datetime.now(tz=timezone.utc) - self.updated_at) > timedelta(minutes=5)
+        td = timedelta(minutes=5)
+        return (datetime.now(tz=timezone.utc) - self.updated_at) > td
 
 
 class Widget(BaseModel, extra=Extra.ignore):
