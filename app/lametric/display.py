@@ -176,12 +176,15 @@ class Display(object):
             self._current_idx = 0
 
     def update(self):
-        if self.is_screensaver_active:
-            if self._current_idx != 0:
-                self._current_idx = 0
-                current = self._items[0]
-                current.activate()
-            return 0
+        try:
+            if self.is_screensaver_active:
+                if self._current_idx != 0:
+                    self._current_idx = 0
+                    current = self._items[0]
+                    current.activate()
+                return 0
+        except AssertionError:
+            pass
 
         current = self._items[self._current_idx]
 
