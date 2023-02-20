@@ -46,6 +46,7 @@ class Server(object, metaclass=ServerMeta):
         srv.start()
 
     def handle_nowplaying(self, payload):
+        logging.info(payload)
         LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
     def handle_status(self, payload):
