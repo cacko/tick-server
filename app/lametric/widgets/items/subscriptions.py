@@ -38,6 +38,7 @@ class Subscriptions(dict):
 
     @classmethod
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
+        logging.info(f"{storage_key} Storage")
         data = Storage.hgetall(storage_key)
         if not data:
             logging.debug("no data")
@@ -54,6 +55,7 @@ class Subscriptions(dict):
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
+        logging.debug(f"{__k,} {__v}")
         Storage.pipeline().hset(
             self.__storage_key, __k, pickle.dumps(__v)
         ).persist(
