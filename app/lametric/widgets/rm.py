@@ -14,6 +14,7 @@ from app.lametric.models import (
 )
 from app.botyo.client import Client as BotyoClient
 from cachable.cacheable import TimeCacheable
+from cachable.storage.redis import RedisStorage
 from app.scheduler import Scheduler
 from .livescore import BaseLivescoresWidget
 from app.core.time import is_today
@@ -29,6 +30,10 @@ class TeamSchedule(TimeCacheable):
     def __init__(self, id) -> None:
         self.__id = id
         super().__init__()
+        
+    @property
+    def storage(self):
+        return RedisStorage
 
     @property
     def content(self):
