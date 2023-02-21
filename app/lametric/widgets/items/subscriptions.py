@@ -49,6 +49,7 @@ class Subscriptions(dict):
         self.__storage_key = storage_key
         self.__scores = Scores({})
         items = self.__class__._load(storage_key)
+        logging.debug(items)
         logging.debug(f"LOADING SUBS {self.__storage_key} {items}")
         super().__init__(items, *args, **kwds)
 
