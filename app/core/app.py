@@ -1,10 +1,9 @@
-import logging
 from app.api.server import Server
 from app.config import Config
 from app.core.thread import StoppableThread
 from app.lametric import LaMetric
 from app.scheduler import Scheduler
-from cachable.storage import Storage
+from cachable.storage.redis import RedisStorage
 from apscheduler.schedulers.background import BackgroundScheduler
 import asyncio
 
@@ -14,14 +13,13 @@ class AppMeta(type):
     _instance = None
     threads: list[StoppableThread] = []
 
-
     def __call__(self, *args, **kwds):
         if not self._instance:
             self._instance = type.__call__(self, *args, **kwds)
         return self._instance
 
     def start(cls):
-        Storage.register(Config.storage.redis_url)
+        RedisStorage.register(Config.storage.redis_url)
         cls().run()
 
     def terminate(cls):
@@ -32,8 +30,6 @@ class AppMeta(type):
 
 
 class App(object, metaclass=AppMeta):
-
-    event_loop = None
 
     def __init__(self) -> None:
         self.eventLoop = asyncio.get_event_loop()
@@ -51,6 +47,6 @@ class App(object, metaclass=AppMeta):
 
         scheduler = BackgroundScheduler()
         self.scheduler = Scheduler(scheduler, Config.storage.redis_url)
-        
+
         Scheduler.start()
         self.eventLoop.run_forever()

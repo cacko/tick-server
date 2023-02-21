@@ -1,5 +1,5 @@
 from app.botyo.models import SubscriptionEvent
-from cachable.storage import Storage
+from cachable.storage.redis import RedisStorage
 import pickle
 from app.botyo.client import Client as BotyoClient
 import logging
@@ -39,7 +39,7 @@ class Subscriptions(dict):
     @classmethod
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         logging.info(f"{storage_key} Storage")
-        data = Storage.hgetall(storage_key)
+        data = RedisStorage.hgetall(storage_key)
         if not data:
             logging.debug("no data")
             return {}
@@ -56,7 +56,7 @@ class Subscriptions(dict):
 
     def __setitem__(self, __k, __v) -> None:
         logging.debug(f"{__k,} {__v}")
-        Storage.pipeline().hset(
+        RedisStorage.pipeline().hset(
             self.__storage_key, __k, pickle.dumps(__v)
         ).persist(
             self.__storage_key
@@ -66,7 +66,7 @@ class Subscriptions(dict):
         return super().__setitem__(__k, __v)
 
     def __delitem__(self, __v) -> None:
-        Storage.pipeline().hdel(self.__storage_key, __v).persist(
+        RedisStorage.pipeline().hdel(self.__storage_key, __v).persist(
             self.__storage_key
         ).execute()
         return super().__delitem__(__v)
@@ -77,7 +77,7 @@ class Subscriptions(dict):
         events = list(filter(lambda x: x.id in ids, data))
         if not len(events):
             return
-        store = Storage.pipeline()
+        store = RedisStorage.pipeline()
         for event in events:
             try:
                 text = event.displayScore

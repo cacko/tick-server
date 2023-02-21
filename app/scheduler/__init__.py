@@ -46,6 +46,7 @@ class SchedulerMeta(type):
         assert cls._instance
         return cls._instance._scheduler.get_jobs(jobstore, pending)
 
+
 class Scheduler(object, metaclass=SchedulerMeta):
 
     _scheduler: BackgroundScheduler

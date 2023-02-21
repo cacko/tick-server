@@ -10,12 +10,14 @@ dependencies:
   - libffi=3.4.2
   - libsqlite=3.40.0
   - libzlib=1.2.13
+  - mypy=1.0.0
   - mypy_extensions=0.4.3
   - ncurses=6.3
-  - openssl=3.0.7
+  - openssl=3.0.8
   - pathspec=0.10.3
   - pip=22.3.1
   - platformdirs=2.6.0
+  - psutil=5.9.4
   - python=3.11.0
   - python_abi=3.11
   - readline=8.1.2
@@ -23,6 +25,7 @@ dependencies:
   - tk=8.6.12
   - toml=0.10.2
   - tomli=2.0.1
+  - typing_extensions=4.4.0
   - wheel=0.38.4
   - xz=5.2.6
   - pip:
@@ -34,17 +37,21 @@ dependencies:
       - better-exceptions==0.3.3
       - bottle==0.12.23
       - butilka==0.1.15
-      - cachable==0.3.11
+      - cachable==0.3.41
       - certifi==2022.6.15
       - charset-normalizer==2.1.1
       - colorama==0.4.6
       - commonmark==0.9.1
       - corelog==0.0.7
       - corestring==0.1.14
+      - cssselect==1.2.0
+      - d==0.2.2
       - deprecated==1.2.13
       - flake8==5.0.4
       - humanfriendly==10.0
       - idna==3.3
+      - lxml==4.9.2
+      - markdown==3.4.1
       - marshmallow==3.17.1
       - marshmallow-enum==1.5.1
       - mccabe==0.7.0
@@ -59,6 +66,7 @@ dependencies:
       - pygments==2.13.0
       - pyotp==2.6.0
       - pyparsing==3.0.9
+      - pyquery==2.0.0
       - python-dateutil==2.8.2
       - pytz==2022.2.1
       - pytz-deprecation-shim==0.1.0.post0
@@ -75,6 +83,8 @@ dependencies:
       - stringcase==1.2.0
       - structlog==22.3.0
       - tenacity==8.0.1
+      - types-requests==2.28.11.13
+      - types-urllib3==1.26.25.6
       - typing-extensions==4.3.0
       - typing-inspect==0.8.0
       - tzdata==2022.2
