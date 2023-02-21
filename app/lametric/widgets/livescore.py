@@ -75,6 +75,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     @property
     def isHidden(self):
+        logging.debug(self.subscriptions)
         return not len(self.subscriptions)
 
     def update_frames(self):

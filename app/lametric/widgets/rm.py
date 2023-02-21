@@ -84,12 +84,14 @@ def schedule_cron(team_id: int, storage_key: str):
 class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def subscriptions(self) -> Subscriptions:
-        return Subscriptions(STORAGE_KEY.REAL_MADRID.value)
+        res =  Subscriptions(STORAGE_KEY.REAL_MADRID.value)
+        logging.debug(res)
+        return res
 
     @property
     def app_name(self) -> APPNAME:
         return APPNAME.RM
-    
+
     @property
     def isHidden(self):
         return False
