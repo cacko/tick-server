@@ -23,7 +23,7 @@ class SchedulerMeta(type):
         try:
             assert cls._instance
             cls._instance._scheduler.shutdown()
-        except:
+        except Exception:
             pass
 
     def add_job(cls, *args, **kwargs):

@@ -62,10 +62,11 @@ class ClientMeta(type):
         except Exception as e:
             logging.error(e)
         return []
-    
+
     def league_schedule(cls, league_id: int) -> list[Game]:
         try:
-            data = cls().do_get(f"{ENDPOINT.LEAGUE_SCHEDULE.value}/{league_id}")
+            data = cls().do_get(
+                f"{ENDPOINT.LEAGUE_SCHEDULE.value}/{league_id}")
             logging.info(data)
             if data:
                 return [Game(**x) for x in data]

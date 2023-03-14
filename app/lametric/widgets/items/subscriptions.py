@@ -38,7 +38,6 @@ class Subscriptions(dict):
 
     @classmethod
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
-        logging.info(f"{storage_key} Storage")
         data = RedisStorage.hgetall(storage_key)
         if not data:
             logging.debug("no data")

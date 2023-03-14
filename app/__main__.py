@@ -3,11 +3,10 @@ import signal
 from app.core.app import App
 import logging
 
+
 try:
     App.start()
-
 except KeyboardInterrupt:
-    import sys
     sys.exit(0)
 except Exception as e:
     logging.exception(e, exc_info=True)

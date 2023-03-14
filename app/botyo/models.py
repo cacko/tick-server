@@ -11,6 +11,7 @@ from hashlib import md5
 import logging
 from corestring import clean_punctuation
 
+
 class EventIcon(IntEnum):
     GOAL = 8627
     SUBSTITUTION = 31567
@@ -111,7 +112,10 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
         except ValueError:
             return None
 
-    def getContentFrame(self, league_icon: Optional[str] = None) -> ContentFrame:
+    def getContentFrame(
+        self,
+        league_icon: Optional[str] = None
+    ) -> ContentFrame:
         parts = []
         if self.time:
             try:
@@ -149,7 +153,7 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
         try:
             icon = EventIcon[constcase(self.action)]
             res.icon = icon.value
-        except:
+        except Exception:
             pass
 
         return res
@@ -167,7 +171,6 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
             pass
         return None
 
-
     @property
     def winner(self) -> int:
         try:
@@ -179,7 +182,6 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
             return 0
         except Exception:
             return 0
-
 
     def getTeamSound(self, team_id, is_winner=None):
         try:
@@ -202,10 +204,9 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
                         return ContentSound(id=SOUNDS.WIN.value)
                     case False:
                         return ContentSound(id=SOUNDS.LOSE1.value)
-        except:
+        except Exception:
             pass
         return ContentSound(id=SOUNDS.BICYCLE.value)
-
 
 
 class SubscriptionEvent(BaseModel, extra=Extra.ignore):
@@ -315,7 +316,8 @@ class LivescoreEvent(BaseModel, extra=Extra.ignore):
         if self.strStatus in STATUS_MAP:
             self.strStatus = STATUS_MAP[self.strStatus]
 
-        delta = (datetime.now(timezone.utc) - self.startTime).total_seconds() / 60
+        delta = (datetime.now(timezone.utc) -
+                 self.startTime).total_seconds() / 60
         try:
             status = self.strStatus
             assert status
@@ -388,7 +390,6 @@ class GameCompetitor(BaseModel, extra=Extra.ignore):
         if len(parts) == 1:
             return self.name[:3].upper()
         return f"{parts[0][:1]}{parts[1][:2]}".upper()
-
 
 
 class Game(BaseModel, extra=Extra.ignore):

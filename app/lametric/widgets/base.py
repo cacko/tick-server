@@ -1,3 +1,4 @@
+import logging
 from app.lametric.client import Client
 from app.lametric.models import (
     Widget,
@@ -89,6 +90,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
 class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
+        logging.info(f"on_event {payload}")
         if payload is None:
             return payload
         if isinstance(payload, list):
