@@ -96,6 +96,8 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
     time: int
     action: str
     order: int
+    home_team_id: int
+    away_team_id: int
     is_old_event: bool
     event_id: Optional[Union[int, str]] = None
     team: Optional[str] = None
