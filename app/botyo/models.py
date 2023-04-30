@@ -1,3 +1,4 @@
+from turtle import st
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional, Union
@@ -218,7 +219,7 @@ class SubscriptionEvent(BaseModel, extra=Extra.ignore):
     home_team_id: int
     away_team: str
     away_team_id: int
-    event_id: int
+    event_id: Union[str, int]
     event_name: str
     job_id: str
     icon: str
