@@ -1,13 +1,11 @@
-from turtle import st
 from app.core.time import to_local_time
 from app.lametric.models import ContentFrame, ContentSound, SOUNDS
 from typing import Optional, Union
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum, StrEnum
 import re
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Extra
 from stringcase import constcase
-from app.core.time import to_local_time
 from hashlib import md5
 import logging
 from corestring import clean_punctuation
@@ -111,8 +109,9 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
     @property
     def event_status(self) -> Optional[Status]:
         try:
+            assert self.status
             return Status(self.status)
-        except ValueError:
+        except (ValueError, AssertionError):
             return None
 
     def getContentFrame(
@@ -122,6 +121,7 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
         parts = []
         if self.time:
             try:
+                assert self.status
                 st = Status(self.status)
                 if self.time > 45 and st == Status.FIRST_HALF:
                     parts.append(f"45+{self.time - 45}'")
@@ -135,6 +135,8 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
                     parts.append(f"{self.time}'")
             except ValueError:
                 parts.append(f"{self.time}'")
+            except AssertionError:
+                pass
         if self.action:
             parts.append(f"{self.action}")
         if self.player:
@@ -177,13 +179,14 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
     @property
     def winner(self) -> int:
         try:
+            assert self.score
             hg, ag = map(int, self.score.split(":"))
             if hg > ag:
                 return self.home_team_id
             elif ag > hg:
                 return self.away_team_id
             return 0
-        except Exception:
+        except AssertionError:
             return 0
 
     def getTeamSound(self, team_id, is_winner=None):
@@ -325,7 +328,9 @@ class LivescoreEvent(BaseModel, extra=Extra.ignore):
             status = self.strStatus
             assert status
             self.displayStatus = GameStatus(status).value
-            if delta < 0 and self.displayStatus in [GameStatus.UNKNOWN, GameStatus.NS]:
+            if delta < 0 and self.displayStatus in [
+                GameStatus.UNKNOWN, GameStatus.NS
+            ]:
                 self.displayStatus = to_local_time(self.startTime)
             else:
                 self.displayStatus = self.displayStatus.name
@@ -426,7 +431,8 @@ class Game(BaseModel, extra=Extra.ignore):
     def subscriptionId(self) -> str:
         logging.info(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
         return md5(
-            f"{self.homeCompetitor.name}/{self.awayCompetitor.name}".lower().encode()
+            f"{self.homeCompetitor.name}"
+            f"/{self.awayCompetitor.name}".lower().encode()
         ).hexdigest()
 
     @property
