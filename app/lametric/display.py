@@ -134,11 +134,11 @@ class Display(object):
                     payload=payload_struct
                 )
             case CONTENT_TYPE.LIVESCOREEVENT:
-                # payload_struct = self.invoke_widget(
-                #     name=APPNAME.RM,
-                #     method="on_event",
-                #     payload=payload_struct
-                # )
+                payload_struct = self.invoke_widget(
+                    name=APPNAME.RM,
+                    method="on_event",
+                    payload=payload_struct
+                )
                 # payload = self.invoke_widget(
                 #     name=APPNAME.LA_LIGA, method="on_event", payload=payload
                 # )
@@ -222,10 +222,10 @@ class Display(object):
                     self._widgets[name.value] = YankoWidget(
                         widget_id=first_key, widget=widget_data, **kwargs
                     )
-                # case APPNAME.RM:
-                #     self._widgets[name.value] = RMWidget(
-                #         widget_id=first_key, widget=widget_data, **kwargs
-                #     )
+                case APPNAME.RM:
+                    self._widgets[name.value] = RMWidget(
+                        widget_id=first_key, widget=widget_data, **kwargs
+                    )
                 case APPNAME.LIVESCORES:
                     self._widgets[name.value] = LivescoresWidget(
                         widget_id=first_key, widget=widget_data, **kwargs

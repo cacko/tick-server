@@ -37,7 +37,6 @@ class TeamSchedule(TimeCacheable):
 
     @property
     def content(self):
-        logging.debug(f"TeamSchedule content {self.cachetime}")
         if not self.load():
             schedule = BotyoClient.team_schedule(self.__id)
             self._struct = self.tocache(schedule)
@@ -90,7 +89,6 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def subscriptions(self) -> Subscriptions:
         res = Subscriptions(STORAGE_KEY.REAL_MADRID.value)
-        logging.debug(res)
         return res
 
     @property
@@ -108,28 +106,20 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         cron_func(self.item_id, STORAGE_KEY.REAL_MADRID.value)
 
     def filter_payload(self, payload):
-        logging.warning(payload)
         if isinstance(payload, list):
             return list(
-                filter(
-                    lambda x: self.item_id
-                    not in [x.get("home_team_id"), x.get("away_team_id")],
-                    payload,
-                )
-            ), list(
                 filter(
                     lambda x: self.item_id
                     in [x.get("home_team_id"), x.get("away_team_id")],
                     payload,
                 )
             )
-
         if self.item_id in [
             payload.get("home_team_id"),
             payload.get("away_team_id")
         ]:
-            return None, payload
-        return payload, None
+            return payload
+        return None
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:

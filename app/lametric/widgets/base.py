@@ -90,32 +90,34 @@ class BaseWidget(object, metaclass=WidgetMeta):
 class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
-        logging.info(f"on_event {self.__class__.__name__} {payload}")
-        if payload is None:
-            return payload
-        if isinstance(payload, list):
-            if not len(payload):
-                return payload
-            self.on_match_events(
-                [MatchEvent(**x) for x in payload]
-            )
-            return self.filter_payload(payload)
         try:
+            logging.info(f"on_event {self.__class__.__name__} {payload}")
+            assert payload
+            widget_payload = self.filter_payload(payload)
+            assert widget_payload
+            if isinstance(widget_payload, list):
+                self.on_match_events(
+                    [MatchEvent(**x) for x in widget_payload]
+                )
+                return list(filter(lambda p: p not in widget_payload, payload))
             action = ACTION(payload.get("action"))
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent(**payload))
+                        CancelJobEvent(**widget_payload))
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
-                        SubscriptionEvent(**payload))
+                        SubscriptionEvent(**widget_payload))
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
-                        SubscriptionEvent(**payload))
+                        SubscriptionEvent(**widget_payload))
+            payload = None
+        except AssertionError:
+            pass
         except ValueError as e:
             logging.exception(e)
         finally:
-            return self.filter_payload(payload)
+            return payload
 
     def filter_payload(self, payload):
         return payload
