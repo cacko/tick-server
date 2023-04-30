@@ -40,7 +40,6 @@ class Subscriptions(dict):
     def _load(cls, storage_key) -> dict[str, SubscriptionEvent]:
         data = RedisStorage.hgetall(storage_key)
         if not data:
-            logging.debug("no data")
             return {}
         items = {k.decode(): pickle.loads(v) for k, v in data.items()}
         return items
@@ -49,12 +48,9 @@ class Subscriptions(dict):
         self.__storage_key = storage_key
         self.__scores = Scores({})
         items = self.__class__._load(storage_key)
-        logging.debug(f"{storage_key} {items}")
-        logging.debug(f"LOADING SUBS {self.__storage_key} {items}")
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
-        logging.debug(f"{__k,} {__v}")
         RedisStorage.pipeline().hset(
             self.__storage_key, __k, pickle.dumps(__v)
         ).persist(
