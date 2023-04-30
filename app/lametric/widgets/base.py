@@ -90,7 +90,7 @@ class BaseWidget(object, metaclass=WidgetMeta):
 class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
-        logging.info(f"on_event {payload}")
+        logging.info(f"on_event {self.__class__.__name__} {payload}")
         if payload is None:
             return payload
         if isinstance(payload, list):
@@ -112,8 +112,8 @@ class SubscriptionWidget(BaseWidget):
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
                         SubscriptionEvent(**payload))
-        except ValueError:
-            pass
+        except ValueError as e:
+            logging.exception(e)
         finally:
             return self.filter_payload(payload)
 
