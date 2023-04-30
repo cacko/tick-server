@@ -90,13 +90,16 @@ class BaseWidget(object, metaclass=WidgetMeta):
 class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
-        logging.info(f"on_event {payload}")
+        logging.info(f"on_event {self.__class__.__name__} {payload}")
         if payload is None:
             return payload
         if isinstance(payload, list):
             if not len(payload):
                 return payload
             payload, w_payload = self.filter_payload(payload)
+            logging.debug(f"widget paylioad {w_payload}")
+            logging.debug(f"next paylioad {payload}")
+
             if w_payload:
                 self.on_match_events(
                     [MatchEvent(**x) for x in w_payload]
@@ -104,6 +107,8 @@ class SubscriptionWidget(BaseWidget):
             return payload
         try:
             payload, w_payload = self.filter_payload(payload)
+            logging.debug(f"widget paylioad {w_payload}")
+            logging.debug(f"next paylioad {payload}")
             action = ACTION(w_payload.get("action"))
             logging.info(f"ACTION {action}")
             match(action):
