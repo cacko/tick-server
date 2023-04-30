@@ -6,7 +6,6 @@ from app.lametric.models import CONTENT_TYPE
 from app.lametric import LaMetric
 from app.core.events import EventManager
 from butilka.server import request, template, Server as ButilkaServer
-import logging
 from typing import Optional, MutableMapping
 
 api_config = Config.api
@@ -52,7 +51,6 @@ class Server(object, metaclass=ServerMeta):
         LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
 
     def handle_subscription(self, payload):
-        logging.warning(payload)
         LaMetric.queue.put_nowait((CONTENT_TYPE.LIVESCOREEVENT, payload))
         return "OK"
 
@@ -80,7 +78,6 @@ def on_button():
 @auth_required
 def on_subscription():
     data = request.json
-    logging.debug(data)
     return Server.subscription(data)
 
 

@@ -16,7 +16,6 @@ from app.lametric.widgets import (
 from typing import Optional
 from typing import Any
 from pydantic import BaseModel, Extra, Field, validator
-import logging
 import json
 
 
@@ -160,7 +159,6 @@ class Display(object):
     def invoke_widget(self, name: APPNAME, method: str, payload: Any):
         try:
             wdg = self._widgets.get(name.value)
-            logging.debug(f"invoke widget{wdg}")
             assert isinstance(wdg, BaseWidget)
             assert hasattr(wdg, method)
             assert callable(getattr(wdg, method))

@@ -96,29 +96,33 @@ class SubscriptionWidget(BaseWidget):
         if isinstance(payload, list):
             if not len(payload):
                 return payload
-            self.on_match_events(
-                [MatchEvent(**x) for x in payload]
-            )
-            return self.filter_payload(payload)
+            payload, w_payload = self.filter_payload(payload)
+            if w_payload:
+                self.on_match_events(
+                    [MatchEvent(**x) for x in w_payload]
+                )
+            return payload
         try:
-            action = ACTION(payload.get("action"))
+            payload, w_payload = self.filter_payload(payload)
+            action = ACTION(w_payload.get("action"))
+            logging.info(f"ACTION {action}")
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent(**payload))
+                        CancelJobEvent(**w_payload))
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
-                        SubscriptionEvent(**payload))
+                        SubscriptionEvent(**w_payload))
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
-                        SubscriptionEvent(**payload))
+                        SubscriptionEvent(**w_payload))
         except ValueError:
             pass
         finally:
-            return self.filter_payload(payload)
+            return payload
 
     def filter_payload(self, payload):
-        return payload
+        return payload, None
 
     def on_match_events(self, events: list[MatchEvent]):
         raise NotImplementedError

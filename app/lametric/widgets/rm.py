@@ -30,7 +30,7 @@ class TeamSchedule(TimeCacheable):
     def __init__(self, id) -> None:
         self.__id = id
         super().__init__()
-        
+
     @property
     def storage(self):
         return RedisStorage
@@ -89,7 +89,7 @@ def schedule_cron(team_id: int, storage_key: str):
 class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def subscriptions(self) -> Subscriptions:
-        res =  Subscriptions(STORAGE_KEY.REAL_MADRID.value)
+        res = Subscriptions(STORAGE_KEY.REAL_MADRID.value)
         logging.debug(res)
         return res
 
@@ -116,13 +116,20 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     not in [x.get("home_team_id"), x.get("away_team_id")],
                     payload,
                 )
+            ), list(
+                filter(
+                    lambda x: self.item_id
+                    in [x.get("home_team_id"), x.get("away_team_id")],
+                    payload,
+                )
             )
+
         if self.item_id in [
             payload.get("home_team_id"),
             payload.get("away_team_id")
         ]:
-            return None
-        return payload
+            return None, payload
+        return payload, None
 
     def on_match_events(self, events: list[MatchEvent]):
         for event in events:
