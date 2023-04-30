@@ -75,7 +75,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     @property
     def isHidden(self):
-        logging.debug(self.subscriptions)
         return not len(self.subscriptions)
 
     def update_frames(self):
@@ -83,7 +82,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
         logging.debug(f">>> UPDATE FRAMES {self.__class__}")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
-                logging.debug(sub)
                 text = []
                 text.append(sub.displayStatus)
                 text.append(sub.displayEventName)
