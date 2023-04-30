@@ -255,11 +255,16 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     lambda x: x.get("league_id", 0) != self.item_id,
                     payload,
                 )
+            ), list(
+                filter(
+                    lambda x: x.get("league_id", 0) == self.item_id,
+                    payload,
+                )
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None
-        return payload
+            return None, payload
+        return payload, None
 
 
 class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
@@ -286,11 +291,16 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     lambda x: x.get("league_id", 0) != self.item_id,
                     payload,
                 )
+            ), list(
+                filter(
+                    lambda x: x.get("league_id", 0) == self.item_id,
+                    payload,
+                )
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None
-        return payload
+            return None, payload
+        return payload, None
 
 
 class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
@@ -305,7 +315,6 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     def post_init(self):
         self.clear_all()
         Scheduler.cancel_jobs(STORAGE_KEY.LA_LIGA.value)
-
         # schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
         # cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
 
@@ -316,11 +325,16 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     lambda x: x.get("league_id", 0) != self.item_id,
                     payload,
                 )
+            ), list(
+                filter(
+                    lambda x: x.get("league_id", 0) == self.item_id,
+                    payload,
+                )
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None
-        return payload
+            return None, payload
+        return payload, None
 
 
 class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):

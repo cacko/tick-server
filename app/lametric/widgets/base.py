@@ -97,9 +97,6 @@ class SubscriptionWidget(BaseWidget):
             if not len(payload):
                 return payload
             payload, w_payload = self.filter_payload(payload)
-            logging.debug(f"widget paylioad {w_payload}")
-            logging.debug(f"next paylioad {payload}")
-
             if w_payload:
                 self.on_match_events(
                     [MatchEvent(**x) for x in w_payload]
@@ -107,8 +104,6 @@ class SubscriptionWidget(BaseWidget):
             return payload
         try:
             payload, w_payload = self.filter_payload(payload)
-            logging.debug(f"widget paylioad {w_payload}")
-            logging.debug(f"next paylioad {payload}")
             action = ACTION(w_payload.get("action"))
             logging.info(f"ACTION {action}")
             match(action):
@@ -127,7 +122,7 @@ class SubscriptionWidget(BaseWidget):
             return payload
 
     def filter_payload(self, payload):
-        return payload, None
+        return None, payload
 
     def on_match_events(self, events: list[MatchEvent]):
         raise NotImplementedError
