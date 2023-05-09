@@ -62,7 +62,7 @@ def cron_func(team_id: int, storage_key: str):
         Scheduler.add_job(
             id=f"{storage_key}_retry",
             name=f"{storage_key}_retry",
-            func=cron_func,
+            func=cron_func, 
             trigger="date",
             run_date=n + td,
             kwargs={"team_id": team_id, "storage_key": storage_key},
@@ -98,6 +98,18 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def isHidden(self):
         return False
+    
+    def onShow(self):
+        expired = []
+        logging.warning(self.subscriptions.items())
+        for k, sub in self.subscriptions.items():
+            self.__class__.hasLivescoreGamesInProgress = sub.inProgress
+            if sub.isExpired:
+                expired.append(k)
+        if expired:
+            for id in expired:
+                del self.subscriptions[id]
+            self.update_frames()
 
     def post_init(self):
         logging.warning(self.item_id)
