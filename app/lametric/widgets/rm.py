@@ -77,7 +77,7 @@ def schedule_cron(team_id: int, storage_key: str):
         name=f"{storage_key}",
         func=cron_func,
         trigger="cron",
-        hour=7,
+        hour=10,
         minute=0 + randint(0, 55),
         kwargs={"team_id": team_id, "storage_key": storage_key},
         replace_existing=True,
@@ -98,22 +98,8 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
     @property
     def isHidden(self):
         return False
-    
-    def onShow(self):
-        expired = []
-        logging.warning(self.subscriptions.items())
-        for k, sub in self.subscriptions.items():
-            self.__class__.hasLivescoreGamesInProgress = sub.inProgress
-            if sub.isExpired:
-                expired.append(k)
-        if expired:
-            for id in expired:
-                del self.subscriptions[id]
-            self.update_frames()
 
     def post_init(self):
-        logging.warning(self.item_id)
-        logging.warning(STORAGE_KEY.REAL_MADRID.value)
         schedule_cron(self.item_id, STORAGE_KEY.REAL_MADRID.value)
         cron_func(self.item_id, STORAGE_KEY.REAL_MADRID.value)
 
