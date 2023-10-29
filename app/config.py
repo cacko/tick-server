@@ -5,13 +5,13 @@ from yaml import load, Loader
 from pydantic import BaseModel, Extra
 
 
-class StorageConfig(BaseModel, extra=Extra.ignore):
+class StorageConfig(BaseModel):
     storage: str
     redis_url: str
     attachments: str
 
 
-class LametricApp(BaseModel, extra=Extra.ignore):
+class LametricApp(BaseModel):
     package: str
     duration: Optional[int] = None
     endpoint: Optional[str] = None
@@ -20,16 +20,16 @@ class LametricApp(BaseModel, extra=Extra.ignore):
     item_id: Optional[int] = None
 
 
-class YankoConfig(BaseModel, extra=Extra.ignore):
+class YankoConfig(BaseModel):
     host: str
     secret: str
 
 
-class BotyoConfig(BaseModel, extra=Extra.ignore):
+class BotyoConfig(BaseModel):
     host: str
 
 
-class ApiConfig(BaseModel, extra=Extra.ignore):
+class ApiConfig(BaseModel):
     host: str
     port: int
     secret: str
@@ -37,7 +37,7 @@ class ApiConfig(BaseModel, extra=Extra.ignore):
     nworkers: int
 
 
-class LametricConfig(BaseModel, extra=Extra.ignore):
+class LametricConfig(BaseModel):
     host: str
     user: str
     apikey: str
@@ -45,7 +45,7 @@ class LametricConfig(BaseModel, extra=Extra.ignore):
     timezone: str
 
 
-class ConfigStruct(BaseModel, extra=Extra.ignore):
+class ConfigStruct(BaseModel):
     storage: StorageConfig
     yanko: YankoConfig
     lametric: LametricConfig

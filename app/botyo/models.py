@@ -89,7 +89,7 @@ class Status(StrEnum):
     INTO_ET = "Into ET."
 
 
-class MatchEvent(BaseModel, extra=Extra.ignore):
+class MatchEvent(BaseModel):
     id: str
     time: int
     action: str
@@ -215,7 +215,7 @@ class MatchEvent(BaseModel, extra=Extra.ignore):
         return ContentSound(id=SOUNDS.BICYCLE.value)
 
 
-class SubscriptionEvent(BaseModel, extra=Extra.ignore):
+class SubscriptionEvent(BaseModel):
     id: str
     action: str
     league: str
@@ -296,7 +296,7 @@ class OrderWeight(IntEnum):
     JUNK = pow(2, 5)
 
 
-class LivescoreEvent(BaseModel, extra=Extra.ignore):
+class LivescoreEvent(BaseModel):
     id: str
     idEvent: int
     strSport: str
@@ -358,7 +358,7 @@ class LivescoreEvent(BaseModel, extra=Extra.ignore):
         return re.match(r"^\d+$", self.strStatus) is not None
 
 
-class CancelJobEvent(BaseModel, extra=Extra.ignore):
+class CancelJobEvent(BaseModel):
     job_id: str
     action: str
 
@@ -369,7 +369,7 @@ class CancelJobEvent(BaseModel, extra=Extra.ignore):
         return self.job_id
 
 
-class GameCompetitor(BaseModel, extra=Extra.ignore):
+class GameCompetitor(BaseModel):
     id: Optional[int] = None
     countryId: Optional[int] = None
     sportId: Optional[int] = None
@@ -400,7 +400,7 @@ class GameCompetitor(BaseModel, extra=Extra.ignore):
         return f"{parts[0][:1]}{parts[1][:2]}".upper()
 
 
-class Game(BaseModel, extra=Extra.ignore):
+class Game(BaseModel):
     id: int
     sportId: int
     competitionId: int

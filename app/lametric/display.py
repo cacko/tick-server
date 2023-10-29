@@ -11,7 +11,8 @@ from app.lametric.widgets import (
     YankoWidget,
     ClockWidget,
     LivescoresWidget,
-    WeatherWidget
+    WeatherWidget,
+    DatetickerWidget
 )
 from typing import Optional
 from typing import Any
@@ -216,6 +217,10 @@ class Display(object):
                     )
                 case APPNAME.WEATHER:
                     self._widgets[name.value] = WeatherWidget(
+                        widget_id=first_key, widget=widget_data, **kwargs
+                    )
+                case APPNAME.DATETICKER:
+                    self._widgets[name.value] = DatetickerWidget(
                         widget_id=first_key, widget=widget_data, **kwargs
                     )
                 case APPNAME.YANKO:

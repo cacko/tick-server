@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Field
 from datetime import time, datetime, timezone, timedelta
 from typing import Optional
 from enum import StrEnum
@@ -22,6 +22,7 @@ class STORAGE_KEY(StrEnum):
 class APPNAME(StrEnum):
     CLOCK = "clock"
     WEATHER = "weather"
+    DATETICKER = "dateticker"
     YANKO = "yanko"
     RM = "rm"
     LIVESCORES = "livescores"
@@ -79,7 +80,7 @@ class SOUNDS(StrEnum):
     WIND_SHORT = "wind_short"
 
 
-class ModeTimeBased(BaseModel, extra=Extra.ignore):
+class ModeTimeBased(BaseModel):
     enabled: bool
     end_time: str
     start_time: str
@@ -103,16 +104,16 @@ class ModeTimeBased(BaseModel, extra=Extra.ignore):
         )
 
 
-class ScreensaveModes(BaseModel, extra=Extra.ignore):
+class ScreensaveModes(BaseModel):
     time_based: ModeTimeBased
 
 
-class DisplayScreensave(BaseModel, extra=Extra.ignore):
+class DisplayScreensave(BaseModel):
     enabled: bool
     modes: ScreensaveModes
 
 
-class DeviceDisplay(BaseModel, extra=Extra.ignore):
+class DeviceDisplay(BaseModel):
     brightness: int
     screensaver: DisplayScreensave
     updated_at: datetime
@@ -123,13 +124,13 @@ class DeviceDisplay(BaseModel, extra=Extra.ignore):
         return (datetime.now(tz=timezone.utc) - self.updated_at) > td
 
 
-class Widget(BaseModel, extra=Extra.ignore):
+class Widget(BaseModel):
     index: int
     package: str
     settings: Optional[dict] = None
 
 
-class App(BaseModel, extra=Extra.ignore):
+class App(BaseModel):
     package: str
     title: str
     vendor: str
@@ -139,14 +140,14 @@ class App(BaseModel, extra=Extra.ignore):
     triggers: Optional[dict] = None
 
 
-class GoalData(BaseModel, extra=Extra.ignore):
+class GoalData(BaseModel):
     start: int
     current: int
     end: int
     units: Optional[str] = ""
 
 
-class ContentFrame(BaseModel, extra=Extra.ignore):
+class ContentFrame(BaseModel):
     text: Optional[str] = None
     icon: Optional[str | int] = None
     index: Optional[int] = Field(default=0)
@@ -170,17 +171,17 @@ class NowPlayingFrame(ContentFrame):
     index: Optional[int] = Field(default=3)
 
 
-class ContentSound(BaseModel, extra=Extra.ignore):
+class ContentSound(BaseModel):
     id: str
     category: str = Field(default="notifications")
 
 
-class Content(BaseModel, extra=Extra.ignore):
+class Content(BaseModel):
     frames: list[ContentFrame]
     sound: Optional[ContentSound] = None
 
 
-class Notification(BaseModel, extra=Extra.ignore):
+class Notification(BaseModel):
     model: Content
     priority: str = Field(default="info")
     icon_type: str = Field(default="none")
