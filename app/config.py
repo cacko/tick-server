@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 from yaml import load, Loader
 from pydantic import BaseModel, Extra
+from zmq import device
 
 
 class StorageConfig(BaseModel):
@@ -35,6 +36,7 @@ class ApiConfig(BaseModel):
     secret: str
     daemon_threads: bool
     nworkers: int
+    device: list[str]
 
 
 class LametricConfig(BaseModel):
