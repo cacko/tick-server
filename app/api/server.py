@@ -1,5 +1,8 @@
+import logging
 from pathlib import Path
 from queue import Queue
+
+from fastapi import Request
 from app.api.auth import auth_required
 from app.config import Config
 from app.lametric.models import CONTENT_TYPE
@@ -55,16 +58,20 @@ class Server(object, metaclass=ServerMeta):
         return "OK"
 
 
-@app.route("/api/nowplaying", method="POST")
-@auth_required
-def nowplaying():
-    return Server.nowplaying(request.json)
-
 
 @app.route("/api/status", method="POST")
 @auth_required
 def status():
     return Server.status(request.json)
+
+
+@app.route("/api/nowplaying", method="PUT")
+@auth_required
+def nowplaying(request: Request):
+    logging.info(request.json())
+    return "OK"
+    return Server.status(request.json)
+
 
 
 @app.route("/api/button")

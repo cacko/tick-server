@@ -1,4 +1,6 @@
+import logging
 from bottle import request, HTTPError
+from sympy import loggamma
 from app.core.otp import OTP
 from functools import wraps
 
@@ -7,6 +9,8 @@ def auth_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         code = request.get_header("x-totp", "")
+        device = request.get_header("x-device", "")
+        logging.info(f"device id = {device}")
         if not OTP.api.verify(code):
             err = HTTPError(403, "no")
             return err
