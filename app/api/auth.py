@@ -1,6 +1,5 @@
 import logging
 from bottle import request, HTTPError
-from sympy import loggamma
 from app.core.otp import OTP
 from functools import wraps
 
