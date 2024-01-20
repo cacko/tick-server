@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.concurrency import run_in_threadpool
 
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 
 @router.post("/status")

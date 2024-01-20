@@ -29,7 +29,7 @@ class Server(object, metaclass=ServerMeta):
 
     def __init__(self, *args, **kwargs):
         self.app = FastAPI()
-        self.app.include_router(rest_router, prefix="/api")
+        self.app.include_router(rest_router)
         super().__init__(*args, **kwargs)
     
     def start_server(self):
