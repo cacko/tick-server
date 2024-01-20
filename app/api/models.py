@@ -47,12 +47,11 @@ class AndroidNowPlaying(BaseModel):
     duration: int
     album: str
     title: str
-    art_url: Optional[str] = None
-    source_id: Optional[str] = None
+    art_uri: Optional[str] = None
     
     @property
     def icon(self):
-        return NowPlayingImage(self.art_url).base64
+        return NowPlayingImage(self.art_uri).base64
     
     @property
     def text(self):
