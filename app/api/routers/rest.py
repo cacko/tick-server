@@ -21,17 +21,16 @@ async def status(request: Request, auth=Depends(check_auth)):
 @router.put("/nowplaying")
 async def nowplaying(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
-    logging.info(payload)
+    logging.debug(payload)
     android_frame = AndroidNowPlaying.from_request(payload)
     frame = await run_in_threadpool(android_frame.get_frame)
-    logging.info(frame)
     return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, frame.model_dump()))
 
 
 @router.post("/nowplaying")
 async def post_nowplaying(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
-    logging.info(payload)
+    logging.debug(payload)
     return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
 
