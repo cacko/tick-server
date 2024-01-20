@@ -28,6 +28,10 @@ class NowPlayingImage(CachableFileImage):
         
 
     @property
+    def storage(self):
+        return FileStorage
+
+    @property
     def base64(self):
         base64_str = self.path.read_text()
         base64_str = b64encode(base64_str)
