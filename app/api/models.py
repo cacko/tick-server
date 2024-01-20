@@ -11,7 +11,6 @@ from PIL import Image
 from corefile import TempPath
 from base64 import b64encode
 
-
 class NowPlayingImage(CachableFileImage):
     
     def __init__(self, url: str):
@@ -66,3 +65,10 @@ class AndroidNowPlaying(BaseModel):
     def from_request(cls, data: dict) -> "AndroidNowPlaying":
         return cls(**{k.split(".")[-1].lower():v for k,v in data.items()})
         
+    
+    def get_frame(self) -> NowPlayingFrame:
+        return NowPlayingFrame(
+            text=self.text,
+            icon=self.icon,
+            duration=self.duration//1000
+        )

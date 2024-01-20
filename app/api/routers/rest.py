@@ -2,9 +2,12 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, Request
 import logging
 from app.api.auth import check_auth
+from app.api.models import AndroidNowPlaying
 from app.lametric import LaMetric
 from app.lametric.models import CONTENT_TYPE
 from fastapi.responses import HTMLResponse
+from fastapi.concurrency import run_in_threadpool
+
 
 router = APIRouter()
 
@@ -18,8 +21,10 @@ async def status(request: Request, auth=Depends(check_auth)):
 @router.put("/nowplaying")
 async def nowplaying(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
-    logging.info(payload)
-    return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
+    android_frame = AndroidNowPlaying(**payload)
+    frame = await run_in_threadpool(android_frame.get_frame)
+    logging.info(frame)
+    return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, frame.model_dump()))
 
 
 @router.post("/nowplaying")
