@@ -21,7 +21,8 @@ class NowPlayingImage(CachableFileImage):
     def tocache(self, res: BinaryStruct):
         assert self._path
         tmp = TempPath(self.filename)
-        im = Image.frombytes(res.binary)
+        print(res)
+        im = Image.open(BytesIO(res.binary))
         im.save(tmp.as_posix())
         pix = Pixelate(tmp, padding=200, block_size=25)
         pix.resize((8, 8))
