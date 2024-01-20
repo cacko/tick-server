@@ -1,18 +1,22 @@
-import logging
-from bottle import request, HTTPError
 from app.core.otp import OTP
-from functools import wraps
 from app.config import Config as app_config
+from fastapi.exceptions import HTTPException
+from starlette.requests import Request
+from starlette.status import HTTP_403_FORBIDDEN
 
 
-def auth_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        code = request.get_header("x-totp", "")
-        device = request.get_header("x-device", "")
-        logging.info(f"device id = {device}")
-        if not any([OTP.api.verify(code), device in app_config.api.device]):
-            err = HTTPError(403, "no")
-            return err
-        return f(*args, **kwargs)
-    return decorated_function
+class Authorization:
+    async def __call__(self, request: Request):
+        client = request.client
+        assert client
+        device = request.headers.get("x-device", "")
+        if device in app_config.api.device:
+            return
+        code = request.headers.get("x-totp", "")
+        if not OTP.api.verify(code):
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN, detail="Not authenticated"
+            )
+
+
+check_auth = Authorization()

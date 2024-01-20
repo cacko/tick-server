@@ -1,21 +1,10 @@
 import logging
-from pathlib import Path
 from queue import Queue
-
-from app.api.auth import auth_required
-from app.config import Config
-from app.lametric.models import CONTENT_TYPE
-from app.lametric import LaMetric
-from app.core.events import EventManager
-from butilka.server import request, template, Server as ButilkaServer
-from typing import Optional, MutableMapping
-
-api_config = Config.api
-views = Path(__file__).parent / "views"
-srv = ButilkaServer(
-    host=api_config.host, port=api_config.port, template_path=views.as_posix()
-)
-app = srv.app
+import uvicorn
+from app.config import Config as app_config
+from typing import Optional
+from fastapi import FastAPI
+from app.api.routers import rest as rest_router
 
 
 class ServerMeta(type):
@@ -32,61 +21,26 @@ class ServerMeta(type):
         cls._mainQueue = mainQueue
         cls().start_server()
 
-    def nowplaying(cls, query):
-        return cls().handle_nowplaying(query)
-
-    def status(cls, query):
-        return cls().handle_status(query)
-
-    def subscription(cls, query):
-        return cls().handle_subscription(query)
 
 
 class Server(object, metaclass=ServerMeta):
+    
+    server: Optional[uvicorn.Server]
+
+    def __init__(self, *args, **kwargs):
+        self.app = FastAPI()
+        self.app.include_router(rest_router, prefix="/api")
+        super().__init__(*args, **kwargs)
+    
     def start_server(self):
-        srv.start()
-
-    def handle_nowplaying(self, payload):
-        LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
-
-    def handle_status(self, payload):
-        LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload))
-
-    def handle_subscription(self, payload):
-        LaMetric.queue.put_nowait((CONTENT_TYPE.LIVESCOREEVENT, payload))
-        return "OK"
-
-
-
-@app.route("/api/status", method="POST")
-@auth_required
-def status():
-    return Server.status(request.json)
-
-
-@app.route("/api/nowplaying", method="PUT")
-@auth_required
-def nowplaying():
-    logging.info(request.json)
-    return "OK"
-    return Server.status(request.json)
-
-
-
-@app.route("/api/button")
-def on_button():
-    assert isinstance(request.query, MutableMapping)
-    events = [f"{k}={v}".lower() for k, v in request.query.items()]
-    EventManager.on_trigger(events)
-
-
-@app.route("/api/subscription", method="POST")
-@auth_required
-def on_subscription():
-    data = request.json
-    return Server.subscription(data)
-
-
-@app.route("/privacy")
-def privacy():
-    return template("privacy")
+        config = app_config.api
+        server_config = uvicorn.Config(
+            app=self.app,
+            host=config.host,
+            port=config.port,
+            use_colors=True,
+            workers=config.nworkers,
+            log_level=logging.root.level
+        )
+        self.server = uvicorn.Server(server_config)
+        self.server.run()
