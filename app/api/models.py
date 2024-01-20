@@ -32,9 +32,9 @@ class NowPlayingImage(CachableFileImage):
         
     def tocache(self, image_path: Path):
         assert self._path
-        pix = Pixelate(image_path, padding=200, block_size=25)
+        pix = Pixelate(image_path, padding=200, block_size=25, result_path=self._path)
         pix.resize((8, 8))
-        pix.image.save(self._path.as_posix())
+        self._path = pix.image_path
         
 
     @property
