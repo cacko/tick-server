@@ -1,5 +1,6 @@
 from io import BytesIO
 import logging
+from pathlib import Path
 from typing import Optional
 from cachable import BinaryStruct
 from pydantic import BaseModel
@@ -11,6 +12,16 @@ from pixelme import Pixelate
 from PIL import Image
 from corefile import TempPath
 from base64 import b64encode
+import requests
+import shutil
+
+def download_image(url: str) -> TempPath:
+    tmp_file = TempPath(f"{uuid4()}.jpg")
+    response = requests.get(url, stream=True)
+    with tmp_file.open("wb") as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+    return tmp_file
+
 
 class NowPlayingImage(CachableFileImage):
     
@@ -18,13 +29,9 @@ class NowPlayingImage(CachableFileImage):
         self._url = url
         super().__init__()
         
-    def tocache(self, res: BinaryStruct):
+    def tocache(self, image_path: Path):
         assert self._path
-        tmp = TempPath(self.filename)
-        print(res)
-        im = Image.open(BytesIO(res.binary))
-        im.save(tmp.as_posix())
-        pix = Pixelate(tmp, padding=200, block_size=25)
+        pix = Pixelate(image_path, padding=200, block_size=25)
         pix.resize((8, 8))
         pix.image.save(self._path.as_posix())
         
@@ -48,6 +55,15 @@ class NowPlayingImage(CachableFileImage):
     def url(self):
         return self._url
     
+    def _init(self):
+        if self.isCached:
+            return
+        try:
+            self.tocache(download_image(self.url))
+        except Exception as e:
+            logging.exception(e)
+            self._path = self.DEFAULT
+
 
 class AndroidNowPlaying(BaseModel):
     artist: str
