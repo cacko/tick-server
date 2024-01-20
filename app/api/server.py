@@ -4,7 +4,7 @@ import uvicorn
 from app.config import Config as app_config
 from typing import Optional
 from fastapi import FastAPI
-from app.api.routers import rest as rest_router
+from app.api.routers.rest import router as rest_router
 
 
 class ServerMeta(type):

@@ -1,9 +1,11 @@
+from pathlib import Path
 from app.api.server import Server
 from app.config import Config
 from app.core.thread import StoppableThread
 from app.lametric import LaMetric
 from app.scheduler import Scheduler
 from cachable.storage.redis import RedisStorage
+from cachable.storage.file import FileStorage
 from apscheduler.schedulers.background import BackgroundScheduler
 import asyncio
 
@@ -20,6 +22,7 @@ class AppMeta(type):
 
     def start(cls):
         RedisStorage.register(Config.storage.redis_url)
+        FileStorage.register(Path(Config.storage.storage))
         cls().run()
 
     def terminate(cls):

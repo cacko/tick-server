@@ -34,6 +34,7 @@ class YankoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def nowplaying(self, payload):
         frame = NowPlayingFrame(**payload)
+        logging.info()
         self.status = MUSIC_STATUS.PLAYING
         YankoWidget.client.send_notification(Notification(
             model=Content(
