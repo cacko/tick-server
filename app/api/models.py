@@ -2,7 +2,7 @@ from io import BytesIO
 from unittest.mock import Base
 from cachable import BinaryStruct
 from pydantic import BaseModel
-from lametric.models import NowPlayingFrame
+from app.lametric.models import NowPlayingFrame
 from cachable.storage.file import FileStorage
 from cachable.storage.filestorage.image import CachableFileImage
 from corestring import string_hash
