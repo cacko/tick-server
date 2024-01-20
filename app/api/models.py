@@ -1,4 +1,5 @@
 from io import BytesIO
+from typing import Optional
 from unittest.mock import Base
 from cachable import BinaryStruct
 from pydantic import BaseModel
@@ -43,11 +44,11 @@ class NowPlayingImage(CachableFileImage):
 
 class AndroidNowPlaying(BaseModel):
     artist: str
-    art_url: str
     duration: int
-    source_id: str
     album: str
     title: str
+    art_url: Optional[str] = None
+    source_id: Optional[str] = None
     
     @property
     def icon(self):

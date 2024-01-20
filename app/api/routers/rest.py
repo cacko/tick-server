@@ -21,6 +21,7 @@ async def status(request: Request, auth=Depends(check_auth)):
 @router.put("/nowplaying")
 async def nowplaying(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
+    logging.info(payload)
     android_frame = AndroidNowPlaying.from_request(payload)
     frame = await run_in_threadpool(android_frame.get_frame)
     logging.info(frame)
