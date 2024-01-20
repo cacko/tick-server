@@ -1,6 +1,5 @@
 from io import BytesIO
 from typing import Optional
-from unittest.mock import Base
 from cachable import BinaryStruct
 from pydantic import BaseModel
 from app.lametric.models import NowPlayingFrame
@@ -16,6 +15,7 @@ class NowPlayingImage(CachableFileImage):
     
     def __init__(self, url: str):
         self._url = url
+        super().__init__()
         
     def tocache(self, res: BinaryStruct):
         assert self._path
@@ -39,7 +39,7 @@ class NowPlayingImage(CachableFileImage):
         
     @property
     def filename(self):
-        return f"{string_hash(self.url)}.jpg"
+        return f"{string_hash(self.url)}.png"
 
     @property
     def url(self):
