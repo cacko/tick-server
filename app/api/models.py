@@ -12,6 +12,7 @@ from pixelme import Pixelate
 from PIL import Image
 from corefile import TempPath
 from base64 import b64encode
+from uuid import uuid4
 import requests
 import shutil
 
