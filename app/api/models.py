@@ -44,7 +44,7 @@ class NowPlayingImage(CachableFileImage):
     @property
     def base64(self):
         logging.info(self._path)
-        base64_str = self.path.read_text()
+        base64_str = self.path.read_bytes()
         base64_str = b64encode(base64_str)
         return f"data:image/png;base64,{base64_str.decode()}"
         
