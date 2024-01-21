@@ -4,7 +4,7 @@ import logging
 from app.api.auth import check_auth
 from app.api.models import AndroidNowPlaying
 from app.lametric import LaMetric
-from app.lametric.models import CONTENT_TYPE
+from app.lametric.models import CONTENT_TYPE, MUSIC_STATUS
 from fastapi.responses import HTMLResponse
 from fastapi.concurrency import run_in_threadpool
 
@@ -20,11 +20,15 @@ async def status(request: Request, auth=Depends(check_auth)):
 
 @router.put("/nowplaying")
 async def nowplaying(request: Request, auth=Depends(check_auth)):
-    payload = await request.json()
-    logging.debug(payload)
-    android_frame = AndroidNowPlaying.from_request(payload)
-    frame = await run_in_threadpool(android_frame.get_frame)
-    return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, frame.model_dump()))
+    try:
+        payload = await request.json()
+        logging.debug(payload)
+        android_frame = AndroidNowPlaying.from_request(payload)
+        frame = await run_in_threadpool(android_frame.get_frame)
+        return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, frame.model_dump()))
+    except Exception as e:
+        logging.exception(e)
+        return LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, dict(status=MUSIC_STATUS.STOPPED.value)))
 
 
 @router.post("/nowplaying")
