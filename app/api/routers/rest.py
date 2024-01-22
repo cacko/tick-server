@@ -28,7 +28,9 @@ async def nowplaying(request: Request, auth=Depends(check_auth)):
         return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, frame.model_dump()))
     except Exception as e:
         logging.exception(e)
-        return LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, dict(status=MUSIC_STATUS.STOPPED.value)))
+        return LaMetric.queue.put_nowait(
+            (CONTENT_TYPE.YANKOSTATUS, dict(status=MUSIC_STATUS.STOPPED.value))
+        )
 
 
 @router.post("/nowplaying")
@@ -37,12 +39,14 @@ async def post_nowplaying(request: Request, auth=Depends(check_auth)):
     logging.debug(payload)
     return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
+
 @router.put("/playstatus")
-async def put_playingstatus(request: Request, auth=Depends(check_auth)):
+async def put_playstatus(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
     logging.debug(payload)
-    return LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload.get("status", "stopped")))
-
+    return LaMetric.queue.put_nowait(
+        (CONTENT_TYPE.YANKOSTATUS, dict(status=payload.get("status", "stopped")))
+    )
 
 
 @router.post("/subscription")
