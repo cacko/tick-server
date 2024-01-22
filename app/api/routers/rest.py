@@ -37,6 +37,13 @@ async def post_nowplaying(request: Request, auth=Depends(check_auth)):
     logging.debug(payload)
     return LaMetric.queue.put_nowait((CONTENT_TYPE.NOWPLAYING, payload))
 
+@router.post("/playstatus")
+async def post_nowplaying(request: Request, auth=Depends(check_auth)):
+    payload = await request.json()
+    logging.debug(payload)
+    return LaMetric.queue.put_nowait((CONTENT_TYPE.YANKOSTATUS, payload.get("status", "stopped")))
+
+
 
 @router.post("/subscription")
 async def on_subscription(request: Request, auth=Depends(check_auth)):
