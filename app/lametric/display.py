@@ -93,7 +93,7 @@ class Display(object):
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
-                _ = self.getWidget(APPNAME(name), app.package, **app.dict())
+                _ = self.getWidget(APPNAME(name), app.package, **app.model_dump())
             except AssertionError:
                 pass
 

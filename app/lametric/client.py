@@ -57,7 +57,7 @@ class Client(object):
             pass
 
     def send_notification(self, notification: Notification):
-        data = notification.dict()
+        data = notification.model_dump()
         data["model"]["frames"] = list(
             map(clean_frame, data.get("model", {}).get("frames", []))
         )
@@ -75,7 +75,7 @@ class Client(object):
         return DeviceDisplay(updated_at=datetime.now(tz=timezone.utc), **res)
 
     def send_model(self, config_name: APPNAME, model: Content):
-        data = model.dict()
+        data = model.model_dump()
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(config_name, Method.POST, json=data)
