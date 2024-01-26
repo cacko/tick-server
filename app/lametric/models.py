@@ -29,6 +29,7 @@ class APPNAME(StrEnum):
     WORLDCUP = "worldcup"
     PREMIER_LEAGUE = "premierleague"
     LA_LIGA = "laliga"
+    SYDNEY="sydney"
 
 
 class MUSIC_STATUS(StrEnum):
@@ -138,7 +139,22 @@ class App(BaseModel):
     version_code: str
     widgets: Optional[dict[str, Widget]] = None
     triggers: Optional[dict] = None
+    
+    
+    def widget_id_by_idx(self, idx: int):
+        try:
+            assert self.widgets
+            return next(filter(lambda k: self.widgets[k].index == idx, self.widgets.keys()), None)
+        except AssertionError:
+            return None
 
+    def widget_data_by_idx(self, idx):
+        try:
+            k = self.widget_id_by_idx(idx)
+            assert k
+            return self.widgets[k]
+        except AssertionError:
+            return None
 
 class GoalData(BaseModel):
     start: int
