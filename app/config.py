@@ -13,6 +13,7 @@ class StorageConfig(BaseModel):
 
 class LametricApp(BaseModel):
     package: str
+    index: Optional[int] = None
     duration: Optional[int] = None
     endpoint: Optional[str] = None
     token: Optional[str] = None
