@@ -200,7 +200,9 @@ class Display(object):
                         widget_id=widget_id, widget=widget_data, **kwargs
                     )
                 case APPNAME.SYDNEY:
-                    self._widgets[name.value] = ClockWidget()
+                    self._widgets[name.value] = ClockWidget(
+                        widget_id=widget_id, widget=widget_data, **kwargs
+                    )
                 case APPNAME.WEATHER:
                     self._widgets[name.value] = WeatherWidget(
                         widget_id=widget_id, widget=widget_data, **kwargs
