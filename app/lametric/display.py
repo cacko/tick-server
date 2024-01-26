@@ -1,3 +1,4 @@
+import logging
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
@@ -190,6 +191,7 @@ class Display(object):
         app_widgets = app.widgets
         assert isinstance(app_widgets, dict)
         widget_id = app.widget_id_by_idx(widget_idx)
+        logging.warn(f"wodget idx - {widget_idx}, id -> {widget_id}")
         assert isinstance(widget_id, str)
         widget_data = app.widget_data_by_idx(widget_idx)
         assert isinstance(widget_data, Widget)
