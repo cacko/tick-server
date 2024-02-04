@@ -174,6 +174,10 @@ class Display(object):
                 return 0
         except AssertionError:
             pass
+        
+        from rich import print
+        print(self._items)
+        print(self._current_idx)
 
         current = self._items[self._current_idx]
 
