@@ -1,4 +1,5 @@
 import logging
+import sys
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
@@ -113,8 +114,10 @@ class Display(object):
                         appname=APPNAME(name),
                     )
                 )
-            except AssertionError:
+            except AssertionError as e:
+                logging.warning(e)
                 pass
+        sys.exit(1)
         self._items = items[:]
         logging.warning(">>>> END INIT")
 
