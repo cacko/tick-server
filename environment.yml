@@ -50,6 +50,8 @@ dependencies:
       - h11==0.14.0
       - httptools==0.6.1
       - idna==3.4
+      - ifaddr==0.2.0
+      - lambo==10.0.8
       - markdown-it-py==3.0.0
       - mdurl==0.1.2
       - numpy==1.26.3
@@ -58,9 +60,11 @@ dependencies:
       - pixelme==0.4.13
       - pydantic==2.4.2
       - pydantic-core==2.10.1
+      - pydantic-settings==2.1.0
       - pygments==2.17.2
       - pyotp==2.9.0
       - python-dotenv==1.0.0
+      - python-hue-v2==1.0.3
       - pytz==2023.3.post1
       - pyyaml==6.0.1
       - random-user-agent==1.0.1
@@ -75,6 +79,7 @@ dependencies:
       - starlette==0.35.1
       - stringcase==1.2.0
       - structlog==24.1.0
+      - typer==0.9.0
       - typing-extensions==4.8.0
       - tzlocal==5.2
       - urllib3==2.0.7
@@ -82,4 +87,5 @@ dependencies:
       - uvloop==0.19.0
       - watchfiles==0.21.0
       - websockets==12.0
+      - zeroconf==0.131.0
 prefix: /Volumes/Devo/Users/jago/miniforge3/envs/tick-server

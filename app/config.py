@@ -1,9 +1,15 @@
+from ast import Str
 from os import environ
 from pathlib import Path
 from typing import Optional
 from yaml import load, Loader
 from pydantic import BaseModel, Extra
 
+
+class LamboConfig(BaseModel):
+    username: str
+    clientkey: str
+    hostname: str
 
 class StorageConfig(BaseModel):
     storage: str
@@ -55,6 +61,7 @@ class ConfigStruct(BaseModel):
     api: ApiConfig
     botyo: BotyoConfig
     display: list[str]
+    lamba: LamboConfig
 
 
 class ConfigMeta(type):
@@ -88,6 +95,10 @@ class ConfigMeta(type):
     @property
     def display(cls) -> list[str]:
         return cls().struct.display
+    
+    @property
+    def lambo(cls) -> LamboConfig:
+        return cls().struct.lambo
 
 
 class Config(object, metaclass=ConfigMeta):

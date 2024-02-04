@@ -21,7 +21,13 @@ from app.core.time import is_today
 import logging
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from random import randint
+from lambo.hue.client import Hue
+from app.config import Config as app_config
 
+Hue.register(hostname=app_config.lambo.hostname, username=app_config.lambo.username)
+
+
+Hue.signaling(colors=["2D2D2D", "72A5D3"])
 
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
@@ -165,6 +171,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                                 sub.status = f"{event.time}'"
                     case _:
                         icon = sub.icon
+                        Hue.signaling(colors=["2D2D2D", "72A5D3"])
                         assert isinstance(icon, str)
                         frame = event.getContentFrame(league_icon=icon)
                         RMWidget.client.send_notification(

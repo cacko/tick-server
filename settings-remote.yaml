@@ -12,6 +12,11 @@ api:
   device:
     - 64.2.A.2.103
 
+lambo:
+  username: sTIxOGC7tQLLO8sI8SfGQnKPm4oVfIanZyTcKEtX
+  clientkey: 3FCE860CBE95896538B97CC37C3F3FB5
+  hostname: 192.168.0.23
+
 yanko:
   host: http://192.168.0.107:7988
   secret: YKXJZI2KGBLF4FPNRDLWETQ4VVNCWTXT
