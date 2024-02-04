@@ -194,7 +194,6 @@ class Display(object):
         assert isinstance(app, App)
         app_widgets = app.widgets
         assert isinstance(app_widgets, dict)
-        logging.warn(f"id -> {widget_id}")
         assert isinstance(widget_id, str)
         widget_data = app_widgets[widget_id]
         assert isinstance(widget_data, Widget)

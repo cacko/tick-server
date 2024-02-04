@@ -53,7 +53,6 @@ def cron_func(team_id: int, storage_key: str):
         for game in games:
             if is_today(game.startTime):
                 BotyoClient.subscribe(game.id)
-                logging.warning(f"SUBSCRIBING FOR {game}")
         schedule_cron(team_id=team_id, storage_key=storage_key)
     except Exception as e:
         logging.exception(e)
@@ -155,7 +154,6 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                             sub.display_event_name = event.event_name.replace(
                                 "/", " / "
                             )
-                        logging.warning(f"STATUS {event.event_status}")
                         match event.event_status:
                             case MatchEventStatus.HALF_TIME:
                                 sub.status = MatchEventStatus.HALF_TIME.value
