@@ -61,7 +61,7 @@ class ConfigStruct(BaseModel):
     api: ApiConfig
     botyo: BotyoConfig
     display: list[str]
-    lamba: LamboConfig
+    lambo: LamboConfig
 
 
 class ConfigMeta(type):
