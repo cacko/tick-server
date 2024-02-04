@@ -12,6 +12,7 @@ from app.lametric.widgets import (
     LivescoresWidget,
     WeatherWidget,
     DatetickerWidget,
+    SydneyWidget
 )
 from typing import Optional
 from typing import Any
@@ -201,7 +202,7 @@ class Display(object):
                         widget_id=widget_id, widget=widget_data, **kwargs
                     )
                 case APPNAME.SYDNEY:
-                    self._widgets[name.value] = ClockWidget(
+                    self._widgets[name.value] = SydneyWidget(
                         widget_id=widget_id, widget=widget_data, **kwargs
                     )
                 case APPNAME.WEATHER:

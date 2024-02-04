@@ -93,7 +93,6 @@ lametric:
 
 display:
   - clock
-  - sydney
   - weather
   - rm
   - livescores

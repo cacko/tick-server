@@ -1,4 +1,4 @@
-from .clock import ClockWidget
+from .clock import ClockWidget, SydneyWidget
 from .weather import WeatherWidget
 from .yanko import YankoWidget
 from .rm import RMWidget
@@ -19,5 +19,6 @@ __all__ = [
     "WorldCupWidget",
     "LaLigaWidget",
     "PremierLeagueWidget",
-    "DatetickerWidget"
+    "DatetickerWidget",
+    "SydneyWidget"
 ]

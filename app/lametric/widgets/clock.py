@@ -9,3 +9,6 @@ class ClockWidget(BaseWidget, metaclass=WidgetMeta):
 
     def onHide(self):
         pass
+
+class SydneyWidget(ClockWidget):
+    pass
