@@ -43,7 +43,7 @@ dependencies:
       - charset-normalizer==3.3.1
       - colorama==0.4.6
       - corefile==0.1.5
-      - corelog==0.0.13
+      - corelog==0.0.16
       - corestring==0.2.5
       - fastapi==0.109.0
       - fs==2.4.16
