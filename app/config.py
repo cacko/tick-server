@@ -18,7 +18,7 @@ class LametricApp(BaseModel):
     endpoint: Optional[str] = None
     token: Optional[str] = None
     sleep_minutes: Optional[int] = None
-    item_id: Optional[int] = None
+    widget_id: Optional[str] = None
 
 
 class YankoConfig(BaseModel):

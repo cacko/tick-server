@@ -148,7 +148,7 @@ class App(BaseModel):
         except AssertionError:
             return None
 
-    def widget_data_by_idx(self, idx):
+    def widget_data_by_id(self, idx):
         try:
             k = self.widget_id_by_idx(idx)
             assert k

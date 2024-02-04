@@ -1,0 +1,101 @@
+storage:
+  redis_url: redis://127.0.0.1/5
+  storage: /store/cache/tick
+  attachments: /tmp
+
+api:
+  host: 192.168.0.105
+  port: 32321
+  secret: O6EH5A34OGI5O7OZLI6RQ3LDLUZQHD6C
+  daemon_threads: True
+  nworkers: 3
+  device:
+    - 64.2.A.2.103
+
+yanko:
+  host: http://192.168.0.107:7988
+  secret: YKXJZI2KGBLF4FPNRDLWETQ4VVNCWTXT
+
+botyo:
+  host: http://192.168.0.105:31313/api
+
+lametric:
+  host: http://192.168.0.88:8080
+  user: dev
+  apikey: 8bfe7cda54b339d690e495217edf41b5dcb4b3356c64bda4e7285a334c694db5
+  timezone: 'Europe/London'
+  apps:
+    clock:
+      package: com.lametric.clock
+      widget_id: 08b8eac21074f8f7e5a29f2855ba8060
+      index: 0 
+      duration: 30
+    weather:
+      package: com.lametric.weather
+      duration: 30
+      widget_id: 380375c4b12c16e3adafb48355ba8061
+    sydney:
+      package: com.lametric.clock
+      index: 1
+      duration: 20
+      widget_id: 10a00f26e8004acbb85de172b1db8d25
+    dateticker:
+      package: com.lametric.date.ticker
+      duration: 10
+      sleep_minutes: 10
+      widget_id: b6107f8479a74145bc98f39afa0d4df9
+    tick:
+      package: com.lametric.8989dc732066722bd5f837443e64e77b
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8989dc732066722bd5f837443e64e77b/1 
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+      widget_id: ceda135a4e4441a1b894d39ff3bc25fc
+    yanko:
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8d5e85833d86929bd1dc73a146cae449/9
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+      package: com.lametric.8d5e85833d86929bd1dc73a146cae449
+      duration: 30
+      widget_id: bd2d3f2b71604822b90f213bc590dab2
+    rm:
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA== 
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.7d6330944f0e9e106cf8cbdee15e711d/1 
+      package: com.lametric.7d6330944f0e9e106cf8cbdee15e711d
+      sleep_minutes: 2 
+      duration: 30
+      item_id: 131
+      widget_id: c21e8daea66e4cc693e2184557e5928b
+    livescores:
+      endpoint:  http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.5db7208e046a7305ef313cca2fe04cb5/3
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA== 
+      package: com.lametric.5db7208e046a7305ef313cca2fe04cb5
+      duration: 30
+      widget_id: 2243fe7aebc44c188f0b40fd7e152467
+    # laliga:
+    #   token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+    #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.1c1d5a951b6485b65ac125697af40d74/1
+    #   package: com.lametric.1c1d5a951b6485b65ac125697af40d74
+    #   duration: 10
+    #   sleep_minutes: 20
+    #   item_id: 11
+    # worldcup:
+    #   token:  N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+    #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.216cd825eb3bc3958e48ffb754b9bb09/1
+    #   package: com.lametric.216cd825eb3bc3958e48ffb754b9bb09
+    #   duration: 10
+    #   sleep_minutes: 20
+    #   item_id: 5930
+    # premierleague:
+    #   token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+    #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.fb56c11d022e76f73bb1686954f21739/1
+    #   package: com.lametric.fb56c11d022e76f73bb1686954f21739
+    #   sleep_minutes: 20
+    #   item_id: 7
+    #   duration: 10
+
+display:
+  - clock
+  - sydney
+  - weather
+  - rm
+  - livescores
+  - yanko
+  - datepicker

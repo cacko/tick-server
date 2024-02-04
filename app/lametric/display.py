@@ -186,14 +186,13 @@ class Display(object):
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         app = self._apps.get(package_name)
-        widget_idx = kwargs.get("index", 0)
+        widget_id = kwargs.get("widget_id", "")
         assert isinstance(app, App)
         app_widgets = app.widgets
         assert isinstance(app_widgets, dict)
-        widget_id = app.widget_id_by_idx(widget_idx)
-        logging.warn(f"wodget idx - {widget_idx}, id -> {widget_id}")
+        logging.warn(f"id -> {widget_id}")
         assert isinstance(widget_id, str)
-        widget_data = app.widget_data_by_idx(widget_idx)
+        widget_data = app_widgets[widget_id]
         assert isinstance(widget_data, Widget)
         if name not in self._widgets:
             match (name):
