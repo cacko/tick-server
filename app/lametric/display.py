@@ -186,6 +186,9 @@ class Display(object):
             return self.get_next_idx()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
+        logging.warn(package_name)
+        logging.warn(self._apps)
+        logging.warn(kwargs)
         app = self._apps.get(package_name)
         widget_id = kwargs.get("widget_id", "")
         if widget_id:
