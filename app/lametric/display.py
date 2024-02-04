@@ -12,7 +12,7 @@ from app.lametric.widgets import (
     LivescoresWidget,
     WeatherWidget,
     DatetickerWidget,
-    SydneyWidget
+    SydneyWidget,
 )
 from typing import Optional
 from typing import Any
@@ -186,13 +186,10 @@ class Display(object):
             return self.get_next_idx()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
-        logging.warn(package_name)
-        logging.warn(self._apps)
-        logging.warn(kwargs)
         app = self._apps.get(package_name)
         widget_id = kwargs.get("widget_id", "")
-        if widget_id:
-            del kwargs["widget_id"]
+        assert widget_id
+        del kwargs["widget_id"]
         assert isinstance(app, App)
         app_widgets = app.widgets
         assert isinstance(app_widgets, dict)
