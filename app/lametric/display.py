@@ -176,7 +176,11 @@ class Display(object):
         except AssertionError:
             pass
 
-        current = self._items[self._current_idx]
+        try:
+            current = self._items[self._current_idx]
+        except Exception as e:
+            logging.exception(e)
+            return self.get_next_idx()
 
         if not current.isAllowed:
             return self.get_next_idx()
