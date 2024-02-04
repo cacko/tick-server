@@ -188,7 +188,8 @@ class Display(object):
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         app = self._apps.get(package_name)
         widget_id = kwargs.get("widget_id", "")
-        del kwargs["widget_id"]
+        if widget_id:
+            del kwargs["widget_id"]
         assert isinstance(app, App)
         app_widgets = app.widgets
         assert isinstance(app_widgets, dict)
