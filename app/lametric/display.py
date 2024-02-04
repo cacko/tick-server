@@ -115,9 +115,7 @@ class Display(object):
                     )
                 )
             except AssertionError as e:
-                logging.exception(e)
                 pass
-        sys.exit(1)
         self._items = items[:]
         logging.warning(">>>> END INIT")
 
