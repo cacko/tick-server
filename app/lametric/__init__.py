@@ -1,3 +1,4 @@
+import logging
 from queue import Queue
 
 from app.lametric.client import Client
@@ -41,6 +42,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
     def run(self, mainQueue):
         self._mainQueue = mainQueue
         queue = LaMetric.queue
+        logging.warn(">>>> LAMETRUIC QUEUE START")
         while True:
             if queue.empty():
                 time.sleep(0.2)

@@ -116,6 +116,7 @@ class Display(object):
             except AssertionError:
                 pass
         self._items = items[:]
+        logging.warning(">>>> END INIT")
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
         payload_struct = json.loads(payload) if isinstance(payload, str) else payload
@@ -174,10 +175,6 @@ class Display(object):
                 return 0
         except AssertionError:
             pass
-        
-        from rich import print
-        print(self._items)
-        print(self._current_idx)
 
         current = self._items[self._current_idx]
 
