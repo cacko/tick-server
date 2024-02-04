@@ -13,12 +13,12 @@ class StorageConfig(BaseModel):
 
 class LametricApp(BaseModel):
     package: str
+    widget_id: str
     index: Optional[int] = None
     duration: Optional[int] = None
     endpoint: Optional[str] = None
     token: Optional[str] = None
     sleep_minutes: Optional[int] = None
-    widget_id: Optional[str] = None
 
 
 class YankoConfig(BaseModel):
