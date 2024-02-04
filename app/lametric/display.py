@@ -108,7 +108,7 @@ class Display(object):
                 items.append(
                     DisplayItem(
                         app=app,
-                        widget=self.getWidget(APPNAME(name), app.package, **app.model_dump()),
+                        widget=self.getWidget(APPNAME(name), app.package),
                         duration=app.duration,
                         hidden=False,
                         appname=APPNAME(name),
@@ -194,17 +194,17 @@ class Display(object):
             return self.get_next_idx()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
-        app = self._apps.get(package_name)
-        widget_id = kwargs.get("widget_id", "")
-        assert widget_id
-        del kwargs["widget_id"]
-        assert isinstance(app, App)
-        app_widgets = app.widgets
-        assert isinstance(app_widgets, dict)
-        assert isinstance(widget_id, str)
-        widget_data = app_widgets[widget_id]
-        assert isinstance(widget_data, Widget)
         if name not in self._widgets:
+            app = self._apps.get(package_name)
+            widget_id = kwargs.get("widget_id", "")
+            assert widget_id
+            del kwargs["widget_id"]
+            assert isinstance(app, App)
+            app_widgets = app.widgets
+            assert isinstance(app_widgets, dict)
+            assert isinstance(widget_id, str)
+            widget_data = app_widgets[widget_id]
+            assert isinstance(widget_data, Widget)
             match (name):
                 case APPNAME.CLOCK:
                     self._widgets[name.value] = ClockWidget(
