@@ -7,7 +7,8 @@ from app.scheduler import Scheduler
 from cachable.storage.redis import RedisStorage
 from cachable.storage.file import FileStorage
 from apscheduler.schedulers.background import BackgroundScheduler
-from queue import Queue
+import asyncio
+
 
 class AppMeta(type):
 
@@ -28,14 +29,20 @@ class AppMeta(type):
         Scheduler.stop()
         for th in cls.threads:
             th.stop()
+        cls().eventLoop.stop()
 
 
 class App(object, metaclass=AppMeta):
 
     def __init__(self) -> None:
-        self.queue = Queue()
+        self.eventLoop = asyncio.get_event_loop()
+        self.queue = asyncio.Queue()
 
     def run(self):
+
+        lm = StoppableThread(target=LaMetric.start, args=[self.queue])
+        lm.start()
+        App.threads.append(lm)
 
         ts = StoppableThread(target=Server.start, args=[self.queue])
         ts.start()
@@ -45,4 +52,4 @@ class App(object, metaclass=AppMeta):
         self.scheduler = Scheduler(scheduler, Config.storage.redis_url)
 
         Scheduler.start()
-        LaMetric.start(self.queue)
+        self.eventLoop.run_forever()

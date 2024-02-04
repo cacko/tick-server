@@ -108,7 +108,7 @@ class Display(object):
                 items.append(
                     DisplayItem(
                         app=app,
-                        widget=self.getWidget(APPNAME(name), app.package),
+                        widget=self.getWidget(APPNAME(name), app.package, **app.model_dump()),
                         duration=app.duration,
                         hidden=False,
                         appname=APPNAME(name),
