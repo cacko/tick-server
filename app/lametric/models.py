@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import time, datetime, timezone, timedelta
 from typing import Optional
-from enum import StrEnum
+from enum import Enum, StrEnum
 from app.core.time import LOCAL_TIMEZONE
 
 
@@ -79,6 +79,16 @@ class SOUNDS(StrEnum):
     WIN2 = "win2"
     WIND = "wind"
     WIND_SHORT = "wind_short"
+    
+class Lights(Enum):
+    GOAL_POSITIVE=['1BB94B', '34B0EE'],
+    GOAL_NEGATIVE=['FF8CFF', 'FFFF46'],
+    YELLOW_CARD=['FFFF46', 'FFFF00'],
+    RED_CARD=['FF0200', '850200'],
+    WIN=['13DB4B', '138BF7'],
+    LOSS=['CF00F7', '8C0089'],
+    DEFAULT=['FBF200', '0FF2FA']
+        
 
 
 class ModeTimeBased(BaseModel):
@@ -201,3 +211,8 @@ class Notification(BaseModel):
     model: Content
     priority: str = Field(default="info")
     icon_type: str = Field(default="none")
+
+
+class ContentLight(BaseModel):
+    duration: int
+    colors: list[str]

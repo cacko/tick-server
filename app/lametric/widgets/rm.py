@@ -27,7 +27,8 @@ from app.config import Config as app_config
 Hue.register(hostname=app_config.lambo.hostname, username=app_config.lambo.username)
 
 
-Hue.signaling(colors=["2D2D2D", "72A5D3"])
+Hue.signaling(duration=1000, colors=["DDDD00", "DD1FD0"])
+
 
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
@@ -67,7 +68,7 @@ def cron_func(team_id: int, storage_key: str):
         Scheduler.add_job(
             id=f"{storage_key}_retry",
             name=f"{storage_key}_retry",
-            func=cron_func, 
+            func=cron_func,
             trigger="date",
             run_date=n + td,
             kwargs={"team_id": team_id, "storage_key": storage_key},
@@ -117,10 +118,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                     payload,
                 )
             )
-        if self.item_id in [
-            payload.get("home_team_id"),
-            payload.get("away_team_id")
-        ]:
+        if self.item_id in [payload.get("home_team_id"), payload.get("away_team_id")]:
             return payload
         return None
 
@@ -145,8 +143,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                                 model=Content(
                                     frames=[frame],
                                     sound=event.getTeamSound(
-                                        self.item_id,
-                                        self.item_id == event.winner
+                                        self.item_id, self.item_id == event.winner
                                     ),
                                 ),
                                 priority="critical",
@@ -171,7 +168,10 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                                 sub.status = f"{event.time}'"
                     case _:
                         icon = sub.icon
-                        Hue.signaling(colors=["2D2D2D", "72A5D3"])
+                        alert_content = event.getAlertContent(
+                            self.item_id, self.item_id == event.winner
+                        )
+                        Hue.signaling(**alert_content.model_dump())
                         assert isinstance(icon, str)
                         frame = event.getContentFrame(league_icon=icon)
                         RMWidget.client.send_notification(
@@ -179,8 +179,7 @@ class RMWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
                                 model=Content(
                                     frames=[frame],
                                     sound=event.getTeamSound(
-                                        self.item_id,
-                                        self.item_id == event.winner
+                                        self.item_id, self.item_id == event.winner
                                     ),
                                 ),
                                 priority="critical",

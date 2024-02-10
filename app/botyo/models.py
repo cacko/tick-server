@@ -1,5 +1,5 @@
 from app.core.time import to_local_time
-from app.lametric.models import ContentFrame, ContentSound, SOUNDS
+from app.lametric.models import ContentFrame, ContentLight, ContentSound, SOUNDS, Lights
 from typing import Optional, Union
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum, StrEnum
@@ -114,10 +114,7 @@ class MatchEvent(BaseModel):
         except (ValueError, AssertionError):
             return None
 
-    def getContentFrame(
-        self,
-        league_icon: Optional[str] = None
-    ) -> ContentFrame:
+    def getContentFrame(self, league_icon: Optional[str] = None) -> ContentFrame:
         parts = []
         if self.time:
             try:
@@ -194,15 +191,19 @@ class MatchEvent(BaseModel):
             action = ACTION(self.action)
             if action in [ACTION.GOAL]:
                 return ContentSound(
-                    id=SOUNDS.POSITIVE1.value
-                    if self.team_id == team_id
-                    else SOUNDS.NEGATIVE1.value
+                    id=(
+                        SOUNDS.POSITIVE1.value
+                        if self.team_id == team_id
+                        else SOUNDS.NEGATIVE1.value
+                    )
                 )
             elif action in [ACTION.YELLOW_CARD, ACTION.RED_CARD]:
                 return ContentSound(
-                    id=SOUNDS.NEGATIVE2.value
-                    if self.team_id == team_id
-                    else SOUNDS.POSITIVE2.value
+                    id=(
+                        SOUNDS.NEGATIVE2.value
+                        if self.team_id == team_id
+                        else SOUNDS.POSITIVE2.value
+                    )
                 )
             elif action == ACTION.FULL_TIME:
                 match (is_winner):
@@ -213,6 +214,41 @@ class MatchEvent(BaseModel):
         except Exception:
             pass
         return ContentSound(id=SOUNDS.BICYCLE.value)
+
+    def getAlertContent(self, team_id, is_winner=None) -> ContentLight:
+        try:
+            action = ACTION(self.action)
+            match action:
+                case ACTION.GOAL:
+                    return ContentLight(
+                        duration=2000,
+                        colors=(
+                            Lights.GOAL_POSITIVE.value
+                            if self.team_id == team_id
+                            else Lights.GOAL_NEGATIVE.value
+                        ),
+                    )
+                case ACTION.YELLOW_CARD:
+                    return ContentLight(
+                        duration=1000,
+                        colors=Lights.YELLOW_CARD.value,
+                    )
+                case ACTION.RED_CARD:
+                    return ContentLight(
+                        duration=2000,
+                        colors=Lights.RED_CARD.value,
+                    )
+                case ACTION.FULL_TIME:
+                    return ContentLight(
+                        duration=3000,
+                        colors=Lights.WIN.value if is_winner else Lights.LOSS.value,
+                    )
+                case _:
+                    return ContentLight(duration=1000, colors=Lights.DEFAULT.value)
+        except Exception:
+            pass
+        return ContentLight(duration=5000, colors=Lights.DEFAULT.value)
+
 
 
 class SubscriptionEvent(BaseModel):
@@ -322,15 +358,12 @@ class LivescoreEvent(BaseModel):
         if self.strStatus in STATUS_MAP:
             self.strStatus = STATUS_MAP[self.strStatus]
 
-        delta = (datetime.now(timezone.utc) -
-                 self.startTime).total_seconds() / 60
+        delta = (datetime.now(timezone.utc) - self.startTime).total_seconds() / 60
         try:
             status = self.strStatus
             assert status
             self.displayStatus = GameStatus(status).value
-            if delta < 0 and self.displayStatus in [
-                GameStatus.UNKNOWN, GameStatus.NS
-            ]:
+            if delta < 0 and self.displayStatus in [GameStatus.UNKNOWN, GameStatus.NS]:
                 self.displayStatus = to_local_time(self.startTime)
             else:
                 self.displayStatus = self.displayStatus.name

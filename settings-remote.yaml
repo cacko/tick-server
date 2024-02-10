@@ -41,7 +41,6 @@ lametric:
     dateticker:
       package: com.lametric.date.ticker
       duration: 10
-      sleep_minutes: 10
       widget_id: b6107f8479a74145bc98f39afa0d4df9
     tick:
       package: com.lametric.8989dc732066722bd5f837443e64e77b
