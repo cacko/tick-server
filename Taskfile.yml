@@ -11,6 +11,10 @@ tasks:
       - mamba run --live-stream -n {{.PROJECT}} python -m app
     silent: true
 
+  cli:
+    cmds:
+      - mamba run --live-stream -n {{.PROJECT}} python -m app.cli ((.CLI_ARGS))
+
   export:
     desc: export env
     cmds:

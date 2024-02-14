@@ -1,5 +1,12 @@
 from app.core.time import to_local_time
-from app.lametric.models import ContentFrame, ContentLight, ContentSound, SOUNDS, Lights
+from app.lametric.models import (
+    ALERT_DURATION,
+    ContentFrame,
+    ContentLight,
+    ContentSound,
+    SOUNDS,
+    ALERT_COLOR,
+)
 from typing import Optional, Union
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum, StrEnum
@@ -9,6 +16,20 @@ from stringcase import constcase
 from hashlib import md5
 import logging
 from corestring import clean_punctuation
+
+class Choices(object):
+    @classmethod
+    def values(cls):
+        return [m.value for m in cls.__members__.values()]
+
+    @classmethod
+    def keys(cls):
+        return [m.lower() for m in cls.__members__.keys()]
+
+    @classmethod
+    def members(cls):
+        return cls.__members__.values()
+
 
 
 class EventIcon(IntEnum):
@@ -21,7 +42,7 @@ class EventIcon(IntEnum):
     GAME__START = 2541
 
 
-class ACTION(StrEnum):
+class ACTION(Choices, StrEnum):
     SUBSTITUTION = "Substitution"
     GOAL = "Goal"
     YELLOW_CARD = "Yellow Card"
@@ -221,34 +242,40 @@ class MatchEvent(BaseModel):
             match action:
                 case ACTION.GOAL:
                     return ContentLight(
-                        duration=2000,
+                        duration=ALERT_DURATION.GOAL,
                         colors=(
-                            Lights.GOAL_POSITIVE.value
+                            ALERT_COLOR.GOAL_POSITIVE.value
                             if self.team_id == team_id
-                            else Lights.GOAL_NEGATIVE.value
+                            else ALERT_COLOR.GOAL_NEGATIVE.value
                         ),
                     )
                 case ACTION.YELLOW_CARD:
                     return ContentLight(
-                        duration=1000,
-                        colors=Lights.YELLOW_CARD.value,
+                        duration=ALERT_DURATION.YELLOW_CARD,
+                        colors=ALERT_COLOR.YELLOW_CARD.value,
                     )
                 case ACTION.RED_CARD:
                     return ContentLight(
-                        duration=2000,
-                        colors=Lights.RED_CARD.value,
+                        duration=ALERT_DURATION.RED_CARD,
+                        colors=ALERT_COLOR.RED_CARD.value,
                     )
                 case ACTION.FULL_TIME:
                     return ContentLight(
-                        duration=3000,
-                        colors=Lights.WIN.value if is_winner else Lights.LOSS.value,
+                        duration=ALERT_DURATION.FULL_TIME,
+                        colors=(
+                            ALERT_COLOR.WIN.value
+                            if is_winner
+                            else ALERT_COLOR.LOSS.value
+                        ),
                     )
                 case _:
-                    return ContentLight(duration=1000, colors=Lights.DEFAULT.value)
+                    return ContentLight(
+                        duration=ALERT_DURATION.DEFAULT,
+                        colors=ALERT_COLOR.DEFAULT.value,
+                    )
         except Exception:
             pass
-        return ContentLight(duration=5000, colors=Lights.DEFAULT.value)
-
+        return ContentLight(duration=5000, colors=ALERT_COLOR.DEFAULT.value)
 
 
 class SubscriptionEvent(BaseModel):
