@@ -59,6 +59,6 @@ async def privacy():
     return html_path.read_text()
 
 @router.post("/termo")
-async def post_termo(request: Request):
+async def post_termo(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
     return LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))
