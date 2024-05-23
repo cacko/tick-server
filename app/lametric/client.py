@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 import logging
+
+from numpy import mat
 from app.core import clean_frame
 from app.config import LametricConfig, LametricApp
 import requests
@@ -34,8 +36,14 @@ class Client(object):
                 url=f"{host}/api/v2/{endpoint}",
                 **args,
             )
-            return response.json()
-        except ConnectionError:
+            match method:
+                case Method.POST:
+                    response.close()
+                case Method.GET: 
+                    return response.json()
+                case _:
+                    response.close()
+        except Exception:
             pass
 
     def widget_call(self, config_name: APPNAME, method: Method, **args):
