@@ -20,7 +20,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
         data = NowData(**payload)
         frames = [
             ContentFrame(text=f"{data.temp}", icon=2369, duration=6),
-            ContentFrame(text=f"{data.humid}%", icon=2369, duration=4),
+            ContentFrame(text=f"{data.humid}%", icon=53390, duration=4),
         ]
         TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         return True
