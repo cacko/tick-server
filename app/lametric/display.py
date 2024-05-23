@@ -129,6 +129,7 @@ class Display(object):
                     name=APPNAME.YANKO, method="nowplaying", payload=payload_struct
                 )
             case CONTENT_TYPE.TERMO:
+                logging.warn("invoke termo")
                 self.invoke_widget(
                     name=APPNAME.TERMO, method="nowdata", payload=payload_struct
                 )

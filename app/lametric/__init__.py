@@ -1,5 +1,5 @@
 import logging
-from queue import Queue
+from queue import Empty, Queue
 
 from app.lametric.client import Client
 from app.config import Config
@@ -44,11 +44,9 @@ class LaMetric(object, metaclass=LaMetricMeta):
         queue = LaMetric.queue
         logging.warn(">>>> LAMETRUIC QUEUE START")
         while True:
-            if queue.empty():
-                time.sleep(0.2)
-            else:
+            try:
                 cmd, payload = queue.get_nowait()
-                queue.task_done()
+                logging.warn(cmd)
                 match(cmd):
                     case CONTENT_TYPE.NOWPLAYING:
                         self._display.on_response(cmd, payload)
@@ -58,4 +56,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
                         self._display.on_response(cmd, payload)
                     case CONTENT_TYPE.TERMO:
                         self._display.on_response(cmd, payload)
+                queue.task_done()
+            except Empty:
+                time.sleep(0.2)
             self._display.update()

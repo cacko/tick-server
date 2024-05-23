@@ -25,6 +25,8 @@ class Client(object):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
+        logging.warning(f"{host}/api/v2/{endpoint}")
+        logging.warning(args)
         try:
             response = requests.request(
                 method=method.value,
@@ -41,8 +43,7 @@ class Client(object):
         assert isinstance(app, LametricApp)
         url = app.endpoint
         token = app.token
-        logging.warning(url)
-        logging.warning(args)
+
         assert token
         try:
             response = requests.request(
