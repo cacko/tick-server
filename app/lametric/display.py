@@ -20,6 +20,8 @@ from typing import Any
 from pydantic import BaseModel, Extra, Field, validator
 import json
 
+from app.lametric.widgets.termo import TermoWidget
+
 
 class DisplayItem(BaseModel):
     app: LametricApp
@@ -126,6 +128,10 @@ class Display(object):
                 self.invoke_widget(
                     name=APPNAME.YANKO, method="nowplaying", payload=payload_struct
                 )
+            case CONTENT_TYPE.TERMO:
+                self.invoke_widget(
+                    name=APPNAME.TERMO, method="nowdata", payload=payload_struct
+                )
             case CONTENT_TYPE.YANKOSTATUS:
                 self.invoke_widget(
                     name=APPNAME.YANKO, method="yankostatus", payload=payload_struct
@@ -210,6 +216,10 @@ class Display(object):
                     )
                 case APPNAME.SYDNEY:
                     self._widgets[name.value] = SydneyWidget(
+                        widget_id=widget_id, widget=widget_data, **kwargs
+                    )
+                case APPNAME.TERMO:
+                    self._widgets[name.value] = TermoWidget(
                         widget_id=widget_id, widget=widget_data, **kwargs
                     )
                 case APPNAME.WEATHER:

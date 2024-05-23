@@ -9,6 +9,7 @@ class CONTENT_TYPE(StrEnum):
     NOWPLAYING = "nowplaying"
     YANKOSTATUS = "yanko_status"
     LIVESCOREEVENT = "livescore_event"
+    TERMO = "termo"
 
 
 class STORAGE_KEY(StrEnum):
@@ -30,6 +31,7 @@ class APPNAME(StrEnum):
     PREMIER_LEAGUE = "premierleague"
     LA_LIGA = "laliga"
     SYDNEY="sydney"
+    TERMO="termo"
 
 
 class MUSIC_STATUS(StrEnum):
@@ -200,7 +202,7 @@ class WeatherFrame(ContentFrame):
 
 class NowPlayingFrame(ContentFrame):
     index: Optional[int] = Field(default=3)
-
+    
 
 class ContentSound(BaseModel):
     id: str

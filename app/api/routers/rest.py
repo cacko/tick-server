@@ -57,3 +57,8 @@ async def on_subscription(request: Request, auth=Depends(check_auth)):
 async def privacy():
     html_path = Path(__file__).parent / "views" / "privacy.tpl"
     return html_path.read_text()
+
+@router.post("/termo")
+async def post_termo(request: Request):
+    payload = await request.json()
+    return LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))

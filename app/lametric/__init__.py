@@ -56,4 +56,6 @@ class LaMetric(object, metaclass=LaMetricMeta):
                         self._display.on_response(cmd, payload)
                     case CONTENT_TYPE.LIVESCOREEVENT:
                         self._display.on_response(cmd, payload)
+                    case CONTENT_TYPE.TERMO:
+                        self._display.on_response(cmd, payload)
             self._display.update()
