@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 import logging
 from app.api.auth import check_auth
 from app.api.models import AndroidNowPlaying
@@ -61,4 +61,5 @@ async def privacy():
 @router.post("/termo")
 async def post_termo(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
-    return LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))
+    LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))
+    return {"status": "ok"}
