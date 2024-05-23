@@ -90,7 +90,7 @@ class Client(object):
         package = app.package
         widget_id = app.widget_id
         endpoint = f"widget/update/{package}/{widget_id}"
-        data = model.model_dump()
+        data = model.model_dump(mode="json")
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.api_call(Method.POST, endpoint=endpoint, json=data)
