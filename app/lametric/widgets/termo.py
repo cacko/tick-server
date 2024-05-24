@@ -6,6 +6,29 @@ from pydantic import BaseModel
 class NowData(BaseModel):
     temp: float
     humid: float
+    
+    @property
+    def temp_icon(self):
+        temp = self.temp
+        match temp:
+            case temp if temp > 25:
+                return 5324
+            case temp if temp > 10:
+                return 5836
+            case _:
+                return 3425
+            
+    @property
+    def humud_icon(self):
+        humid = self.humid
+        match humid:
+            case humid if humid > 80:
+                return 43363
+            case humid if humid > 30:
+                return 3359
+            case _:
+                return 32960
+                
 
 
 class TermoWidget(BaseWidget, metaclass=WidgetMeta):
@@ -19,8 +42,8 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
     def nowdata(self, payload):
         data = NowData(**payload)
         frames = [
-            ContentFrame(text=f"{data.temp}°", icon=2369, duration=10),
-            ContentFrame(text=f"{data.humid}%", icon=53390, duration=4),
+            ContentFrame(text=f"{data.temp}°", icon=data.temp_icon, duration=10, index=0),
+            ContentFrame(text=f"{data.humid}%", icon=data.humud_icon, duration=8, index=1),
         ]
         TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         return True
