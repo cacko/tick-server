@@ -61,6 +61,5 @@ async def privacy():
 @router.post("/termo")
 async def post_termo(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
-    logging.warning(payload)
     LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))
     return {"status": "ok"}

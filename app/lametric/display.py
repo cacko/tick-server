@@ -119,7 +119,6 @@ class Display(object):
             except AssertionError as e:
                 pass
         self._items = items[:]
-        logging.warning(">>>> END INIT")
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
         payload_struct = json.loads(payload) if isinstance(payload, str) else payload
@@ -129,7 +128,6 @@ class Display(object):
                     name=APPNAME.YANKO, method="nowplaying", payload=payload_struct
                 )
             case CONTENT_TYPE.TERMO:
-                logging.warn("invoke termo")
                 self.invoke_widget(
                     name=APPNAME.TERMO, method="nowdata", payload=payload_struct
                 )

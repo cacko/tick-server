@@ -42,11 +42,10 @@ class LaMetric(object, metaclass=LaMetricMeta):
     def run(self, mainQueue):
         self._mainQueue = mainQueue
         queue = LaMetric.queue
-        logging.warn(">>>> LAMETRUIC QUEUE START")
+        logging.info(">>>> LAMETRUIC QUEUE START")
         while True:
             try:
                 cmd, payload = queue.get_nowait()
-                logging.warn(cmd)
                 match(cmd):
                     case CONTENT_TYPE.NOWPLAYING:
                         self._display.on_response(cmd, payload)

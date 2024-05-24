@@ -13,7 +13,7 @@ except Exception as e:
 
 
 def handler_stop_signals(signum, frame):
-    logging.warning("Stopping app")
+    logging.warn("Stopping app")
     App.terminate()
     sys.exit(0)
 
