@@ -1,12 +1,19 @@
+from enum import StrEnum
 from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
 
 
+class SensorLocation(StrEnum):
+    INDOOR = "indoor"
+    OUTDOOR = "outdoor"
+
+
 class NowData(BaseModel):
     temp: float
     humid: float
-    
+    location: SensorLocation
+
     @property
     def temp_icon(self):
         temp = self.temp
@@ -17,7 +24,7 @@ class NowData(BaseModel):
                 return 5836
             case _:
                 return 3425
-            
+
     @property
     def humud_icon(self):
         humid = self.humid
@@ -28,7 +35,6 @@ class NowData(BaseModel):
                 return 3359
             case _:
                 return 32960
-                
 
 
 class TermoWidget(BaseWidget, metaclass=WidgetMeta):
@@ -42,8 +48,12 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
     def nowdata(self, payload):
         data = NowData(**payload)
         frames = [
-            ContentFrame(text=f"{data.temp}°", icon=data.temp_icon, duration=10, index=0),
-            ContentFrame(text=f"{data.humid}%", icon=data.humud_icon, duration=8, index=1),
+            ContentFrame(
+                text=f"{data.temp}°", icon=data.temp_icon, duration=10, index=0
+            ),
+            ContentFrame(
+                text=f"{data.humid}%", icon=data.humud_icon, duration=8, index=1
+            ),
         ]
         TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         return True
