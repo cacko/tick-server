@@ -58,7 +58,8 @@ class _config(BaseModel):
     storage: StorageConfig
     yanko: YankoConfig
     botyo: BotyoConfig
-    lametric: LamboConfig
+    lametric: LametricConfig
+    lambo :LamboConfig
     api: ApiConfig
     display: list[str]
     saver: list[str]
