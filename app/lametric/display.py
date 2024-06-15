@@ -208,15 +208,8 @@ class Display(object):
             current = self._saveritems.drop()
             current.activate()
             current = self._items.drop()
-            # if self.is_screensaver_active:
-            #     if self._current_idx != 0:
-            #         self._current_idx = 0
-            #         current = self._items[0]
-            #         current.activate()
-            #     return 0
-            return
         except AssertionError:
-            return current.deactivate()
+            pass
 
         try:
             current = self._items.drop()
