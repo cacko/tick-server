@@ -1,4 +1,5 @@
 from pathlib import Path
+from click import pause
 from fastapi import APIRouter, Depends, Request, Response
 import logging
 from app.api.auth import check_auth
@@ -62,4 +63,10 @@ async def privacy():
 async def post_termo(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
     LaMetric.queue.put_nowait((CONTENT_TYPE.TERMO, payload))
+    return {"status": "ok"}
+
+@router.post("/sure")
+async def post_sure(request: Request, auth=Depends(check_auth)):
+    payload = await request.json()
+    LaMetric.queue.put_nowait((CONTENT_TYPE.SURE, payload))
     return {"status": "ok"}

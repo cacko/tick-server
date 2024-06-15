@@ -10,6 +10,7 @@ class CONTENT_TYPE(StrEnum):
     YANKOSTATUS = "yanko_status"
     LIVESCOREEVENT = "livescore_event"
     TERMO = "termo"
+    SURE="sure"
 
 
 class STORAGE_KEY(StrEnum):
@@ -32,6 +33,7 @@ class APPNAME(StrEnum):
     LA_LIGA = "laliga"
     SYDNEY="sydney"
     TERMO="termo"
+    SURE="sure"
 
 
 class MUSIC_STATUS(StrEnum):
