@@ -49,7 +49,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
                     index=1,
                 ),
             ]
-            SureWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
+            SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
             return True
         except AssertionError:
             pass
