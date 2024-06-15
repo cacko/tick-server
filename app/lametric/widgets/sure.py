@@ -1,4 +1,3 @@
-from enum import StrEnum
 from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
@@ -40,13 +39,13 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
                     text=f"{data.total:.02f}°",
                     icon=data.total_icon,
                     duration=5,
-                    index=0,
+                    index=2,
                 ),
                 ContentFrame(
                     text=f"{data.per_night}%",
                     icon=data.per_night_icon,
                     duration=10,
-                    index=1,
+                    index=3,
                 ),
             ]
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
