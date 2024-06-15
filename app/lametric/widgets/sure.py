@@ -38,16 +38,16 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
             data = BestOffer(**payload)
             frames = [
                 ContentFrame(
-                    text=f"{data.total:.02f}°",
+                    text=f"{data.total:.02f}",
                     icon=data.total_icon,
-                    duration=5,
-                    index=2,
+                    duration=10,
+                    index=0,
                 ),
                 ContentFrame(
-                    text=f"{data.per_night}%",
+                    text=f"{data.per_night}",
                     icon=data.per_night_icon,
                     duration=10,
-                    index=3,
+                    index=1,
                 ),
             ]
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
