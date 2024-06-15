@@ -1,3 +1,4 @@
+import logging
 from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
@@ -32,6 +33,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def bestoffer(self, payload):
+        logging.warning(payload)
         try:
             data = BestOffer(**payload)
             frames = [

@@ -27,6 +27,14 @@ class Client(object):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
+        logging.warning(
+            dict(
+                method=method.value,
+                auth=(user, apikey),
+                url=f"{host}/api/v2/{endpoint}",
+                **args,
+            )
+        )
         try:
             response = requests.request(
                 method=method.value,
@@ -37,7 +45,7 @@ class Client(object):
             match method:
                 case Method.POST:
                     response.close()
-                case Method.GET: 
+                case Method.GET:
                     return response.json()
                 case _:
                     response.close()
@@ -89,7 +97,7 @@ class Client(object):
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.widget_call(config_name, Method.POST, json=data)
-    
+
     def send_model_api2(self, config_name: APPNAME, model: Content):
         app = self.__config.apps.get(config_name.value)
         logging.info(app)
@@ -101,6 +109,3 @@ class Client(object):
         data = clean_frame(data)
         data["frames"] = list(map(clean_frame, data.get("frames", [])))
         return self.api_call(Method.POST, endpoint=endpoint, json=data)
-        
-    
-    
