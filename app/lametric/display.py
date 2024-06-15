@@ -263,5 +263,6 @@ class Display(object):
                 #         widget_id=widget_id, widget=widget_data, **kwargs
                 #     )
         res = self._widgets.get(name.value)
+        logging.info(res)
         assert isinstance(res, BaseWidget)
         return res

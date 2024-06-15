@@ -67,6 +67,14 @@ lametric:
       package: com.lametric.5db7208e046a7305ef313cca2fe04cb5
       duration: 30
       widget_id: 2243fe7aebc44c188f0b40fd7e152467
+    termo:
+      package: com.lametric.diy.devwidget
+      duration: 10
+      widget_id: a7243115b4bc4e8b8eacabf37bf9a460
+    sure:
+      package: com.lametric.diy.devwidget
+      duration: 10
+      widget_id: cfe4035691394797b81c26ff8e4f418d
     # laliga:
     #   token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
     #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.1c1d5a951b6485b65ac125697af40d74/1
@@ -96,3 +104,5 @@ display:
   - livescores
   - yanko
   - datepicker
+  - termo
+  - sure
