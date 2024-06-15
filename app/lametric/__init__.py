@@ -55,6 +55,8 @@ class LaMetric(object, metaclass=LaMetricMeta):
                         self._display.on_response(cmd, payload)
                     case CONTENT_TYPE.TERMO:
                         self._display.on_response(cmd, payload)
+                    case CONTENT_TYPE.SURE:
+                        self._display.on_response(cmd, payload)
                 queue.task_done()
             except Empty:
                 time.sleep(0.2)
