@@ -1,5 +1,7 @@
 import logging
 import sys
+
+import rich
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
@@ -119,7 +121,7 @@ class Display(object):
                 )
             except AssertionError as e:
                 pass
-        logging.warning(items)
+        rich.print(items)
         self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
