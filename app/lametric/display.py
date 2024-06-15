@@ -29,7 +29,7 @@ from app.lametric.widgets.sure import SureWidget
 from app.lametric.widgets.termo import TermoWidget
 
 
-class DisplayItem(BaseModel):
+class DisplayItem(BaseModel, arbitrary_types_allowed=True)):
     app: LametricApp
     widget: BaseWidget
     duration: int
