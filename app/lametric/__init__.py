@@ -5,6 +5,7 @@ from app.lametric.client import Client
 from app.config import Config
 from app.lametric.models import (
     CONTENT_TYPE,
+    DEVICE_MODE,
 )
 from app.lametric.display import Display
 import time
@@ -38,6 +39,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
     def __init__(self) -> None:
         self._client = Client(Config.lametric)
         self._display = Display(client=self._client)
+        self._client.set_device_mode(DEVICE_MODE.MANUAL)
 
     def run(self, mainQueue):
         self._mainQueue = mainQueue

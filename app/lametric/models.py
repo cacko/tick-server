@@ -5,6 +5,13 @@ from enum import Enum, IntEnum, StrEnum
 from app.core.time import LOCAL_TIMEZONE
 
 
+class DEVICE_MODE(StrEnum):
+    MANUAL = "manual"
+    AUTO = "auto"
+    SCHEDULE = "schedule"
+    KIOSK = "kiosk"
+
+
 class CONTENT_TYPE(StrEnum):
     NOWPLAYING = "nowplaying"
     YANKOSTATUS = "yanko_status"

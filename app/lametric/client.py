@@ -9,6 +9,7 @@ from requests import ConnectionError
 from cachable.request import Method
 from app.lametric.models import (
     APPNAME,
+    DEVICE_MODE,
     App,
     DeviceDisplay,
     Notification,
@@ -43,6 +44,9 @@ class Client(object):
                     response.close()
         except Exception:
             pass
+
+    def set_device_mode(self, mode: DEVICE_MODE):
+        return self.api_call(Method.PUT, "device", json=dict(mode=mode.value))
 
     def widget_call(self, config_name: APPNAME, method: Method, **args):
         app = self.__config.apps.get(config_name.value)
