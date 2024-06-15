@@ -240,9 +240,9 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         self.clear_all()
         Scheduler.cancel_jobs(STORAGE_KEY.WORLDCUP.value)
 
-    # def post_init(self):
-    #     schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
-    #     cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
+    def post_init(self):
+        schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
+        cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
 
     def filter_payload(self, payload):
 

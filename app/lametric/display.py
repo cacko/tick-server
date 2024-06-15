@@ -155,9 +155,9 @@ class Display(object):
                 # method="on_event",
                 # payload=payload
                 # )
-                # payload = self.invoke_widget(
-                #     name=APPNAME.WORLDCUP, method="on_event", payload=payload
-                # )
+                payload = self.invoke_widget(
+                    name=APPNAME.WORLDCUP, method="on_event", payload=payload
+                )
                 self.invoke_widget(
                     name=APPNAME.LIVESCORES, method="on_event", payload=payload_struct
                 )
@@ -253,10 +253,10 @@ class Display(object):
                     self._widgets[name.value] = LivescoresWidget(
                         widget_id=widget_id, widget=widget_data, **kwargs
                     )
-                # case APPNAME.WORLDCUP:
-                #     self._widgets[name.value] = WorldCupWidget(
-                #         widget_id=widget_id, widget=widget_data, **kwargs
-                #     )
+                case APPNAME.WORLDCUP:
+                    self._widgets[name.value] = WorldCupWidget(
+                        widget_id=widget_id, widget=widget_data, **kwargs
+                    )
                 # case APPNAME.LA_LIGA:
                 #     self._widgets[name.value] = LaLigaWidget(
                 #         widget_id=widget_id, widget=widget_data, **kwargs

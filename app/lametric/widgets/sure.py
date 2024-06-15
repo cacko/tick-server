@@ -44,7 +44,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
                     index=0,
                 ),
                 ContentFrame(
-                    text=f"{data.per_night}",
+                    text=f"{data.per_night:.02f}",
                     icon=data.per_night_icon,
                     duration=10,
                     index=1,
