@@ -23,6 +23,7 @@ from app.core.time import is_today
 from cachable.cacheable import TimeCacheable
 from datetime import datetime, timedelta, timezone
 from random import randint
+from cachable.storage.redis import RedisStorage
 
 
 class BaseLivescoresWidget(SubscriptionWidget):
@@ -214,6 +215,11 @@ class LeagueSchedule(TimeCacheable):
     def __init__(self, id: int):
         self.__id = id
         super().__init__()
+
+    @property
+    def storage(self):
+        return RedisStorage
+
 
     @property
     def content(self):

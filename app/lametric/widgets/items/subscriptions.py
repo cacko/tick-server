@@ -2,6 +2,7 @@ from app.botyo.models import SubscriptionEvent
 from cachable.storage.redis import RedisStorage
 import pickle
 from app.botyo.client import Client as BotyoClient
+from cachable.storage.redis import RedisStorage
 
 
 class Scores(dict):
