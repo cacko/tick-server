@@ -3,6 +3,7 @@ from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
 
+
 class BestOffer(BaseModel):
     total: float
     per_night: float
@@ -34,13 +35,18 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     def bestoffer(self, payload):
         try:
             data = BestOffer(**payload)
-            assert data.location == SensorLocation.INDOOR
             frames = [
                 ContentFrame(
-                    text=f"{data.total:.02f}°", icon=data.total_icon, duration=5, index=0
+                    text=f"{data.total:.02f}°",
+                    icon=data.total_icon,
+                    duration=5,
+                    index=0,
                 ),
                 ContentFrame(
-                    text=f"{data.per_night}%", icon=data.per_night_icon, duration=10, index=1
+                    text=f"{data.per_night}%",
+                    icon=data.per_night_icon,
+                    duration=10,
+                    index=1,
                 ),
             ]
             SureWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
