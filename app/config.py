@@ -60,8 +60,8 @@ class _config(BaseModel):
     botyo: BotyoConfig
     lametric: LamboConfig
     api: ApiConfig
-    display: dict[str]
-    saver: dict[str]
+    display: list[str]
+    saver: list[str]
 
 
 settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
