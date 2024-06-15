@@ -27,14 +27,6 @@ class Client(object):
         host = self.__config.host
         user = self.__config.user
         apikey = self.__config.apikey
-        logging.warning(
-            dict(
-                method=method.value,
-                auth=(user, apikey),
-                url=f"{host}/api/v2/{endpoint}",
-                **args,
-            )
-        )
         try:
             response = requests.request(
                 method=method.value,

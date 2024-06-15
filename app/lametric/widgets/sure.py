@@ -33,7 +33,6 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
         pass
 
     def bestoffer(self, payload):
-        logging.warning(payload)
         try:
             data = BestOffer(**payload)
             frames = [

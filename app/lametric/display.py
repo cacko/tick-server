@@ -13,6 +13,7 @@ from app.lametric.widgets import (
     YankoWidget,
     ClockWidget,
     LivescoresWidget,
+    WorldCupWidget,
     WeatherWidget,
     DatetickerWidget,
     SydneyWidget,
@@ -121,7 +122,6 @@ class Display(object):
                 )
             except AssertionError as e:
                 pass
-        rich.print(items)
         self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
