@@ -78,3 +78,14 @@ tasks:
     desc: run the server
     cmds:
       - direnv exec . mamba run --live-stream -n {{.PROJECT}} python -m app
+
+  update-config:
+    desc: upload condfig an restaft
+    cmds:
+      - scp settings-remote.yaml $REMOTE_HOST:/var/www/{{.PROJECT}}/app/settings.yaml
+      - task: restart
+
+  get-config:
+    desc: get remote config
+    cmds:
+      - scp $REMOTE_HOST:/var/www/{{.PROJECT}}/app/settings.yaml ettings-remote.yaml 
