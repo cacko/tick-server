@@ -119,6 +119,7 @@ class Display(object):
                 )
             except AssertionError as e:
                 pass
+        logging.warning(items)
         self._items = items[:]
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
