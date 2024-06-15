@@ -80,7 +80,7 @@ class Client(object, metaclass=ClientMeta):
     __host = None
 
     def __init__(self) -> None:
-        self.__host = Config.botyo.host
+        self.__host = app_config.botyo.host
 
     def do_get(self, endpoint: str, **kwargs):
         resp = get(
