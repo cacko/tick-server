@@ -1,7 +1,7 @@
 import logging
 from queue import Queue
 import uvicorn
-from app.config import Config as app_config
+from app.config import app_config
 from typing import Optional
 from fastapi import FastAPI
 from app.api.routers.rest import router as rest_router

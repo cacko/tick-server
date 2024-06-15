@@ -28,7 +28,7 @@ lametric:
   host: http://192.168.0.88:8080
   user: dev
   apikey: 8bfe7cda54b339d690e495217edf41b5dcb4b3356c64bda4e7285a334c694db5
-  timezone: 'Europe/London'
+  timezone: "Europe/London"
   apps:
     clock:
       package: com.lametric.clock
@@ -44,7 +44,7 @@ lametric:
       widget_id: b6107f8479a74145bc98f39afa0d4df9
     tick:
       package: com.lametric.8989dc732066722bd5f837443e64e77b
-      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8989dc732066722bd5f837443e64e77b/1 
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8989dc732066722bd5f837443e64e77b/1
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       widget_id: ceda135a4e4441a1b894d39ff3bc25fc
     yanko:
@@ -54,16 +54,16 @@ lametric:
       duration: 30
       widget_id: bd2d3f2b71604822b90f213bc590dab2
     rm:
-      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA== 
-      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.7d6330944f0e9e106cf8cbdee15e711d/1 
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.7d6330944f0e9e106cf8cbdee15e711d/1
       package: com.lametric.7d6330944f0e9e106cf8cbdee15e711d
-      sleep_minutes: 2 
+      sleep_minutes: 2
       duration: 30
       item_id: 131
       widget_id: c21e8daea66e4cc693e2184557e5928b
     livescores:
-      endpoint:  http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.5db7208e046a7305ef313cca2fe04cb5/3
-      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA== 
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.5db7208e046a7305ef313cca2fe04cb5/3
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       package: com.lametric.5db7208e046a7305ef313cca2fe04cb5
       duration: 30
       widget_id: 2243fe7aebc44c188f0b40fd7e152467
@@ -76,7 +76,7 @@ lametric:
       duration: 10
       widget_id: cfe4035691394797b81c26ff8e4f418d
     worldcup:
-      token:  N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
+      token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.216cd825eb3bc3958e48ffb754b9bb09/1
       package: com.lametric.216cd825eb3bc3958e48ffb754b9bb09
       duration: 10
@@ -100,4 +100,8 @@ lametric:
 
 display:
   - worldcup
+  - termo
+saver:
+  - clock
+  - sure
   - termo

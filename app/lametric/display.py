@@ -1,12 +1,14 @@
 import logging
+from queue import Queue
 import sys
+from xml.etree.ElementTree import QName
 
 import rich
 from app.lametric.widgets.base import BaseWidget
 from app.config import LametricApp
 from app.lametric.client import Client
 from app.lametric.models import CONTENT_TYPE, App, APPNAME, DeviceDisplay, Widget
-from app.config import Config
+from app.config import app_config
 from time import time
 from app.lametric.widgets import (
     RMWidget,
@@ -18,7 +20,7 @@ from app.lametric.widgets import (
     DatetickerWidget,
     SydneyWidget,
 )
-from typing import Optional
+from typing import List, Optional
 from typing import Any
 from pydantic import BaseModel, Extra, Field, validator
 import json
@@ -35,7 +37,7 @@ class DisplayItem(BaseModel):
     hidden: bool = Field(default=False)
     activated_at: Optional[float] = None
 
-    class Config:
+    class app_config:
         arbitrary_types_allowed = True
         extra = Extra.ignore
 
@@ -49,8 +51,12 @@ class DisplayItem(BaseModel):
         self.widget.onShow()
 
     def deactivate(self):
-        self.activated_at = None
-        self.widget.onHide()
+        try:
+            assert self.isActive
+            self.activated_at = None
+            self.widget.onHide()
+        except AssertionError:
+            pass
 
     @property
     def isExpired(self):
@@ -70,10 +76,17 @@ class DisplayItem(BaseModel):
         return not (self.hidden or self.widget.isHidden)
 
 
+class RepeatingItems(list):
+
+    def drop(self) -> DisplayItem:
+        res = super().pop(0)
+        self.insert(0, res)
+        return res
+
+
 class Display(object):
     _apps: dict[str, App] = {}
     _client: Client
-    _items: list[DisplayItem] = []
     _current_idx: int = 0
     _widgets: dict[str, BaseWidget] = {}
     _device_display: DeviceDisplay
@@ -83,6 +96,8 @@ class Display(object):
         self._apps = client.get_apps()
         BaseWidget.register(self._client)
         self._device_display = self._client.get_display()
+        self._items: RepeatingItems[DisplayItem] = RepeatingItems([])
+        self._saveritems: RepeatingItems[DisplayItem] = RepeatingItems([])
         self.__init()
 
     @property
@@ -96,8 +111,8 @@ class Display(object):
         return self._device_display.screensaver.modes.time_based.isActive
 
     def __init(self):
-        lametricaps = Config.lametric.apps
-        for name in Config.display:
+        lametricaps = app_config.lametric.apps
+        for name in app_config.display:
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
@@ -105,13 +120,12 @@ class Display(object):
             except AssertionError:
                 pass
 
-        items = []
-        for name in Config.display:
+        for name in app_config.display:
             try:
                 app = lametricaps.get(name)
                 assert isinstance(app, LametricApp)
                 assert isinstance(app.duration, int)
-                items.append(
+                self._items.append(
                     DisplayItem(
                         app=app,
                         widget=self.getWidget(APPNAME(name), app.package),
@@ -122,7 +136,23 @@ class Display(object):
                 )
             except AssertionError as e:
                 pass
-        self._items = items[:]
+
+        for name in app_config.display:
+            try:
+                app = lametricaps.get(name)
+                assert isinstance(app, LametricApp)
+                assert isinstance(app.duration, int)
+                self._saveritems.append(
+                    DisplayItem(
+                        app=app,
+                        widget=self.getWidget(APPNAME(name), app.package),
+                        duration=app.duration,
+                        hidden=False,
+                        appname=APPNAME(name),
+                    )
+                )
+            except AssertionError as e:
+                pass
 
     def on_response(self, content_type: CONTENT_TYPE, payload):
         payload_struct = json.loads(payload) if isinstance(payload, str) else payload
@@ -172,37 +202,30 @@ class Display(object):
         except AssertionError:
             return payload
 
-    def get_next_idx(self):
-        next_idx = self._current_idx + 1
-        if len(self._items) > next_idx:
-            self._current_idx = next_idx
-        else:
-            self._current_idx = 0
-
     def update(self):
         try:
-            if self.is_screensaver_active:
-                if self._current_idx != 0:
-                    self._current_idx = 0
-                    current = self._items[0]
-                    current.activate()
-                return 0
+            assert self.is_screensaver_active
+            current = self._saveritems.drop()
+            current.activate()
+            current = self._items.drop()
+            # if self.is_screensaver_active:
+            #     if self._current_idx != 0:
+            #         self._current_idx = 0
+            #         current = self._items[0]
+            #         current.activate()
+            #     return 0
+            return
         except AssertionError:
-            pass
+            return current.deactivate()
 
         try:
-            current = self._items[self._current_idx]
+            current = self._items.drop()
+            assert current.isAllowed
+            assert not current.isActive
+            assert current.isExpired
+            current.activate()
         except Exception as e:
-            logging.exception(e)
-            return self.get_next_idx()
-
-        if not current.isAllowed:
-            return self.get_next_idx()
-        if not current.isActive:
-            return current.activate()
-        if current.isExpired:
             current.deactivate()
-            return self.get_next_idx()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         if name not in self._widgets:

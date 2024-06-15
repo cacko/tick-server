@@ -1,4 +1,4 @@
-from app.config import Config
+from app.config import app_config
 from enum import Enum
 from requests import get, post
 from app.botyo.models import (
@@ -37,16 +37,16 @@ class ClientMeta(type):
 
     def unsubscribe(cls, sub: SubscriptionEvent):
         json = {
-            "webhook": f"http://{Config.api.host}:{Config.api.port}/api/subscription",
-            "group": Config.api.secret,
+            "webhook": f"http://{app_config.api.host}:{app_config.api.port}/api/subscription",
+            "group": app_config.api.secret,
             "id": sub.job_id
         }
         return cls().do_post(ENDPOINT.UNSUBSCRIBE.value, json=json)
 
     def subscribe(cls, id: int):
         json = {
-            "webhook": f"http://{Config.api.host}:{Config.api.port}/api/subscription",
-            "group": Config.api.secret,
+            "webhook": f"http://{app_config.api.host}:{app_config.api.port}/api/subscription",
+            "group": app_config.api.secret,
             "id": id
         }
         return cls().do_post(ENDPOINT.SUBSCRIBE.value, json=json)

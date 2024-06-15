@@ -1,15 +1,15 @@
-from ast import Str
 from os import environ
 from pathlib import Path
 from typing import Optional
-from yaml import load, Loader
-from pydantic import BaseModel, Extra
+import yaml
+from pydantic import BaseModel
 
 
 class LamboConfig(BaseModel):
     username: str
     clientkey: str
     hostname: str
+
 
 class StorageConfig(BaseModel):
     storage: str
@@ -54,58 +54,16 @@ class LametricConfig(BaseModel):
     timezone: str
 
 
-class ConfigStruct(BaseModel):
+class _config(BaseModel):
     storage: StorageConfig
     yanko: YankoConfig
-    lametric: LametricConfig
-    api: ApiConfig
     botyo: BotyoConfig
-    display: list[str]
-    lambo: LamboConfig
+    lametric: LamboConfig
+    api: ApiConfig
+    display: dict[str]
+    saver: dict[str]
 
 
-class ConfigMeta(type):
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(ConfigMeta, cls).__call__(*args, **kwargs)
-        return cls._instance
-
-    @property
-    def storage(cls) -> StorageConfig:
-        return cls().struct.storage
-
-    @property
-    def yanko(cls) -> YankoConfig:
-        return cls().struct.yanko
-
-    @property
-    def botyo(cls) -> BotyoConfig:
-        return cls().struct.botyo
-
-    @property
-    def lametric(cls) -> LametricConfig:
-        return cls().struct.lametric
-
-    @property
-    def api(cls) -> ApiConfig:
-        return cls().struct.api
-
-    @property
-    def display(cls) -> list[str]:
-        return cls().struct.display
-    
-    @property
-    def lambo(cls) -> LamboConfig:
-        return cls().struct.lambo
-
-
-class Config(object, metaclass=ConfigMeta):
-
-    struct: ConfigStruct
-
-    def __init__(self):
-        settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
-        data = load(settings.read_text(), Loader=Loader)
-        self.struct = ConfigStruct(**data)
+settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
+data = yaml.full_load(settings.read_text())
+app_config = _config(**data)

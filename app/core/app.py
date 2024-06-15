@@ -1,6 +1,6 @@
 from pathlib import Path
 from app.api.server import Server
-from app.config import Config
+from app.config import app_config
 from app.core.thread import StoppableThread
 from app.lametric import LaMetric
 from app.scheduler import Scheduler
@@ -21,8 +21,8 @@ class AppMeta(type):
         return self._instance
 
     def start(cls):
-        RedisStorage.register(Config.storage.redis_url)
-        FileStorage.register(Path(Config.storage.storage))
+        RedisStorage.register(app_config.storage.redis_url)
+        FileStorage.register(Path(app_config.storage.storage))
         cls().run()
 
     def terminate(cls):
@@ -49,7 +49,7 @@ class App(object, metaclass=AppMeta):
         App.threads.append(ts)
 
         scheduler = BackgroundScheduler()
-        self.scheduler = Scheduler(scheduler, Config.storage.redis_url)
+        self.scheduler = Scheduler(scheduler, app_config.storage.redis_url)
 
         Scheduler.start()
         self.eventLoop.run_forever()

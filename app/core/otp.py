@@ -1,5 +1,5 @@
 from typing import Dict
-from app.config import Config
+from app.config import app_config
 import pyotp
 
 
@@ -14,11 +14,11 @@ class OTPMeta(type):
 
     @property
     def api(cls) -> "OTP":
-        return cls(Config.api.secret)
+        return cls(app_config.api.secret)
 
     @property
     def yanko(cls) -> "OTP":
-        return cls(Config.yanko.secret)
+        return cls(app_config.yanko.secret)
 
 
 class OTP(object, metaclass=OTPMeta):

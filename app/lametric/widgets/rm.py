@@ -22,7 +22,7 @@ import logging
 from app.lametric.widgets.items.subscriptions import Subscriptions
 from random import randint
 from lambo.hue.client import Hue
-from app.config import Config as app_config
+from app.config import app_config
 
 Hue.register(hostname=app_config.lambo.hostname, username=app_config.lambo.username)
 

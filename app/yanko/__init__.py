@@ -1,4 +1,4 @@
-from app.config import Config
+from app.config import app_config
 from app.core.otp import OTP
 from requests import request
 from enum import Enum
@@ -40,7 +40,7 @@ class Yanko(object, metaclass=YankoMeta):
 
     def __init__(self) -> None:
         self.__otp = OTP.yanko
-        self.__host = Config.yanko.host
+        self.__host = app_config.yanko.host
 
     def make_request(self, method: Method, endpoint: Endpoints, **kwags):
         try:

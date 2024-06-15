@@ -1,5 +1,5 @@
 from app.core.otp import OTP
-from app.config import Config as app_config
+from app.config import app_config
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN

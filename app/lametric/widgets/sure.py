@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
@@ -26,8 +27,15 @@ class BestOffer(BaseModel):
 
 class SureWidget(BaseWidget, metaclass=WidgetMeta):
 
+    __nextFramres: list[ContentFrame] = []
+
     def onShow(self):
-        pass
+        try:
+            assert len(self.__nextFramres)
+            frames, self.__nextFramres = self.__nextFramres, []
+            SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
+        except AssertionError:
+            pass
 
     def onHide(self):
         pass
@@ -35,7 +43,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     def bestoffer(self, payload):
         try:
             data = BestOffer(**payload)
-            frames = [
+            self.__nextFramres = [
                 ContentFrame(
                     text=f"{data.total:.02f}",
                     icon=data.total_icon,
@@ -49,7 +57,6 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
                     index=1,
                 ),
             ]
-            SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
             return True
         except AssertionError:
             pass

@@ -2,7 +2,7 @@ import logging
 from queue import Empty, Queue
 
 from app.lametric.client import Client
-from app.config import Config
+from app.config import app_config
 from app.lametric.models import (
     CONTENT_TYPE,
     DEVICE_MODE,
@@ -37,7 +37,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
     _mainQueue = None
 
     def __init__(self) -> None:
-        self._client = Client(Config.lametric)
+        self._client = Client(app_config.lametric)
         self._display = Display(client=self._client)
         self._client.set_device_mode(DEVICE_MODE.MANUAL)
 

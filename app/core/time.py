@@ -1,8 +1,8 @@
-from app.config import Config
+from app.config import app_config
 from zoneinfo import ZoneInfo
 from datetime import datetime
 
-LOCAL_TIMEZONE = ZoneInfo(Config.lametric.timezone)
+LOCAL_TIMEZONE = ZoneInfo(app_config.lametric.timezone)
 
 
 def to_local(d: datetime) -> datetime:

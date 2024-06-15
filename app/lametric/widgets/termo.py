@@ -39,8 +39,15 @@ class NowData(BaseModel):
 
 class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
+    __nextFrames: list[ContentFrame] = []
+
     def onShow(self):
-        pass
+        try:
+            assert len(self.__nextFramres)
+            frames, self.__nextFramres = self.__nextFramres, []
+            TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
+        except AssertionError:
+            pass
 
     def onHide(self):
         pass
@@ -49,7 +56,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
         try:
             data = NowData(**payload)
             assert data.location == SensorLocation.INDOOR
-            frames = [
+            self.__nextFrames = [
                 ContentFrame(
                     text=f"{data.temp}°", icon=data.temp_icon, duration=10, index=0
                 ),
@@ -57,7 +64,6 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
                     text=f"{data.humid}%", icon=data.humud_icon, duration=8, index=1
                 ),
             ]
-            TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
             return True
         except AssertionError:
             pass
