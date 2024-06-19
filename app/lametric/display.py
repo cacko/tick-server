@@ -206,7 +206,8 @@ class Display(object):
         try:
             assert self._current
             assert self._current.isAllowed
-        except:
+            logging.info(f"old item {self._current}")
+        except AssertionError:
             self._current = (
                 self._saveritems.drop()
                 if self.is_screensaver_active
@@ -219,7 +220,7 @@ class Display(object):
             assert not self._current.isActive
             logging.info(f"activating {self._current}")
             self._current.activate()
-        except:
+        except AssertionError:
             logging.info(f"deactivating {self._current}")
             self._current.deactivate()
             self._current = None
