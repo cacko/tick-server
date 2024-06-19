@@ -175,6 +175,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 def cron_func(competition_id: int, storage_key: str):
     try:
         games = LeagueSchedule(competition_id).content
+        logging.info(games)
         for game in games:
             logging.info(game)
             if is_today(game.startTime):
@@ -244,8 +245,8 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.WORLDCUP
 
     def post_init(self):
-        schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
         cron_func(self.item_id, STORAGE_KEY.WORLDCUP.value)
+        schedule_cron(self.item_id, STORAGE_KEY.WORLDCUP.value)
 
     def filter_payload(self, payload):
 
