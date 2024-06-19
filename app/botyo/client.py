@@ -83,7 +83,7 @@ class Client(object, metaclass=ClientMeta):
 
     def do_get(self, endpoint: str, **kwargs):
         logging.info(endpoint)
-        logging.info(**kwargs)
+        logging.info(kwargs)
         resp = get(
             url=f"{self.__host}/{endpoint}",
             **kwargs
