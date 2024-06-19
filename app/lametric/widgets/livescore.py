@@ -176,6 +176,7 @@ def cron_func(competition_id: int, storage_key: str):
     try:
         games = LeagueSchedule(competition_id).content
         for game in games:
+            logging.info(game)
             if is_today(game.startTime):
                 BotyoClient.subscribe(game.id)
         schedule_cron(competition_id=competition_id, storage_key=storage_key)
@@ -276,12 +277,8 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.PREMIER_LEAGUE
 
     def post_init(self):
-        self.clear_all()
-        Scheduler.cancel_jobs(STORAGE_KEY.PREMIER_LEAGUE.value)
-
-    # def post_init(self):
-    #     schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
-    #     cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+        schedule_cron(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
+        cron_func(self.item_id, STORAGE_KEY.PREMIER_LEAGUE.value)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
@@ -312,10 +309,8 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.LA_LIGA
 
     def post_init(self):
-        self.clear_all()
-        Scheduler.cancel_jobs(STORAGE_KEY.LA_LIGA.value)
-        # schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
-        # cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
+        schedule_cron(self.item_id, STORAGE_KEY.LA_LIGA.value)
+        cron_func(self.item_id, STORAGE_KEY.LA_LIGA.value)
 
     def filter_payload(self, payload):
         if isinstance(payload, list):

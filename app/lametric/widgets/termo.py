@@ -75,5 +75,6 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
                 ),
             ]
             return True
-        except AssertionError:
+        except AssertionError as e:
+            logging.exception(e)
             pass

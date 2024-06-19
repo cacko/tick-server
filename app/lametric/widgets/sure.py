@@ -35,9 +35,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
         
     def onShow(self):
         try:
-            assert len(self.nextFrames)
-            frames, self.nextFrames = self.nextFrames, []
-            SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
+            SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=self.nextFrames))
         except AssertionError as e:
             logging.exception(e)
             pass
@@ -67,5 +65,6 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
                 ),
             ]
             return True
-        except AssertionError:
+        except AssertionError as e:
+            logging.exception(e)
             pass
