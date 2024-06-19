@@ -112,13 +112,6 @@ class Display(object):
 
     def __init(self):
         lametricaps = app_config.lametric.apps
-        # for name in app_config.display:
-        #     try:
-        #         app = lametricaps.get(name)
-        #         assert isinstance(app, LametricApp)
-        #         _ = self.getWidget(APPNAME(name), app.package, **app.model_dump())
-        #     except AssertionError:
-        #         pass
 
         for name in app_config.display:
             try:
@@ -128,7 +121,9 @@ class Display(object):
                 self._items.append(
                     DisplayItem(
                         app=app,
-                        widget=self.getWidget(APPNAME(name), app.package, **app.model_dump()),
+                        widget=self.getWidget(
+                            APPNAME(name), app.package, **app.model_dump()
+                        ),
                         duration=app.duration,
                         hidden=False,
                         appname=APPNAME(name),
@@ -203,25 +198,22 @@ class Display(object):
             return payload
 
     def update(self):
-        try:
-            assert self._current
-            assert self._current.isAllowed
-        except AssertionError:
-            self._current = (
-                self._saveritems.drop()
-                if self.is_screensaver_active
-                else self._items.drop()
-            )
-            logging.info(f"new item {self._current}")
-        try:
-            assert self._current.isAllowed
-            assert not self._current.isExpired
-            if not self._current.isActive:
-                self._current.activate()
-        except AssertionError:
+        isAllowed = False
+        while not isAllowed:
+            try:
+                assert self._current
+            except AssertionError:
+                self._current = (
+                    self._saveritems.drop()
+                    if self.is_screensaver_active
+                    else self._items.drop()
+                )
+            isAllowed = self._current.isAllowed
+        if self._current.isExpired:
             self._current.deactivate()
             self._current = None
-
+        elif not self._current.isActive:
+            self._current.activate()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         if name not in self._widgets:

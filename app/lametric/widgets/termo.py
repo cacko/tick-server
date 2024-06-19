@@ -42,10 +42,6 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
     nextFrames: list[ContentFrame] = []
     
-    def activate(self):
-        logging.warn(f"activating {self.widget_id}")
-        super().activate()
-
     def onShow(self):
         pass
 
