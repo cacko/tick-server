@@ -168,10 +168,8 @@ class BaseLivescoresWidget(SubscriptionWidget):
 def cron_func(competition_id: int, storage_key: str):
     try:
         games = LeagueSchedule(competition_id).content
-        logging.info(games)
         for game in games:
             if is_today(game.startTime):
-                logging.info(game)
                 BotyoClient.subscribe(game.id)
         schedule_cron(competition_id=competition_id, storage_key=storage_key)
     except Exception as e:
@@ -204,7 +202,7 @@ def schedule_cron(competition_id: int, storage_key: str):
 
 
 class LeagueSchedule(TimeCacheable):
-    cachetime: timedelta = timedelta(seconds=10)
+    cachetime: timedelta = timedelta(hours=5)
     __id: int
 
     def __init__(self, id: int):

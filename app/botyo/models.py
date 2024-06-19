@@ -489,7 +489,7 @@ class Game(BaseModel):
 
     @property
     def subscriptionId(self) -> str:
-        logging.info(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
+        logging.debug(f"{self.homeCompetitor.name}/{self.awayCompetitor.name}")
         return md5(
             f"{self.homeCompetitor.name}"
             f"/{self.awayCompetitor.name}".lower().encode()

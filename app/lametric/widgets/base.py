@@ -91,7 +91,7 @@ class SubscriptionWidget(BaseWidget):
 
     def on_event(self, payload):
         try:
-            logging.info(f"on_event {self.__class__.__name__} {payload}")
+            logging.debug(f"on_event {self.__class__.__name__} {payload}")
             assert payload
             widget_payload = self.filter_payload(payload)
             assert widget_payload
