@@ -37,10 +37,6 @@ class DisplayItem(BaseModel, arbitrary_types_allowed=True):
     hidden: bool = Field(default=False)
     activated_at: Optional[float] = None
 
-    class app_config:
-        arbitrary_types_allowed = True
-        extra = Extra.ignore
-
     @validator("widget")
     def widget_val(cls, v):
         return v
@@ -197,21 +193,24 @@ class Display(object):
         except AssertionError:
             return payload
 
+    def getNext(self):
+        return (
+            self._saveritems.drop()
+            if self.is_screensaver_active
+            else self._items.drop()
+        )
+
     def update(self):
         isAllowed = False
         while not isAllowed:
             try:
                 assert self._current
             except AssertionError:
-                self._current = (
-                    self._saveritems.drop()
-                    if self.is_screensaver_active
-                    else self._items.drop()
-                )
+                self._current = self.getNext()
             isAllowed = self._current.isAllowed
         if self._current.isExpired:
             self._current.deactivate()
-            self._current = None
+            self._current = self.getNext()
         elif not self._current.isActive:
             self._current.activate()
 
