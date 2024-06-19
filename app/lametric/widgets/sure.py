@@ -30,7 +30,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     nextFrames: list[ContentFrame] = []
     
     def activate(self):
-        logging.info(f"activating {self.widget_id}")
+        logging.warn(f"activating {self.widget_id}")
         super().activate()
         
     def onShow(self):

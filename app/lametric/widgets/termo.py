@@ -43,6 +43,10 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
     nextFrames: list[ContentFrame] = []
     
     def activate(self):
+        logging.warn(f"activating {self.widget_id}")
+        super().activate()
+
+    def onShow(self):
         try:
             assert len(self.nextFrames)
             frames, self.nextFrames = self.nextFrames, []
@@ -50,9 +54,6 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
         except AssertionError as e:
             logging.exception(e)
             pass
-
-    def onShow(self):
-        pass
 
     def onHide(self):
         pass
