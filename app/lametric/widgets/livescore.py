@@ -76,8 +76,6 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     @property
     def isHidden(self):
-        logging.warning(self.subscriptions)
-        logging.warn(len(self.subscriptions))
         return not len(self.subscriptions)
 
     def update_frames(self):
@@ -164,13 +162,11 @@ class BaseLivescoresWidget(SubscriptionWidget):
             del self.subscriptions[sub.id]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        logging.warn(f"SUBSCRIBEING {event.event_name} {self.__class__}")
         self.subscriptions[event.id] = event
         self.update_frames()
 
     def on_unsubscribed_event(self, event: SubscriptionEvent):
         del self.subscriptions[event.id]
-        logging.debug(f"DELETING {event.event_name}")
         self.update_frames()
 
 
@@ -330,8 +326,8 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None, payload
-        return payload, None
+            return payload
+        return None
 
 
 class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
