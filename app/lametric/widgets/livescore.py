@@ -94,6 +94,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 frames.append(frame)
         except AttributeError as e:
             logging.error(e)
+        logging.info(frames)
         self.__class__.client.send_model(self.app_name, Content(frames=frames))
 
     def on_match_events(self, events: list[MatchEvent]):
