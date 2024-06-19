@@ -1,3 +1,4 @@
+import logging
 from app.botyo.models import SubscriptionEvent
 from cachable.storage.redis import RedisStorage
 import pickle
@@ -51,6 +52,7 @@ class Subscriptions(dict):
         super().__init__(items, *args, **kwds)
 
     def __setitem__(self, __k, __v) -> None:
+        logging.info([__k, __v, self.__storage_key])
         RedisStorage.pipeline().hset(
             self.__storage_key, __k, pickle.dumps(__v)
         ).persist(

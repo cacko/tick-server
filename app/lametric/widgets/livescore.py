@@ -164,7 +164,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             del self.subscriptions[sub.id]
 
     def on_subscribed_event(self, event: SubscriptionEvent):
-        logging.debug(f"SUBSCRIBEING {event.event_name} {self.__class__}")
+        logging.warn(f"SUBSCRIBEING {event.event_name} {self.__class__}")
         self.subscriptions[event.id] = event
         self.update_frames()
 
