@@ -3,6 +3,7 @@ from app.api.server import Server
 from app.config import app_config
 from app.core.thread import StoppableThread
 from app.lametric import LaMetric
+from app.scheduler import Scheduler
 from cachable.storage.redis import RedisStorage
 from cachable.storage.file import FileStorage
 import asyncio
@@ -23,6 +24,7 @@ class AppMeta(type):
         cls().run()
 
     def terminate(cls):
+        Scheduler.stop()
         for th in cls.threads:
             th.stop()
         cls().eventLoop.stop()
@@ -44,4 +46,5 @@ class App(object, metaclass=AppMeta):
         ts.start()
         App.threads.append(ts)
 
+        Scheduler.start()
         self.eventLoop.run_forever()
