@@ -40,12 +40,12 @@ class NowData(BaseModel):
 
 class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
-    __nextFrames: list[ContentFrame] = []
+    nextFrames: list[ContentFrame] = []
     
     def activate(self):
         try:
-            assert len(self.__nextFrames)
-            frames, self.__nextFrames = self.__nextFrames, []
+            assert len(self.nextFrames)
+            frames, self.nextFrames = self.nextFrames, []
             TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         except AssertionError as e:
             logging.exception(e)
@@ -61,7 +61,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
         try:
             data = NowData(**payload)
             assert data.location == SensorLocation.INDOOR
-            self.__nextFrames = [
+            self.nextFrames = [
                 ContentFrame(
                     text=f"{data.temp}°", icon=data.temp_icon, duration=10, index=0
                 ),

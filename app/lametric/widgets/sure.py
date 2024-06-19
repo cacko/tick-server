@@ -27,7 +27,7 @@ class BestOffer(BaseModel):
 
 class SureWidget(BaseWidget, metaclass=WidgetMeta):
 
-    __nextFrames: list[ContentFrame] = []
+    nextFrames: list[ContentFrame] = []
     
     def activate(self):
         logging.info(f"activating {self.widget_id}")
@@ -35,8 +35,8 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
         
     def onShow(self):
         try:
-            assert len(self.__nextFrames)
-            frames, self.__nextFrames = self.__nextFrames, []
+            assert len(self.nextFrames)
+            frames, self.nextFrames = self.nextFrames, []
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
         except AssertionError as e:
             logging.exception(e)
@@ -48,7 +48,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     def bestoffer(self, payload):
         try:
             data = BestOffer(**payload)
-            self.__nextFrames = [
+            self.nextFrames = [
                 ContentFrame(
                     text=f"{data.total:.02f}",
                     icon=data.total_icon,
