@@ -201,18 +201,16 @@ class Display(object):
         )
 
     def update(self):
-        isAllowed = False
-        while not isAllowed:
-            try:
-                assert self._current
-            except AssertionError:
-                self._current = self.getNext()
-            isAllowed = self._current.isAllowed
-        if self._current.isExpired:
-            self._current.deactivate()
+        try:
+            assert self._current
+            assert self._current.isAllowed
+            if self._current.isExpired:
+                self._current.deactivate()
+                raise AssertionError
+            if not self._current.isActive:
+                self._current.activate()
+        except AssertionError:
             self._current = self.getNext()
-        elif not self._current.isActive:
-            self._current.activate()
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         if name not in self._widgets:
