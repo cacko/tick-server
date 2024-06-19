@@ -1,7 +1,7 @@
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from urllib.parse import urlparse, parse_qs
-
+from app.config import app_config
 
 class RedisNotConfiguredException(Exception):
     pass
@@ -16,45 +16,37 @@ class SchedulerMeta(type):
         return cls._instance
 
     def start(cls):
-        assert cls._instance
-        cls._instance._scheduler.start()
+        cls().scheduler.start()
 
     def stop(cls):
         try:
-            assert cls._instance
-            cls._instance._scheduler.shutdown()
+            cls().scheduler.shutdown()
         except Exception:
             pass
 
     def add_job(cls, *args, **kwargs):
-        assert cls._instance
-        return cls._instance._scheduler.add_job(*args, **kwargs)
+        return cls().scheduler.add_job(*args, **kwargs)
 
     def get_job(cls, id, jobstore=None):
-        assert cls._instance
-        return cls._instance._scheduler.get_job(id, jobstore)
+        return cls().scheduler.get_job(id, jobstore)
 
     def cancel_jobs(cls, id, jobstore=None):
-        assert cls._instance
-        return cls._instance._scheduler.remove_job(id, jobstore)
+        return cls().scheduler.remove_job(id, jobstore)
 
     def remove_all_jobs(cls, jobstore=None):
-        assert cls._instance
-        return cls._instance._scheduler.remove_all_jobs(jobstore)
+        return cls().scheduler.remove_all_jobs(jobstore)
 
     def get_jobs(cls, jobstore=None, pending=None):
-        assert cls._instance
-        return cls._instance._scheduler.get_jobs(jobstore, pending)
+        return cls().scheduler.get_jobs(jobstore, pending)
 
 
 class Scheduler(object, metaclass=SchedulerMeta):
 
-    _scheduler: BackgroundScheduler
-    _instance = None
+    scheduler: BackgroundScheduler
 
-    def __init__(self, scheduler: BackgroundScheduler, url: str) -> None:
-        self._scheduler = scheduler
-        redis_url = urlparse(url)
+    def __init__(self) -> None:
+        self.scheduler = BackgroundScheduler()
+        redis_url = urlparse(app_config.storage.redis_url)
         redis_url_options = parse_qs(redis_url.query)
         jobstores = None
 
@@ -74,4 +66,4 @@ class Scheduler(object, metaclass=SchedulerMeta):
             }
         else:
             raise RedisNotConfiguredException("not valid REDIS_URL")
-        self._scheduler.configure(jobstores=jobstores)
+        self.scheduler.configure(jobstores=jobstores)

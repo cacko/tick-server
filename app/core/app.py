@@ -21,6 +21,7 @@ class AppMeta(type):
     def start(cls):
         RedisStorage.register(app_config.storage.redis_url)
         FileStorage.register(Path(app_config.storage.storage))
+        Scheduler.start()
         cls().run()
 
     def terminate(cls):
@@ -46,5 +47,4 @@ class App(object, metaclass=AppMeta):
         ts.start()
         App.threads.append(ts)
 
-        Scheduler.start()
         self.eventLoop.run_forever()
