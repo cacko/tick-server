@@ -100,8 +100,7 @@ class SubscriptionWidget(BaseWidget):
                     [MatchEvent(**x) for x in widget_payload]
                 )
                 return list(filter(lambda p: p not in widget_payload, payload))
-            action = ACTION(payload.get("action"))
-            logging.warning(action)
+            action = ACTION(widget_payload.get("action"))
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
@@ -114,7 +113,7 @@ class SubscriptionWidget(BaseWidget):
                         SubscriptionEvent(**widget_payload))
             payload = None
         except AssertionError as e:
-            logging.exception(e)
+            pass
         except ValueError as e:
             logging.exception(e)
         except Exception as e:
