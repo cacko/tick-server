@@ -69,17 +69,17 @@ lametric:
       widget_id: 2243fe7aebc44c188f0b40fd7e152467
     termo:
       package: com.lametric.diy.devwidget
-      duration: 10
+      duration: 30
       widget_id: a7243115b4bc4e8b8eacabf37bf9a460
     sure:
       package: com.lametric.diy.devwidget
-      duration: 10
+      duration: 30
       widget_id: cfe4035691394797b81c26ff8e4f418d
     worldcup:
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.216cd825eb3bc3958e48ffb754b9bb09/1
       package: com.lametric.216cd825eb3bc3958e48ffb754b9bb09
-      duration: 10
+      duration: 30
       widget_id: 6dd8e2b983c44de7936872caf8965c1b
       item_id: 6316
     # laliga:

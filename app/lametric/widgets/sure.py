@@ -30,15 +30,17 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     __nextFrames: list[ContentFrame] = []
     
     def activate(self):
+        logging.info(f"activating {self.widget_id}")
+        super().activate()
+        
+    def onShow(self):
         try:
             assert len(self.__nextFrames)
             frames, self.__nextFrames = self.__nextFrames, []
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
-        except AssertionError:
+        except AssertionError as e:
+            logging.exception(e)
             pass
-        
-    def onShow(self):
-        pass
 
     def onHide(self):
         pass

@@ -1,4 +1,5 @@
 from enum import StrEnum
+import logging
 from app.lametric.models import APPNAME, Content, ContentFrame
 from .base import BaseWidget, WidgetMeta
 from pydantic import BaseModel
@@ -46,7 +47,8 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
             assert len(self.__nextFrames)
             frames, self.__nextFrames = self.__nextFrames, []
             TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
-        except AssertionError:
+        except AssertionError as e:
+            logging.exception(e)
             pass
 
     def onShow(self):
