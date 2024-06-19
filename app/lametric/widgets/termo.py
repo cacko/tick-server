@@ -57,6 +57,10 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def onHide(self):
         pass
+    
+    @property
+    def isHidden(self):
+        return len(self.nextFrames) == 0
 
     def nowdata(self, payload):
         try:

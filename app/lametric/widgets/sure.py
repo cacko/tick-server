@@ -41,6 +41,10 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
         except AssertionError as e:
             logging.exception(e)
             pass
+        
+    @property
+    def isHidden(self):
+        return len(self.nextFrames) == 0
 
     def onHide(self):
         pass
