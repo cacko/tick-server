@@ -80,7 +80,7 @@ class RepeatingItems(list):
 
     def drop(self) -> DisplayItem:
         res = super().pop(0)
-        self.insert(0, res)
+        self.append(res)
         return res
 
 
