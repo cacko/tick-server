@@ -47,13 +47,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
         super().activate()
 
     def onShow(self):
-        try:
-            assert len(self.nextFrames)
-            frames, self.nextFrames = self.nextFrames, []
-            TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
-        except AssertionError as e:
-            logging.exception(e)
-            pass
+        pass
 
     def onHide(self):
         pass
@@ -74,7 +68,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
                     text=f"{data.humid}%", icon=data.humud_icon, duration=8, index=1
                 ),
             ]
+            TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=self.nextFrames))
             return True
         except AssertionError as e:
-            logging.exception(e)
             pass
