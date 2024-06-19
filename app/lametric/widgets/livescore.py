@@ -177,8 +177,8 @@ def cron_func(competition_id: int, storage_key: str):
         games = LeagueSchedule(competition_id).content
         logging.info(games)
         for game in games:
-            logging.info(game)
             if is_today(game.startTime):
+                logging.info(game)
                 BotyoClient.subscribe(game.id)
         schedule_cron(competition_id=competition_id, storage_key=storage_key)
     except Exception as e:
