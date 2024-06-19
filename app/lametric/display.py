@@ -87,7 +87,7 @@ class RepeatingItems(list):
 class Display(object):
     _apps: dict[str, App] = {}
     _client: Client
-    _current_idx: int = 0
+    _current: DisplayItem = None
     _widgets: dict[str, BaseWidget] = {}
     _device_display: DeviceDisplay
 
@@ -204,21 +204,26 @@ class Display(object):
 
     def update(self):
         try:
-            assert self.is_screensaver_active
-            current = self._saveritems.drop()
-            current.activate()
-            current = self._items.drop()
-        except AssertionError:
-            pass
-
+            assert self._current
+            assert self._current.isAllowed
+        except:
+            self._current = (
+                self._saveritems.drop()
+                if self.is_screensaver_active
+                else self._items.drop()
+            )
+            logging.info(f"new item {self._current}")
         try:
-            current = self._items.drop()
-            assert current.isAllowed
-            assert not current.isActive
-            assert current.isExpired
-            current.activate()
-        except Exception as e:
-            current.deactivate()
+            assert self._current.isAllowed
+            assert not self._current.isExpired
+            assert not self._current.isActive
+            logging.info(f"activating {self._current}")
+            self._current.activate()
+        except:
+            logging.info(f"deactivating {self._current}")
+            self._current.deactivate()
+            self._current = None
+
 
     def getWidget(self, name: APPNAME, package_name: str, **kwargs) -> BaseWidget:
         if name not in self._widgets:
