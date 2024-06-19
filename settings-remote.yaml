@@ -99,8 +99,10 @@ lametric:
     #   duration: 10
 
 display:
+  - clock
   - worldcup
   - termo
+  - sure
 saver:
   - clock
   - sure
