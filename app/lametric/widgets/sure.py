@@ -28,14 +28,17 @@ class BestOffer(BaseModel):
 class SureWidget(BaseWidget, metaclass=WidgetMeta):
 
     __nextFrames: list[ContentFrame] = []
-
-    def onShow(self):
+    
+    def activate(self):
         try:
             assert len(self.__nextFrames)
             frames, self.__nextFrames = self.__nextFrames, []
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
         except AssertionError:
             pass
+        
+    def onShow(self):
+        pass
 
     def onHide(self):
         pass

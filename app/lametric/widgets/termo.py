@@ -40,14 +40,17 @@ class NowData(BaseModel):
 class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
     __nextFrames: list[ContentFrame] = []
-
-    def onShow(self):
+    
+    def activate(self):
         try:
             assert len(self.__nextFrames)
             frames, self.__nextFrames = self.__nextFrames, []
             TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         except AssertionError:
             pass
+
+    def onShow(self):
+        pass
 
     def onHide(self):
         pass
