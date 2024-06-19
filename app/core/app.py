@@ -6,9 +6,7 @@ from app.lametric import LaMetric
 from app.scheduler import Scheduler
 from cachable.storage.redis import RedisStorage
 from cachable.storage.file import FileStorage
-from apscheduler.schedulers.background import BackgroundScheduler
 import asyncio
-
 
 class AppMeta(type):
 
@@ -47,9 +45,6 @@ class App(object, metaclass=AppMeta):
         ts = StoppableThread(target=Server.start, args=[self.queue])
         ts.start()
         App.threads.append(ts)
-
-        scheduler = BackgroundScheduler()
-        self.scheduler = Scheduler(scheduler, app_config.storage.redis_url)
 
         Scheduler.start()
         self.eventLoop.run_forever()
