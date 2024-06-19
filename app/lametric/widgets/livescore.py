@@ -80,7 +80,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def update_frames(self):
         frames = []
-        logging.debug(f">>> UPDATE FRAMES {self.__class__}")
+        logging.info(f">>> UPDATE FRAMES {self.__class__}")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
@@ -101,7 +101,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             if event.is_old_event:
                 continue
             try:
-                logging.debug(event)
+                logging.info(event)
                 sub = self.subscriptions[event.id]
                 assert isinstance(sub, SubscriptionEvent)
                 if sub.status == "FT":
@@ -144,7 +144,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             except ValueError as e:
                 logging.exception(e)
             except KeyError:
-                logging.debug(f">>>MISSING {event.id} {self.__class__}")
+                logging.warn(f">>>MISSING {event.id} {self.__class__}")
             except AssertionError as e:
                 logging.exception(e)
         self.update_frames()
