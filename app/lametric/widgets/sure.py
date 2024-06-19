@@ -27,12 +27,12 @@ class BestOffer(BaseModel):
 
 class SureWidget(BaseWidget, metaclass=WidgetMeta):
 
-    __nextFramres: list[ContentFrame] = []
+    __nextFrames: list[ContentFrame] = []
 
     def onShow(self):
         try:
-            assert len(self.__nextFramres)
-            frames, self.__nextFramres = self.__nextFramres, []
+            assert len(self.__nextFrames)
+            frames, self.__nextFrames = self.__nextFrames, []
             SureWidget.client.send_model_api2(APPNAME.SURE, Content(frames=frames))
         except AssertionError:
             pass
@@ -43,7 +43,7 @@ class SureWidget(BaseWidget, metaclass=WidgetMeta):
     def bestoffer(self, payload):
         try:
             data = BestOffer(**payload)
-            self.__nextFramres = [
+            self.__nextFrames = [
                 ContentFrame(
                     text=f"{data.total:.02f}",
                     icon=data.total_icon,

@@ -217,9 +217,9 @@ class Display(object):
         try:
             assert self._current.isAllowed
             assert not self._current.isExpired
-            assert not self._current.isActive
-            logging.info(f"activating {self._current}")
-            self._current.activate()
+            if not self._current.isActive:
+                logging.info(f"activating {self._current}")
+                self._current.activate()
         except AssertionError:
             logging.info(f"deactivating {self._current}")
             self._current.deactivate()

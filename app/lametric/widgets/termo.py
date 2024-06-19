@@ -43,8 +43,8 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
 
     def onShow(self):
         try:
-            assert len(self.__nextFramres)
-            frames, self.__nextFramres = self.__nextFramres, []
+            assert len(self.__nextFrames)
+            frames, self.__nextFrames = self.__nextFrames, []
             TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=frames))
         except AssertionError:
             pass
