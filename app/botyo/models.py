@@ -470,8 +470,6 @@ class Game(BaseModel):
     statusText: str
     shortStatusText: str
     gameTimeAndStatusDisplayType: int
-    gameTime: int
-    gameTimeDisplay: str
     homeCompetitor: GameCompetitor
     awayCompetitor: GameCompetitor
     seasonNum: Optional[int] = 0
@@ -484,6 +482,8 @@ class Game(BaseModel):
     hasBetsTeaser: Optional[bool] = None
     winDescription: Optional[str] = ""
     aggregateText: Optional[str] = ""
+    gameTime: Optional[int] = None
+    gameTimeDisplay: Optional[str] = None
     icon: Optional[str] = ""
     score: Optional[str] = ""
 
