@@ -101,6 +101,7 @@ class SubscriptionWidget(BaseWidget):
                 )
                 return list(filter(lambda p: p not in widget_payload, payload))
             action = ACTION(payload.get("action"))
+            logging.warning(action)
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
