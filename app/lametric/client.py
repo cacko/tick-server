@@ -96,7 +96,6 @@ class Client(object):
 
     def send_model_api2(self, config_name: APPNAME, model: Content):
         app = self.__config.apps.get(config_name.value)
-        logging.warn(app)
         assert isinstance(app, LametricApp)
         package = app.package
         widget_id = app.widget_id
