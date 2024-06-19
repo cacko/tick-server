@@ -105,13 +105,13 @@ class SubscriptionWidget(BaseWidget):
             match(action):
                 case ACTION.CANCEL_JOB:
                     self.on_cancel_job_event(
-                        CancelJobEvent(**widget_payload))
+                        CancelJobEvent(**payload))
                 case ACTION.SUBSCRIBED:
                     self.on_subscribed_event(
-                        SubscriptionEvent(**widget_payload))
+                        SubscriptionEvent(**payload))
                 case ACTION.UNSUBSUBSCRIBED:
                     self.on_unsubscribed_event(
-                        SubscriptionEvent(**widget_payload))
+                        SubscriptionEvent(**payload))
             payload = None
         except AssertionError as e:
             logging.exception(e)
