@@ -113,9 +113,11 @@ class SubscriptionWidget(BaseWidget):
                     self.on_unsubscribed_event(
                         SubscriptionEvent(**widget_payload))
             payload = None
-        except AssertionError:
-            pass
+        except AssertionError as e:
+            logging.exception(e)
         except ValueError as e:
+            logging.exception(e)
+        except Exception as e:
             logging.exception(e)
         finally:
             return payload
