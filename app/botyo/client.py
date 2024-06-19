@@ -67,9 +67,8 @@ class ClientMeta(type):
         try:
             data = cls().do_get(
                 f"{ENDPOINT.LEAGUE_SCHEDULE.value}/{league_id}")
-            logging.info(data)
-            if data:
-                return [Game(**x) for x in data]
+            assert data
+            return [Game(**x) for x in data]
         except Exception as e:
             logging.error(e)
         return []
