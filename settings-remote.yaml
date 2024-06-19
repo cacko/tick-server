@@ -33,10 +33,10 @@ lametric:
     clock:
       package: com.lametric.clock
       widget_id: 08b8eac21074f8f7e5a29f2855ba8060
-      duration: 30
+      duration: 15
     weather:
       package: com.lametric.weather
-      duration: 30
+      duration: 15
       widget_id: 380375c4b12c16e3adafb48355ba8061
     dateticker:
       package: com.lametric.date.ticker
@@ -51,7 +51,7 @@ lametric:
       endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.8d5e85833d86929bd1dc73a146cae449/9
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       package: com.lametric.8d5e85833d86929bd1dc73a146cae449
-      duration: 30
+      duration: 15
       widget_id: bd2d3f2b71604822b90f213bc590dab2
     rm:
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
@@ -65,7 +65,7 @@ lametric:
       endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.5db7208e046a7305ef313cca2fe04cb5/3
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
       package: com.lametric.5db7208e046a7305ef313cca2fe04cb5
-      duration: 30
+      duration: 15
       widget_id: 2243fe7aebc44c188f0b40fd7e152467
     termo:
       package: com.lametric.diy.devwidget
@@ -77,14 +77,14 @@ lametric:
       widget_id: cfe4035691394797b81c26ff8e4f418d
     worldcup:
       token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
-      endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.216cd825eb3bc3958e48ffb754b9bb09/1
+      endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.216cd825eb3bc3958e48ffb754b9bb09/1
       package: com.lametric.216cd825eb3bc3958e48ffb754b9bb09
-      duration: 30
+      duration: 15
       widget_id: 6dd8e2b983c44de7936872caf8965c1b
       item_id: 6316
     # laliga:
     #   token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
-    #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.1c1d5a951b6485b65ac125697af40d74/1
+    #   endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.1c1d5a951b6485b65ac125697af40d74/1
     #   package: com.lametric.1c1d5a951b6485b65ac125697af40d74
     #   duration: 10
     #   sleep_minutes: 20
@@ -92,7 +92,7 @@ lametric:
 
     # premierleague:
     #   token: N2JiZDdlNDRiYWU4ZDc2NjhkNWZiN2RiMGY4MmMzNDM3MjYwYjU5NjNlYzI3ZDhjNTBlMGMyMmRmYmViZDk4OA==
-    #   endpoint: https://192.168.0.88:4343/api/v1/dev/widget/update/com.lametric.fb56c11d022e76f73bb1686954f21739/1
+    #   endpoint: http://192.168.0.88:8080/api/v1/dev/widget/update/com.lametric.fb56c11d022e76f73bb1686954f21739/1
     #   package: com.lametric.fb56c11d022e76f73bb1686954f21739
     #   sleep_minutes: 20
     #   item_id: 7

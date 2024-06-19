@@ -53,7 +53,6 @@ class Client(object):
         assert isinstance(app, LametricApp)
         url = app.endpoint
         token = app.token
-
         assert token
         try:
             response = requests.request(
@@ -66,8 +65,6 @@ class Client(object):
                 url=f"{url}",
                 **args,
             )
-            logging.warning(url)
-            logging.warning(response.status_code)
             return response.status_code
         except ConnectionError as e:
             logging.exception(e)
