@@ -89,10 +89,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 if sub.score:
                     text.append(sub.score)
                 frame = ContentFrame(
-                    text=" ".join(text),
-                    index=idx,
-                    icon=sub.display_icon,
-                    duration=0
+                    text=" ".join(text), index=idx, icon=sub.display_icon, duration=0
                 )
                 frames.append(frame)
         except AttributeError as e:
@@ -137,8 +134,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                         frame = event.getContentFrame(league_icon=icon)
                         self.__class__.client.send_notification(
                             Notification(
-                                model=Content(
-                                    frames=[frame], sound=event.sound),
+                                model=Content(frames=[frame], sound=event.sound),
                                 priority="critical",
                             )
                         )
@@ -155,8 +151,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def on_cancel_job_event(self, event: CancelJobEvent):
         sub = next(
-            filter(lambda x: x.jobId == event.jobId,
-                   self.subscriptions.events), None
+            filter(lambda x: x.jobId == event.jobId, self.subscriptions.events), None
         )
         if sub:
             del self.subscriptions[sub.id]
@@ -220,7 +215,6 @@ class LeagueSchedule(TimeCacheable):
     def storage(self):
         return RedisStorage
 
-
     @property
     def content(self):
         if not self.load():
@@ -251,11 +245,6 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: x.get("league_id", 0) != self.item_id,
-                    payload,
-                )
-            ), list(
-                filter(
                     lambda x: x.get("league_id", 0) == self.item_id,
                     payload,
                 )
@@ -283,11 +272,6 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         if isinstance(payload, list):
             return list(
                 filter(
-                    lambda x: x.get("league_id", 0) != self.item_id,
-                    payload,
-                )
-            ), list(
-                filter(
                     lambda x: x.get("league_id", 0) == self.item_id,
                     payload,
                 )
@@ -295,7 +279,7 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
             return payload
-        return  None
+        return None
 
 
 class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
@@ -313,12 +297,7 @@ class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
 
     def filter_payload(self, payload):
         if isinstance(payload, list):
-            return list(
-                filter(
-                    lambda x: x.get("league_id", 0) != self.item_id,
-                    payload,
-                )
-            ), list(
+            return  list(
                 filter(
                     lambda x: x.get("league_id", 0) == self.item_id,
                     payload,
@@ -340,11 +319,5 @@ class LivescoresWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
         return APPNAME.LIVESCORES
 
     def post_init(self):
-        EventManager.listen(
-            BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE,
-            self.clear_all
-        )
-        EventManager.listen(
-            BUTTON_EVENTS.LIVESCORES_CLEAN,
-            self.clear_finished
-        )
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_UNSUBSCRIBE, self.clear_all)
+        EventManager.listen(BUTTON_EVENTS.LIVESCORES_CLEAN, self.clear_finished)
