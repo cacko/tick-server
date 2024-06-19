@@ -66,9 +66,11 @@ class Client(object):
                 url=f"{url}",
                 **args,
             )
+            logging.warning(url)
+            logging.warning(response.status_code)
             return response.status_code
-        except ConnectionError:
-            pass
+        except ConnectionError as e:
+            logging.exception(e)
 
     def send_notification(self, notification: Notification):
         data = notification.model_dump()
