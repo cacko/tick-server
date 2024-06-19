@@ -266,8 +266,8 @@ class WorldCupWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None, payload
-        return payload, None
+            return payload
+        return None
 
 
 class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
@@ -298,8 +298,8 @@ class PremierLeagueWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
             )
         league_id = payload.get("league_id", 0)
         if league_id == self.item_id:
-            return None, payload
-        return payload, None
+            return payload
+        return  None
 
 
 class LaLigaWidget(BaseLivescoresWidget, metaclass=WidgetMeta):
