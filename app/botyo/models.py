@@ -190,6 +190,8 @@ class MatchEvent(BaseModel):
                     return ContentSound(id=SOUNDS.POSITIVE5.value)
                 case ACTION.FULL_TIME:
                     return ContentSound(id=SOUNDS.BICYCLE.value)
+                case ACTION.GAME_START:
+                    return ContentSound(id=SOUNDS.CAR.value)
         except ValueError:
             pass
         return None
