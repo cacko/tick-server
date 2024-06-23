@@ -27,9 +27,6 @@ from app.config import app_config
 Hue.register(hostname=app_config.lambo.hostname, username=app_config.lambo.username)
 
 
-Hue.signaling(duration=1000, colors=["DDDD00", "DD1FD0"])
-
-
 class TeamSchedule(TimeCacheable):
     cachetime: timedelta = timedelta(seconds=30)
     __id: int

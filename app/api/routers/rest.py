@@ -1,5 +1,4 @@
 from pathlib import Path
-from click import pause
 from fastapi import APIRouter, Depends, Request, Response
 import logging
 from app.api.auth import check_auth
@@ -8,6 +7,7 @@ from app.lametric import LaMetric
 from app.lametric.models import CONTENT_TYPE, MUSIC_STATUS
 from fastapi.responses import HTMLResponse
 from fastapi.concurrency import run_in_threadpool
+from lambo.hue.client import Hue
 
 
 router = APIRouter(prefix="/api")
@@ -69,4 +69,9 @@ async def post_termo(request: Request, auth=Depends(check_auth)):
 async def post_sure(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
     LaMetric.queue.put_nowait((CONTENT_TYPE.SURE, payload))
+    return {"status": "ok"}
+
+@router.post("/alert")
+async def post_alert(request: Request, auth=Depends(check_auth)):
+    Hue.signaling(duration=1000, colors=["DDDD00", "DD1FD0"])
     return {"status": "ok"}
