@@ -68,7 +68,4 @@ class _config(BaseModel):
 settings = Path(environ.get("SETTINGS_PATH", "app/settings.yaml"))
 data = yaml.full_load(settings.read_text())
 
-print(data)
-
-
 app_config = _config(**data)

@@ -9,7 +9,6 @@ from starlette.status import HTTP_403_FORBIDDEN
 class Authorization:
     async def __call__(self, request: Request):
         client = request.client
-        logging.warn(f"auth {client}")
         assert client
         device = request.headers.get("x-device", "")
         if device in app_config.api.device:
