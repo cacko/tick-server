@@ -31,19 +31,6 @@ class Server(object, metaclass=ServerMeta):
     def __init__(self, *args, **kwargs):
         self.app = FastAPI()
         
-        origins = [
-            "*",
-        ]
-
-
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=origins,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-            expose_headers=["x-device"],
-        )
             
         self.app.include_router(rest_router)
         super().__init__(*args, **kwargs)
