@@ -80,7 +80,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
 
     def update_frames(self):
         frames = []
-        logging.info(f">>> UPDATE FRAMES {self.__class__}")
+        logging.debug(f">>> UPDATE FRAMES {self.__class__}")
         try:
             for idx, sub in enumerate(self.subscriptions.events):
                 text = []
@@ -94,7 +94,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
                 frames.append(frame)
         except AttributeError as e:
             logging.error(e)
-        logging.info(frames)
+        logging.debug(frames)
         self.__class__.client.send_model(self.app_name, Content(frames=frames))
 
     def on_match_events(self, events: list[MatchEvent]):
@@ -102,7 +102,7 @@ class BaseLivescoresWidget(SubscriptionWidget):
             if event.is_old_event:
                 continue
             try:
-                logging.info(event)
+                logging.debug(event)
                 sub = self.subscriptions[event.id]
                 assert isinstance(sub, SubscriptionEvent)
                 if sub.status == "FT":
