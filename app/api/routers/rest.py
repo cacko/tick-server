@@ -66,7 +66,7 @@ async def post_termo(request: Request, auth=Depends(check_auth)):
     return {"status": "ok"}
 
 @router.post("/sure")
-async def post_sure(request: Request):
+async def post_sure(request: Request, auth=Depends(check_auth)):
     payload = await request.json()
     LaMetric.queue.put_nowait((CONTENT_TYPE.SURE, payload))
     return {"status": "ok"}

@@ -29,10 +29,9 @@ class Server(object, metaclass=ServerMeta):
     server: Optional[uvicorn.Server]
 
     def __init__(self, *args, **kwargs):
-        self.app = FastAPI()
-        
-            
-        self.app.include_router(rest_router)
+        app = FastAPI()
+        app.include_router(rest_router)
+        self.app = app
         super().__init__(*args, **kwargs)
     
     def start_server(self):
