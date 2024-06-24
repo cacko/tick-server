@@ -5,7 +5,6 @@ from app.config import app_config
 from typing import Optional
 from fastapi import FastAPI
 from app.api.routers.rest import router as rest_router
-from fastapi.middleware.cors import CORSMiddleware
 
 
 class ServerMeta(type):
@@ -30,21 +29,6 @@ class Server(object, metaclass=ServerMeta):
 
     def __init__(self, *args, **kwargs):
         self.app = FastAPI()
-        
-        origins = [
-            "*",
-        ]
-
-
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=origins,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-            expose_headers=["x-device"],
-        )
-            
         self.app.include_router(rest_router)
         super().__init__(*args, **kwargs)
     
@@ -55,7 +39,7 @@ class Server(object, metaclass=ServerMeta):
             host=config.host,
             port=config.port,
             use_colors=True,
-            workers=config.nworkers,
+            loop="uvloop",
             log_level=logging.root.level
         )
         self.server = uvicorn.Server(server_config)
