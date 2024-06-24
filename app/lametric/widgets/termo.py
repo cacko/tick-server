@@ -55,6 +55,7 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
     def nowdata(self, payload):
         try:
             data = NowData(**payload)
+            logging.info(data)
             assert data.location == SensorLocation.INDOOR
             self.nextFrames = [
                 ContentFrame(
@@ -67,4 +68,5 @@ class TermoWidget(BaseWidget, metaclass=WidgetMeta):
             TermoWidget.client.send_model_api2(APPNAME.TERMO, Content(frames=self.nextFrames))
             return True
         except AssertionError as e:
+            logging.exception(e)
             pass

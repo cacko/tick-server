@@ -39,7 +39,7 @@ class LaMetric(object, metaclass=LaMetricMeta):
     def __init__(self) -> None:
         self._client = Client(app_config.lametric)
         self._display = Display(client=self._client)
-        self._client.set_device_mode(DEVICE_MODE.KIOSK)
+        self._client.set_device_mode(DEVICE_MODE.MANUAL)
 
     def run(self, mainQueue):
         self._mainQueue = mainQueue
